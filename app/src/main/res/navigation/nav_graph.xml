@@ -25,10 +25,25 @@
         android:id="@+id/productsFragment"
         android:name="com.example.logisticky.viewLayer.ProductsFragment"
         android:label="fragment_products"
-        tools:layout="@layout/fragment_products" />
+        tools:layout="@layout/fragment_products" >
+        <action
+            android:id="@+id/action_productsFragment_to_productInfoFragment"
+            app:destination="@id/productInfoFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.logisticky.viewLayer.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" />
+    <fragment
+
+        android:id="@+id/productInfoFragment"
+        android:name="com.example.logisticky.viewLayer.ProductInfoFragment"
+        android:label="fragment_product_info"
+        tools:layout="@layout/fragment_product_info" >
+
+        <argument android:name="productId"
+            android:defaultValue="none"/>
+
+    </fragment>
 </navigation>
