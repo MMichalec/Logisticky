@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/packing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="17dp"
@@ -35,31 +35,35 @@
 
     <Spinner
 
-        android:id="@+id/spinner"
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:background="@color/secondColor"
+        android:id="@+id/magazinePicker"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+
+
         android:spinnerMode="dropdown"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.606"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.194" />
+        app:layout_constraintVertical_bias="0.219" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="20dp"
         android:text="Avaibility"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinner"
+        app:layout_constraintTop_toBottomOf="@+id/magazinePicker"
         app:layout_constraintVertical_bias="0.081" />
 
     <TextView
-        android:textSize="24sp"
-        android:id="@+id/textView4"
+        android:textSize="44sp"
+        android:id="@+id/productAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="370.25 m2"
@@ -71,18 +75,18 @@
 
     <TextView
         android:textSize="24sp"
-        android:id="@+id/textView5"
+        android:id="@+id/productPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="38,25 zł"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/productAmount"
         app:layout_constraintVertical_bias="0.067" />
 
     <EditText
-        android:id="@+id/editTextNumber"
+        android:id="@+id/productAddPackage"
         android:layout_width="161dp"
         android:layout_height="48dp"
         android:ems="10"
@@ -93,11 +97,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.74"
+        android:gravity="center"
         android:hint="packages"
         />
 
     <EditText
-        android:id="@+id/editTextNumberDecimal2"
+        android:id="@+id/productAddAmount"
         android:layout_width="161dp"
         android:layout_height="48dp"
         android:ems="10"
@@ -108,12 +113,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.74"
-        android:hint="m2" />
+        android:hint="m2"
+        android:gravity="center"
+        android:imeOptions="actionDone"/>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/addToCartButton"
         android:layout_width="180dp"
         android:layout_height="80dp"
+        android:backgroundTint="@color/cart"
         android:text="Add to Cart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -123,7 +131,8 @@
         app:layout_constraintVertical_bias="0.926" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/makeDeliveryButton"
+        android:backgroundTint="@color/secondColor"
         android:layout_width="180dp"
         android:layout_height="80dp"
         android:text="MAKE DELIVERY"

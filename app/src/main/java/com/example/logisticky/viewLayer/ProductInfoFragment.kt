@@ -1,12 +1,18 @@
 package com.example.logisticky.viewLayer
 
+import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
+import android.widget.TextView.OnEditorActionListener
+import androidx.fragment.app.Fragment
 import com.example.logisticky.R
+import kotlin.math.roundToInt
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -48,6 +54,69 @@ class ProductInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view?.findViewById<TextView>(R.id.productName)?.text = productId
+
+        val exampleValue = 23.45
+        val packingValue = 10.75
+
+        val editTextAddAmount = view.findViewById<EditText>(R.id.productAddAmount)
+        val editTextAddPackage = view.findViewById<EditText>(R.id.productAddPackage)
+
+
+        //TODO Add if statement for showing Toast. Currently Tast is shown even if the amount has not been rounded
+        editTextAddAmount?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS -> {
+                    if(editTextAddAmount.text.isNotEmpty()){
+                        val calculatedPackage = editTextAddAmount.text.toString().toDouble()
+                        val roundedPackage = (calculatedPackage/packingValue).roundToInt()
+                        val roundedAmount = roundedPackage * packingValue
+
+                        Toast.makeText(activity, "Value has been rounded", Toast.LENGTH_LONG).show()
+
+                        //hide keyboard after input
+                        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(view?.getWindowToken(), 0)
+
+                        editTextAddAmount.setText(roundedAmount.toString())
+                        editTextAddPackage.setText(roundedPackage.toString())
+                    }
+                    return@OnEditorActionListener true
+                }
+            }
+            false
+        })
+
+        editTextAddPackage?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS -> {
+                    if(editTextAddPackage.text.isNotEmpty()){
+                        val calculatedPackage = editTextAddPackage.text.toString().toDouble()
+                        editTextAddAmount.setText((calculatedPackage*packingValue).toString())
+
+
+                        //hide keyboard after input
+                        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(view?.getWindowToken(), 0)
+
+                    }
+                    return@OnEditorActionListener true
+                }
+            }
+            false
+        })
+
+
+
+        val spinnerArray: MutableList<String> = ArrayList()
+        spinnerArray.add("LODZ")
+        spinnerArray.add("WARSAW")
+        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
+            view.context, R.layout.spinner_item, spinnerArray
+        )
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_list)
+        val sItems = view.findViewById(R.id.magazinePicker) as Spinner
+        sItems.adapter = adapter
+
     }
 
     companion object {
