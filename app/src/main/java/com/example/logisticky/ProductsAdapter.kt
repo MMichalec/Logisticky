@@ -5,11 +5,14 @@ import android.view.LayoutInflater
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import androidx.appcompat.view.menu.ActionMenuItemView
 import androidx.recyclerview.widget.RecyclerView
 
-class ProductsAdapter(private val exampleList: List<ProductItem>): RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
+open class ProductsAdapter(private var exampleList: List<ProductItem>, private var exampleListFull: List<ProductItem> = ArrayList<ProductItem>(exampleList)):
+    RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
 
 
 
@@ -31,5 +34,6 @@ class ProductsAdapter(private val exampleList: List<ProductItem>): RecyclerView.
     }
 
     override fun getItemCount() = exampleList.size
+
 
 }
