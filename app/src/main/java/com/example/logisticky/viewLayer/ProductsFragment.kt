@@ -1,15 +1,17 @@
 package com.example.logisticky.viewLayer
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.SearchView
+
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.ProductItem
 import com.example.logisticky.ProductsAdapter
 import com.example.logisticky.R
+import java.util.*
+import kotlin.collections.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -22,8 +24,10 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class ProductsFragment : Fragment() {
+    var testList = ArrayList<ProductItem>()
+    val displayList = ArrayList<ProductItem>()
 
-
+    lateinit var recyclerView: RecyclerView
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -34,6 +38,8 @@ class ProductsFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+        setHasOptionsMenu(true);
 
 
     }
@@ -81,12 +87,63 @@ class ProductsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val testList = generateDummyList(150)
+        testList = generateDummyList(15) as ArrayList<ProductItem>;
+        displayList.addAll(testList)
 
-        val recyclerView: RecyclerView? = view?.findViewById(R.id.products_recycleView)
-        recyclerView?.adapter = ProductsAdapter(testList)
+        recyclerView = view?.findViewById(R.id.products_recycleView)
+        recyclerView?.adapter = ProductsAdapter(displayList)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.setHasFixedSize(true)
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        inflater.inflate(R.menu.search, menu)
+        val menuItem = menu!!.findItem(R.id.searchProducts)
+
+        if(menuItem != null){
+
+            val searchView = menuItem.actionView as SearchView
+
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+
+                    if(newText!!.isNotEmpty()){
+                        displayList.clear()
+                        val search = newText.toLowerCase(Locale.getDefault())
+                        testList.forEach{
+
+                            if(it.text1.toLowerCase(Locale.getDefault()).contains(search)) {
+                                displayList.add(it)
+                            }
+                        }
+
+
+                        recyclerView.adapter!!.notifyDataSetChanged()
+                    }
+                    else {
+
+                        displayList.clear()
+                        displayList.addAll(testList)
+
+                        recyclerView.adapter!!.notifyDataSetChanged()
+                    }
+
+                    return true
+                }
+
+            })
+        }
+
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return super.onOptionsItemSelected(item)
     }
 }
