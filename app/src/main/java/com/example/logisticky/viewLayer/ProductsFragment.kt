@@ -2,6 +2,7 @@ package com.example.logisticky.viewLayer
 
 import android.os.Bundle
 import android.view.*
+import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 
 import androidx.fragment.app.Fragment
@@ -105,6 +106,8 @@ class ProductsFragment : Fragment() {
         if(menuItem != null){
 
             val searchView = menuItem.actionView as SearchView
+            val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+            editText.hint = "Search Your Product..."
 
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {
