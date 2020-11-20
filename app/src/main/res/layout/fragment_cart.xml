@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/productsFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".viewLayer.ProductsFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cart_recycleView"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        android:layout_above="@+id/searchProducts"
+        android:clipToPadding="false"
+        android:padding="10dp"
+        tools:listitem="@layout/product_list_item">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/cartAmountText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/cart_recycleView"
+        android:layout_margin="20dp"
+        android:background="@drawable/rounded_textview"
+        android:gravity="center"
+        android:padding="20dp"
+        android:text="1273.20 PLN"
+        android:textColor="@color/white"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/cartAddProductButton"
+        android:layout_width="185dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/cartAmountText"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="Add product"
+        android:backgroundTint="@color/mainTile"
+        />
+
+    <Button
+        android:id="@+id/cartRemoveSelectedButton"
+        android:layout_width="185dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/cartAmountText"
+
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:backgroundTint="@color/mainTile"
+        android:text="Remove Selected" />
+
+    <Button
+        android:id="@+id/cartMakeDeliveryButton"
+        android:layout_width="390dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/cartAddProductButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="Make Delivery"
+        android:backgroundTint="@color/mainTile"
+
+        />
+
+
+</RelativeLayout>

@@ -11,6 +11,7 @@ import android.widget.*
 import android.widget.TextView.OnEditorActionListener
 import androidx.fragment.app.Fragment
 import com.example.logisticky.R
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
@@ -62,7 +63,7 @@ class ProductInfoFragment : Fragment() {
         val editTextAddPackage = view.findViewById<EditText>(R.id.productAddPackage)
 
 
-        //TODO Add if statement for showing Toast. Currently Tast is shown even if the amount has not been rounded
+
         editTextAddAmount?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS -> {
@@ -71,6 +72,7 @@ class ProductInfoFragment : Fragment() {
                         val roundedPackage = (calculatedPackage/packingValue).roundToInt()
                         val roundedAmount = roundedPackage * packingValue
 
+                        if (calculatedPackage-roundedAmount > 0.001)
                         Toast.makeText(activity, "Value has been rounded", Toast.LENGTH_LONG).show()
 
                         //hide keyboard after input

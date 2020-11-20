@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
@@ -28,10 +29,12 @@ class ProductsAdapter2(private var exampleList: List<ProductItem2>):
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsViewHolder2 {
         val itemView = LayoutInflater.from(parent.context).inflate(
-            R.layout.product_list_item,
+            R.layout.product_list_item2,
             parent,
             false
         )
+
+
 
         return ProductsViewHolder2(itemView)
     }
@@ -43,22 +46,8 @@ class ProductsAdapter2(private var exampleList: List<ProductItem2>):
         holder.textView2.text = currentItem.text2
         holder.checkBox = currentItem.checkBox
 
-        holder.itemView.setOnClickListener{
-            var gName:String = currentItem.text1
-            var navController = Navigation.findNavController(it)
 
 
-
-            if(!TextUtils.isEmpty(currentItem.text1)){
-                val bundle = bundleOf("productId" to currentItem.text1)
-                navController!!.navigate(
-                    R.id.action_productsFragment_to_productInfoFragment,
-                    bundle
-                )
-            }
-
-
-        }
     }
 
     override fun getItemCount() = exampleList.size

@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_mainMenuFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
     </fragment>
     <fragment
         android:id="@+id/productsFragment"
@@ -46,4 +49,8 @@
             android:defaultValue="none"/>
 
     </fragment>
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.example.logisticky.viewLayer.CartFragment"
+        android:label="CartFragment" />
 </navigation>

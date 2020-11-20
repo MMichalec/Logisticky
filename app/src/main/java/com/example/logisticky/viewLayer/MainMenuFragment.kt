@@ -39,6 +39,7 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
         navController = Navigation.findNavController(view)
         view.findViewById<Button>(R.id.settingsButton).setOnClickListener(this)
         view.findViewById<Button>(R.id.productsButton).setOnClickListener(this)
+        view.findViewById<Button>(R.id.cartButton).setOnClickListener(this)
 
     }
 
@@ -46,6 +47,7 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
         when(v!!.id){
             R.id.settingsButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_settingsFragment)
             R.id.productsButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_productsFragment)
+            R.id.cartButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_cartFragment)
 
         }
     }
