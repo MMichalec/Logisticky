@@ -2,9 +2,9 @@ package com.example.logisticky.viewLayer
 
 import android.os.Bundle
 import android.view.*
+import android.widget.CheckBox
 import android.widget.EditText
 import androidx.appcompat.widget.SearchView
-
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +13,7 @@ import com.example.logisticky.ProductsAdapter
 import com.example.logisticky.R
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -48,6 +49,7 @@ class ProductsFragment : Fragment() {
     private fun generateDummyList(size: Int): List<ProductItem>{
         val list = ArrayList<ProductItem>()
 
+        val checkBox = CheckBox(activity)
         for (i in 0 until size){
             val item = ProductItem("Item $i")
             list +=item
@@ -109,27 +111,26 @@ class ProductsFragment : Fragment() {
             val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
             editText.hint = "Search Your Product..."
 
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     return true
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
 
-                    if(newText!!.isNotEmpty()){
+                    if (newText!!.isNotEmpty()) {
                         displayList.clear()
                         val search = newText.toLowerCase(Locale.getDefault())
-                        testList.forEach{
+                        testList.forEach {
 
-                            if(it.text1.toLowerCase(Locale.getDefault()).contains(search)) {
+                            if (it.text1.toLowerCase(Locale.getDefault()).contains(search)) {
                                 displayList.add(it)
                             }
                         }
 
 
                         recyclerView.adapter!!.notifyDataSetChanged()
-                    }
-                    else {
+                    } else {
 
                         displayList.clear()
                         displayList.addAll(testList)
