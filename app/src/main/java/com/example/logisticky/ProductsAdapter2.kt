@@ -2,21 +2,19 @@ package com.example.logisticky
 
 
 
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.os.bundleOf
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 
 
 class ProductsAdapter2(private var exampleList: List<ProductItem2>):
     RecyclerView.Adapter<ProductsAdapter2.ProductsViewHolder2>() {
-
+    private val items =ArrayList<ProductItem2>()
 
 
 
@@ -25,6 +23,7 @@ class ProductsAdapter2(private var exampleList: List<ProductItem2>):
         val textView1: TextView = itemView.findViewById(R.id.text_view_list1)
         val textView2: TextView = itemView.findViewById(R.id.text_view_list2)
         var checkBox: CheckBox = itemView.findViewById(R.id.productCheckBox)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsViewHolder2 {
@@ -40,12 +39,31 @@ class ProductsAdapter2(private var exampleList: List<ProductItem2>):
     }
 
     override fun onBindViewHolder(holder: ProductsViewHolder2, position: Int) {
-        val currentItem = exampleList[position]
+        val currentItem = exampleList.get(position)
 
         holder.textView1.text = currentItem.text1
         holder.textView2.text = currentItem.text2
-        holder.checkBox = currentItem.checkBox
 
+
+
+
+
+        holder.checkBox.setOnCheckedChangeListener(null)
+        holder.checkBox.isChecked = currentItem.checkBox.isChecked
+        //TODO ACTION ON CHECK AND SINGLE CHECK WORKING https://stackoverflow.com/questions/32427889/checkbox-in-recyclerview-keeps-on-checking-different-items
+        holder.checkBox.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                Toast.makeText(holder.itemView.context, currentItem.text1, Toast.LENGTH_LONG).show()
+//                currentItem.checkBox.isChecked = isChecked
+//                holder.textView2.text = isChecked.toString()
+            }
+        })
+
+
+
+        holder.itemView.setOnClickListener{
+            Toast.makeText(holder.itemView.context, "Value has been rounded", Toast.LENGTH_LONG).show()
+        }
 
 
     }
