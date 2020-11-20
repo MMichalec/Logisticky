@@ -6,9 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.get
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import java.lang.Exception
 
 
 open class ProductsAdapter(private var exampleList: List<ProductItem>):
@@ -31,6 +34,8 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
             false
         )
 
+
+
         return ProductsViewHolder(itemView)
     }
 
@@ -41,20 +46,26 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
 //        holder.textView2.text = currentItem.text2
 //        holder.checkBox = currentItem.checkBox
 
+
+
         holder.itemView.setOnClickListener{
         var gName:String = currentItem.text1
         var navController = Navigation.findNavController(it)
 
-
-
+            //TODO This condition is bad. I am using exception handling to navigate to proper fragment
             if(!TextUtils.isEmpty(currentItem.text1)){
-                val bundle = bundleOf("productId" to currentItem.text1)
-                navController!!.navigate(
-                    R.id.action_productsFragment_to_productInfoFragment,
-                    bundle
-                )
-            }
+                try {
+                    val bundle = bundleOf("productId" to currentItem.text1)
+                    navController!!.navigate(
+                        R.id.action_productsFragment_to_productInfoFragment,
+                        bundle
+                    )
+                } catch (e:Exception){
+                    val bundle = bundleOf("deliveryId" to currentItem.text1)
+                    navController!!.navigate(R.id.action_deliversFragment_to_deliveryInfoFragment, bundle)
+                }
 
+            }
 
         }
     }
