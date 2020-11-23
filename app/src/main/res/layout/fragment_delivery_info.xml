@@ -24,6 +24,7 @@
         android:layout_margin="10dp"
         android:ems="10"
         android:inputType="date"
+        android:focusable="false"
         android:clickable="true"
         android:editable="false"/>
 

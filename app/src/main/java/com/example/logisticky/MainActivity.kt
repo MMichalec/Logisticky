@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar;
 
 //TODO - fix checkboxes in Cart View
+//TODO - change formating of date on deliveryInfoFragment and style texts. Check if you can give datepicker fullscreen
 
 
 class MainActivity : AppCompatActivity() {

@@ -1,15 +1,15 @@
 package com.example.logisticky.viewLayer
 
+import android.app.DatePickerDialog
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.View.OnTouchListener
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+
 import com.example.logisticky.ProductItem
 import com.example.logisticky.ProductsAdapter
 import com.example.logisticky.R
@@ -27,7 +27,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [DeliveryInfoFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class DeliveryInfoFragment : Fragment(), View.OnClickListener {
+class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
     var isViewMode = true;
     var testList = ArrayList<ProductItem>()
@@ -35,6 +35,14 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
     lateinit var spinnerDrivers:Spinner
     lateinit var spinnerMagazines:Spinner
     lateinit var spinnerVehicles:Spinner
+
+    var day = 0
+    var month = 0
+    var year = 0
+
+    var savedDay = 0
+    var savedMonth = 0
+    var savedYear = 0
 
     //Had to initialize multiple variables because if I used one there were weird interactions when clicking spinner (visualy showed as all spinners clicked at once)
     lateinit var driverSpinnerBackground:Drawable
@@ -55,6 +63,7 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
         }
 
         deliveryId = requireArguments().getString("deliveryId").toString()
+
     }
 
     override fun onCreateView(
@@ -71,7 +80,7 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        pickDate()
 
 
         view.findViewById<TextView>(R.id.deliveryId)?.text =deliveryId
@@ -144,11 +153,13 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
 
 
         view.findViewById<Button>(R.id.deliveryEditButton).setOnClickListener(this)
-        view.findViewById<Button>(R.id.deliverySaveEdit).setOnClickListener (this)
+        view.findViewById<Button>(R.id.deliverySaveEdit).setOnClickListener(this)
 
         driverSpinnerBackground = spinnerDrivers.getBackground()
         vehicleSpinnerBackground = spinnerVehicles.getBackground()
         magazineSpinnerBackground = spinnerMagazines.getBackground()
+
+
 
         updateMode()
 
@@ -160,6 +171,7 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
         when(v!!.id){
             R.id.deliveryEditButton -> (changeMode())
             R.id.deliverySaveEdit -> (changeMode())
+
         }
     }
 
@@ -167,13 +179,13 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
         if(isViewMode){
             isViewMode=false
             val toast = Toast.makeText(activity, "Edit mode enabled", Toast.LENGTH_LONG)
-            toast.setGravity(Gravity.TOP,0,0)
+            toast.setGravity(Gravity.TOP, 0, 0)
             toast.show()
         }
         else if(!isViewMode) {
             isViewMode=true
             val toast = Toast.makeText(activity, "View mode enabled", Toast.LENGTH_LONG)
-            toast.setGravity(Gravity.TOP,0,0)
+            toast.setGravity(Gravity.TOP, 0, 0)
             toast.show()
         }
         updateMode()
@@ -231,7 +243,6 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
 
 
 
-
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -265,6 +276,38 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
         return list
     }
 
+    private fun getDateTimeCalendar(){
+        val cal:Calendar = Calendar.getInstance()
+        day = cal.get(Calendar.DAY_OF_MONTH)
+        month = cal.get(Calendar.MONTH)
+        year = cal.get(Calendar.YEAR)
+    }
+
+
+
+    private fun pickDate(){
+
+        var datePicker = view?.findViewById<EditText>(R.id.deliveryDatePicker)
+        datePicker?.setOnTouchListener(OnTouchListener { v, event ->
+            if (MotionEvent.ACTION_UP == event.action){
+                getDateTimeCalendar()
+                DatePickerDialog(v.context,this,year,month,day).show()
+            }
+            false
+        })
+    }
+
+    override fun onDateSet(p0: DatePicker?, p1: Int, p2: Int, p3: Int) {
+        savedDay = p3
+        savedMonth = p2
+        savedYear = p1
+
+        getDateTimeCalendar()
+
+        view?.findViewById<EditText>(R.id.deliveryDatePicker)?.setText("$savedDay-$savedMonth-$savedYear")
+
+
+    }
 
 
 }
