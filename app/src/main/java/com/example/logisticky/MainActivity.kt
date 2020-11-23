@@ -9,7 +9,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar;
 
-
+//TODO - fix checkboxes in Cart View
 
 
 class MainActivity : AppCompatActivity() {

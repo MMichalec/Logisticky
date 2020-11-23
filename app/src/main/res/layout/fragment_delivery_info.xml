@@ -156,7 +156,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:backgroundTint="@color/mainTile"
+        android:backgroundTint="#b33939"
         android:text="Cancel delivery"
         android:visibility="gone"/>
 
@@ -165,15 +165,13 @@
         android:layout_width="120dp"
         android:layout_height="80dp"
         android:layout_below="@id/deliveryAmountText"
-
-
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:backgroundTint="@color/mainTile"
+        android:backgroundTint="#36a353"
         android:text="Save Changes"
         android:visibility="gone"/>
 

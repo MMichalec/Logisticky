@@ -1,5 +1,6 @@
 package com.example.logisticky.viewLayer
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -34,6 +35,11 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
     lateinit var spinnerDrivers:Spinner
     lateinit var spinnerMagazines:Spinner
     lateinit var spinnerVehicles:Spinner
+
+    //Had to initialize multiple variables because if I used one there were weird interactions when clicking spinner (visualy showed as all spinners clicked at once)
+    lateinit var driverSpinnerBackground:Drawable
+    lateinit var vehicleSpinnerBackground:Drawable
+    lateinit var magazineSpinnerBackground:Drawable
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -123,7 +129,7 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
         //Disabling spinners in view-only mode. Will be reenebling them when go into edit mode
 
 
-        //TODO disable arrows in spinners in view-only mode. (You can disable them by setting xml like this android:background="@null" but I don't know how to restore them. Yet.
+
 
         //Setting up recycler view
 
@@ -139,6 +145,10 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
 
         view.findViewById<Button>(R.id.deliveryEditButton).setOnClickListener(this)
         view.findViewById<Button>(R.id.deliverySaveEdit).setOnClickListener (this)
+
+        driverSpinnerBackground = spinnerDrivers.getBackground()
+        vehicleSpinnerBackground = spinnerVehicles.getBackground()
+        magazineSpinnerBackground = spinnerMagazines.getBackground()
 
         updateMode()
 
@@ -170,6 +180,8 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
     }
 
     fun updateMode(){
+
+
         if (isViewMode){
 
             view?.findViewById<Button>(R.id.deliveryAddProduct)?.visibility = View.GONE
@@ -177,12 +189,16 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
             view?.findViewById<Button>(R.id.deliverySaveEdit)?.visibility = View.GONE
             view?.findViewById<Button>(R.id.deliveryEditButton)?.visibility = View.VISIBLE
 
+            spinnerDrivers.background = null;
             spinnerDrivers.isEnabled = false
             spinnerDrivers.isClickable = false
 
+
+            spinnerVehicles.background = null;
             spinnerVehicles.isEnabled = false
             spinnerVehicles.isClickable = false
 
+            spinnerMagazines.background = null;
             spinnerMagazines.isEnabled = false
             spinnerMagazines.isClickable = false
 
@@ -196,12 +212,16 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
             view?.findViewById<Button>(R.id.deliverySaveEdit)?.visibility = View.VISIBLE
             view?.findViewById<Button>(R.id.deliveryEditButton)?.visibility = View.GONE
 
+            spinnerDrivers.background = driverSpinnerBackground
             spinnerDrivers.isEnabled = true
             spinnerDrivers.isClickable = true
 
+
+            spinnerVehicles.background = vehicleSpinnerBackground
             spinnerVehicles.isEnabled = true
             spinnerVehicles.isClickable = true
 
+            spinnerMagazines.background = magazineSpinnerBackground
             spinnerMagazines.isEnabled = true
             spinnerMagazines.isClickable = true
 
