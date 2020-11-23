@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.lang.Exception
 
 
+
 open class ProductsAdapter(private var exampleList: List<ProductItem>):
     RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
 

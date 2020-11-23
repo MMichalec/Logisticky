@@ -56,7 +56,6 @@ class ProductInfoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         view?.findViewById<TextView>(R.id.productName)?.text = productId
 
-        val exampleValue = 23.45
         val packingValue = 10.75
 
         val editTextAddAmount = view.findViewById<EditText>(R.id.productAddAmount)
