@@ -18,14 +18,14 @@
             app:destination="@id/productsFragment"
             />
         <action
-            android:id="@+id/action_mainMenuFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-        <action
             android:id="@+id/action_mainMenuFragment_to_cartFragment"
             app:destination="@id/cartFragment" />
         <action
             android:id="@+id/action_mainMenuFragment_to_deliversFragment"
             app:destination="@id/deliversFragment" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/productsFragment"

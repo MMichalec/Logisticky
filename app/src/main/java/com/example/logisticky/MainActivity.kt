@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar;
 
 //TODO - fix checkboxes in Cart View
 //TODO - change formating of date on deliveryInfoFragment and style texts. Check if you can give datepicker fullscreen
+//TODO - add dialog popups when critical changes are being made (dialog "Are You Sure" when deleting delivery etc)
 
 
 class MainActivity : AppCompatActivity() {

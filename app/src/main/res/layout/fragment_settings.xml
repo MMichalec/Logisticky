@@ -1,15 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settingsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".viewLayer.SettingsFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/settingsFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <Button
+        android:id="@+id/settingsButton"
+        style="@style/mainButtonStyle"
+        android:layout_marginEnd="28dp"
+        android:layout_marginRight="28dp"
+        android:layout_marginBottom="20dp"
+        android:paddingBottom="10dp"
 
-</FrameLayout>
+
+        android:text="Settings"
+
+        app:backgroundTint="@color/mainTile"
+        app:layout_constraintBottom_toTopOf="@+id/logOutButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:drawableBottom="@drawable/ic_products"
+        />
+
+    <Button
+        android:id="@+id/cartButton"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center_horizontal"
+        android:text="Cart"
+        android:textAlignment="center"
+
+        app:backgroundTint="#343F4B"
+        app:layout_constraintBottom_toTopOf="@+id/logOutButton"
+        app:layout_constraintEnd_toStartOf="@+id/settingsButton"
+        app:layout_constraintStart_toStartOf="parent"
+        android:drawableBottom="@drawable/ic_cart"
+        android:paddingBottom="18dp"
+        />
+
+    <Button
+        android:id="@+id/productsButton"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_marginBottom="20dp"
+        android:text="Products"
+        app:backgroundTint="#343F4B"
+        app:layout_constraintBottom_toTopOf="@+id/cartButton"
+        app:layout_constraintEnd_toStartOf="@+id/deliversButton"
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center_horizontal"
+        android:drawableBottom="@drawable/ic_products"
+        android:paddingBottom="20dp"
+        />
+
+    <Button
+        android:id="@+id/deliversButton"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginRight="28dp"
+        android:layout_marginBottom="20dp"
+        android:text="Delivers"
+        android:drawableBottom="@drawable/ic_delivers"
+
+
+        app:backgroundTint="#343F4B"
+
+        android:paddingBottom="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/settingsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/logOutButton"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:text="Log out"
+        app:backgroundTint="#343F4B"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.811"
+        android:gravity="center_horizontal"
+        android:drawableBottom="@drawable/ic_logout"
+        android:paddingBottom="20dp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

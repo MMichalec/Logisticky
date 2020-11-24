@@ -1,18 +1,25 @@
 package com.example.logisticky.viewLayer
 
 import android.os.Bundle
+import android.os.Looper
 import android.view.*
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ListView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.ProductItem
 import com.example.logisticky.ProductsAdapter
 import com.example.logisticky.R
+import com.google.gson.GsonBuilder
+import okhttp3.*
+import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -30,6 +37,7 @@ class ProductsFragment : Fragment() {
     val displayList = ArrayList<ProductItem>()
 
     lateinit var recyclerView: RecyclerView
+
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -41,7 +49,11 @@ class ProductsFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
 
-        setHasOptionsMenu(true);
+        setHasOptionsMenu(true)
+        fetchJson()
+
+
+
 
 
     }
@@ -90,13 +102,22 @@ class ProductsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        testList = generateDummyList(15) as ArrayList<ProductItem>;
+        //waiting for data to load TODO: This is retarded. Find a way to refresh list
+        while (testList.size == 0){ }
+
+
+
+        displayList.clear()
         displayList.addAll(testList)
 
+
         recyclerView = view?.findViewById(R.id.products_recycleView)
+
         recyclerView?.adapter = ProductsAdapter(displayList)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.setHasFixedSize(true)
+
+
 
     }
 
@@ -123,7 +144,7 @@ class ProductsFragment : Fragment() {
                         val search = newText.toLowerCase(Locale.getDefault())
                         testList.forEach {
 
-                            if (it.text1.toLowerCase(Locale.getDefault()).contains(search)) {
+                            if (it.name.toLowerCase(Locale.getDefault()).contains(search)) {
                                 displayList.add(it)
                             }
                         }
@@ -131,10 +152,8 @@ class ProductsFragment : Fragment() {
 
                         recyclerView.adapter!!.notifyDataSetChanged()
                     } else {
-
                         displayList.clear()
                         displayList.addAll(testList)
-
                         recyclerView.adapter!!.notifyDataSetChanged()
                     }
 
@@ -142,6 +161,7 @@ class ProductsFragment : Fragment() {
                 }
 
             })
+
         }
 
         super.onCreateOptionsMenu(menu, inflater)
@@ -150,4 +170,47 @@ class ProductsFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return super.onOptionsItemSelected(item)
     }
+
+    fun fetchJson(){
+        println("Attempting to Fetch JSON")
+
+        val url = "https://dystproapi.azurewebsites.net/products/names"
+
+        val client = OkHttpClient()
+
+        val request = Request.Builder().url(url).build()
+
+        client.newCall(request).enqueue(object : Callback {
+
+            override fun onResponse(call: Call, response: Response) {
+                println("Data access succesful")
+
+                val body = response.body()?.string()
+                println(body)
+
+                val gson = GsonBuilder().create()
+                val listFromJson = gson.fromJson(body, ProductList::class.java)
+
+                testList.addAll(listFromJson.products)
+
+
+
+                activity?.runOnUiThread {
+                    recyclerView.adapter?.notifyDataSetChanged()
+
+                }
+            }
+
+            override fun onFailure(call: Call, e: IOException) {
+                println("Data not loaded")
+                testList.add(ProductItem("COULD NOT LOAD DATA. CHECK YOUR NETWORK CONNECTION"))
+            }
+        })
+
+    }
+
+    class ProductList (var products: ArrayList<ProductItem>)
+
+
+
 }

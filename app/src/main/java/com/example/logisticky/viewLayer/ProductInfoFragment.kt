@@ -11,6 +11,8 @@ import android.widget.*
 import android.widget.TextView.OnEditorActionListener
 import androidx.fragment.app.Fragment
 import com.example.logisticky.R
+import okhttp3.*
+import java.io.IOException
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -119,6 +121,8 @@ class ProductInfoFragment : Fragment() {
         sItems.adapter = adapter
 
     }
+
+
 
     companion object {
         /**

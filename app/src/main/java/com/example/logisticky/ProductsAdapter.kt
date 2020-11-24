@@ -43,26 +43,26 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
     override fun onBindViewHolder(holder: ProductsViewHolder, position: Int) {
         val currentItem = exampleList[position]
 
-        holder.textView1.text = currentItem.text1
+        holder.textView1.text = currentItem.name
 //        holder.textView2.text = currentItem.text2
 //        holder.checkBox = currentItem.checkBox
 
 
 
         holder.itemView.setOnClickListener{
-        var gName:String = currentItem.text1
+        var gName:String = currentItem.name
         var navController = Navigation.findNavController(it)
 
             //TODO This condition is bad. I am using exception handling to navigate to proper fragment
-            if(!TextUtils.isEmpty(currentItem.text1)){
+            if(!TextUtils.isEmpty(currentItem.name)){
                 try {
-                    val bundle = bundleOf("productId" to currentItem.text1)
+                    val bundle = bundleOf("productId" to currentItem.name)
                     navController!!.navigate(
                         R.id.action_productsFragment_to_productInfoFragment,
                         bundle
                     )
                 } catch (e:Exception){
-                    val bundle = bundleOf("deliveryId" to currentItem.text1)
+                    val bundle = bundleOf("deliveryId" to currentItem.name)
                     navController!!.navigate(R.id.action_deliversFragment_to_deliveryInfoFragment, bundle)
                 }
 

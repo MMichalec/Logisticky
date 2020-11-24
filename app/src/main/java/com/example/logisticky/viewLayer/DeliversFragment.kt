@@ -107,7 +107,7 @@ class DeliversFragment : Fragment() {
                         val search = newText.toLowerCase(Locale.getDefault())
                         testList.forEach {
 
-                            if (it.text1.toLowerCase(Locale.getDefault()).contains(search)) {
+                            if (it.name.toLowerCase(Locale.getDefault()).contains(search)) {
                                 displayList.add(it)
                             }
                         }

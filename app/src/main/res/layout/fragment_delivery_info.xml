@@ -17,6 +17,7 @@
         android:text="TextView" />
 
     <EditText
+        android:gravity="center"
         android:id="@+id/deliveryDatePicker"
         android:layout_width="match_parent"
         android:layout_below="@id/deliveryId"
@@ -29,6 +30,7 @@
         android:editable="false"/>
 
     <Spinner
+        android:gravity="center"
         android:id="@+id/deliveryDriverPicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,6 +46,7 @@
          />
 
     <Spinner
+        android:gravity="center"
         android:id="@+id/deliveryVehiclePicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,6 +62,7 @@
         />
 
     <Spinner
+        android:gravity="center"
         android:id="@+id/deliveryMagazinePicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -72,6 +76,7 @@
         app:layout_constraintVertical_bias="0.219" />
 
     <androidx.recyclerview.widget.RecyclerView
+
         android:id="@+id/delivery_recycleView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
