@@ -1,14 +1,12 @@
 package com.example.logisticky.viewLayer
 
+import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.view.*
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.ListView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.ProductItem
@@ -19,7 +17,6 @@ import okhttp3.*
 import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.concurrent.thread
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -102,22 +99,14 @@ class ProductsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //waiting for data to load TODO: This is retarded. Find a way to refresh list
-        while (testList.size == 0){ }
-
-
 
         displayList.clear()
         displayList.addAll(testList)
 
-
         recyclerView = view?.findViewById(R.id.products_recycleView)
-
         recyclerView?.adapter = ProductsAdapter(displayList)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.setHasFixedSize(true)
-
-
 
     }
 
@@ -192,13 +181,8 @@ class ProductsFragment : Fragment() {
                 val listFromJson = gson.fromJson(body, ProductList::class.java)
 
                 testList.addAll(listFromJson.products)
-
-
-
-                activity?.runOnUiThread {
-                    recyclerView.adapter?.notifyDataSetChanged()
-
-                }
+                refreshFragment()
+                
             }
 
             override fun onFailure(call: Call, e: IOException) {
@@ -207,10 +191,17 @@ class ProductsFragment : Fragment() {
             }
         })
 
+
     }
 
-    class ProductList (var products: ArrayList<ProductItem>)
+    fun refreshFragment(){
+        val ft = requireFragmentManager().beginTransaction()
+        if (Build.VERSION.SDK_INT >= 26) {
+            ft.setReorderingAllowed(false)
+        }
+        ft.detach(this).attach(this).commit()
+    }
 
-
+    class ProductList(var products: ArrayList<ProductItem>)
 
 }
