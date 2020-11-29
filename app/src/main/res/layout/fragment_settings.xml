@@ -9,7 +9,7 @@
 
     <!-- TODO: Update blank fragment layout -->
     <Button
-        android:id="@+id/settingsButton"
+        android:id="@+id/settingsDiscountsButton"
         style="@style/mainButtonStyle"
         android:layout_marginEnd="28dp"
         android:layout_marginRight="28dp"
@@ -17,69 +17,71 @@
         android:paddingBottom="10dp"
 
 
-        android:text="Settings"
+
+        android:text="Discounts"
 
         app:backgroundTint="@color/mainTile"
-        app:layout_constraintBottom_toTopOf="@+id/logOutButton"
+        app:layout_constraintBottom_toTopOf="@+id/settingsVersionButton"
         app:layout_constraintEnd_toEndOf="parent"
-        android:drawableBottom="@drawable/ic_products"
+        android:drawableBottom="@drawable/ic_discount"
         />
 
     <Button
-        android:id="@+id/cartButton"
+        android:id="@+id/settingsMagazineButton"
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_marginBottom="20dp"
         android:gravity="center_horizontal"
-        android:text="Cart"
+        android:text="Magazine"
         android:textAlignment="center"
 
+
         app:backgroundTint="#343F4B"
-        app:layout_constraintBottom_toTopOf="@+id/logOutButton"
-        app:layout_constraintEnd_toStartOf="@+id/settingsButton"
+        app:layout_constraintBottom_toTopOf="@+id/settingsVersionButton"
+        app:layout_constraintEnd_toStartOf="@+id/settingsDiscountsButton"
         app:layout_constraintStart_toStartOf="parent"
-        android:drawableBottom="@drawable/ic_cart"
+        android:drawableBottom="@drawable/ic_magazine"
         android:paddingBottom="18dp"
         />
 
     <Button
-        android:id="@+id/productsButton"
+        android:id="@+id/settingsVehiclesButtons"
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_marginBottom="20dp"
-        android:text="Products"
+        android:text="Vehicles"
         app:backgroundTint="#343F4B"
-        app:layout_constraintBottom_toTopOf="@+id/cartButton"
-        app:layout_constraintEnd_toStartOf="@+id/deliversButton"
+        app:layout_constraintBottom_toTopOf="@+id/settingsMagazineButton"
+        app:layout_constraintEnd_toStartOf="@+id/settingsDriversButton"
         app:layout_constraintStart_toStartOf="parent"
         android:gravity="center_horizontal"
-        android:drawableBottom="@drawable/ic_products"
+        android:drawableBottom="@drawable/ic_vehicles"
         android:paddingBottom="20dp"
         />
 
     <Button
-        android:id="@+id/deliversButton"
+        android:id="@+id/settingsDriversButton"
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_marginEnd="28dp"
         android:layout_marginRight="28dp"
         android:layout_marginBottom="20dp"
-        android:text="Delivers"
-        android:drawableBottom="@drawable/ic_delivers"
+        android:text="Drivers"
+        android:drawableBottom="@drawable/ic_driver"
 
 
         app:backgroundTint="#343F4B"
 
         android:paddingBottom="6dp"
-        app:layout_constraintBottom_toTopOf="@+id/settingsButton"
+        app:layout_constraintBottom_toTopOf="@+id/settingsDiscountsButton"
         app:layout_constraintEnd_toEndOf="parent"
         android:gravity="center_horizontal"/>
 
     <Button
-        android:id="@+id/logOutButton"
+        android:id="@+id/settingsVersionButton"
         android:layout_width="160dp"
         android:layout_height="160dp"
-        android:text="Log out"
+        android:text="Version info"
         app:backgroundTint="#343F4B"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -88,8 +90,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.811"
         android:gravity="center_horizontal"
-        android:drawableBottom="@drawable/ic_logout"
-        android:paddingBottom="20dp"
+        android:drawableBottom="@drawable/ic_version"
+        android:paddingBottom="10dp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

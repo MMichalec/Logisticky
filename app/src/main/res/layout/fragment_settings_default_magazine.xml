@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/settingsDefaultMagazineFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context=".viewLayer.SettingsDefaultMagazineFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="40dp"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:text="You can choose default magazine that will automaticly be set when creating new delivery or order. You can change from default magazine to any other"
+        android:id="@+id/discountText" />
+
+    <Spinner
+        android:gravity="center"
+        android:id="@+id/settingsMagazinePicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="100dp"
+        android:spinnerMode="dropdown"
+        android:layout_below="@id/discountText"
+        />
+
+    <Button
+        android:id="@+id/makeDeliveryButton"
+        android:backgroundTint="@color/accept"
+        android:layout_marginHorizontal="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:text="Save changes"
+        android:layout_marginBottom="50dp"
+        android:layout_alignParentBottom="true"
+        />
+
+</RelativeLayout>

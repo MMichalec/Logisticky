@@ -40,7 +40,11 @@
         android:id="@+id/settingsFragment"
         android:name="com.example.logisticky.viewLayer.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_settingsDefaultMagazineFragment2"
+            app:destination="@id/settingsDefaultMagazineFragment2" />
+    </fragment>
     <fragment
 
         android:id="@+id/productInfoFragment"
@@ -74,4 +78,9 @@
             android:defaultValue="None"/>
 
     </fragment>
+    <fragment
+        android:id="@+id/settingsDefaultMagazineFragment2"
+        android:name="com.example.logisticky.viewLayer.SettingsDefaultMagazineFragment"
+        android:label="fragment_settings_default_magazine"
+        tools:layout="@layout/fragment_settings_default_magazine" />
 </navigation>

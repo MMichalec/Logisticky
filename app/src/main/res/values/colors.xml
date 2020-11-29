@@ -11,4 +11,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="delivery">#1f6160</color>
     <color name="cart">#1f6149</color>
+    <color name="accept">#36a353</color>
 </resources>

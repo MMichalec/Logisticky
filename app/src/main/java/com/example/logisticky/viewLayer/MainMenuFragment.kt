@@ -1,6 +1,5 @@
 package com.example.logisticky.viewLayer
 
-import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,8 +9,6 @@ import android.widget.Button
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.logisticky.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,7 +47,6 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
             R.id.productsButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_productsFragment)
             R.id.cartButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_cartFragment)
             R.id.deliversButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_deliversFragment)
-
         }
     }
 
