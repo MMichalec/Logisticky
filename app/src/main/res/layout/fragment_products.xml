@@ -8,6 +8,13 @@
     tools:context=".viewLayer.ProductsFragment"
     android:id="@+id/productsFragment">
 
+    <ProgressBar
+        android:id="@+id/productsLoader"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/products_recycleView"
         android:padding="10dp"
@@ -16,7 +23,9 @@
         android:layout_height="match_parent"
         tools:listitem="@layout/product_list_item"
         android:layout_above="@+id/searchProducts"
-        />
+        >
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 
 </RelativeLayout>

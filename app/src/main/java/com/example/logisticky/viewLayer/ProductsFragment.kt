@@ -1,10 +1,12 @@
 package com.example.logisticky.viewLayer
 
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ProgressBar
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,6 +34,7 @@ private const val ARG_PARAM2 = "param2"
 class ProductsFragment : Fragment() {
     var testList = ArrayList<ProductItem>()
     val displayList = ArrayList<ProductItem>()
+    var isPreloaderVisible = true;
 
     lateinit var recyclerView: RecyclerView
 
@@ -99,6 +102,11 @@ class ProductsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if(!isPreloaderVisible)
+        {
+            view?.findViewById<ProgressBar>(R.id.productsLoader)?.visibility = View.GONE
+        } else view?.findViewById<ProgressBar>(R.id.productsLoader)?.visibility = View.VISIBLE
 
         displayList.clear()
         displayList.addAll(testList)
@@ -181,6 +189,7 @@ class ProductsFragment : Fragment() {
                 val listFromJson = gson.fromJson(body, ProductList::class.java)
 
                 testList.addAll(listFromJson.products)
+                isPreloaderVisible=false
                 refreshFragment()
                 
             }
