@@ -53,7 +53,7 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
         var gName:String = currentItem.name
         var navController = Navigation.findNavController(it)
 
-            //TODO This condition is bad. I am using exception handling to navigate to proper fragment
+            //TODO This condition is bad. I am using exception handling to navigate to proper fragment. I need to implement something like if (previous fragment was this) then (go there)
             if(!TextUtils.isEmpty(currentItem.name)){
                 try {
                     val bundle = bundleOf("productId" to currentItem.name)
@@ -63,7 +63,11 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
                     )
                 } catch (e:Exception){
                     val bundle = bundleOf("deliveryId" to currentItem.name)
+
+                    try{
                     navController!!.navigate(R.id.action_deliversFragment_to_deliveryInfoFragment, bundle)
+                } catch (e:Exception){}
+
                 }
 
             }
@@ -72,6 +76,5 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
     }
 
     override fun getItemCount() = exampleList.size
-
 
 }

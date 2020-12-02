@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".viewLayer.settingsDriversFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/drivers_recycleView"
+        android:layout_width="match_parent"
+        android:layout_height="520dp"
+        android:layout_above="@+id/searchProducts"
+        android:clipToPadding="false"
+        android:padding="10dp"
+        tools:listitem="@layout/product_list_item2"/>
+
+    <EditText
+        android:id="@+id/driverNameEditText"
+        android:layout_below="@id/drivers_recycleView"
+        android:layout_width="185dp"
+        android:layout_height="80dp"
+        android:ems="10"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:inputType="text"
+        android:hint="Name"
+        />
+
+    <EditText
+        android:id="@+id/driverSurnameEditText"
+        android:layout_below="@id/drivers_recycleView"
+        android:layout_width="185dp"
+        android:layout_height="80dp"
+        android:ems="10"
+        android:inputType="text"
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+
+        android:hint="Surname"
+        android:gravity="center"
+        android:imeOptions="actionDone"/>
+
+    <Button
+        android:id="@+id/settingsAddDriverButton"
+        android:layout_width="185dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/driverSurnameEditText"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="Add driver"
+        android:backgroundTint="@color/mainTile"
+        />
+
+    <Button
+        android:id="@+id/settingsRemoveDriverButton"
+        android:layout_width="185dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/driverNameEditText"
+
+        android:layout_alignParentRight="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:backgroundTint="@color/mainTile"
+        android:text="Remove Selected" />
+</RelativeLayout>

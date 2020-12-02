@@ -14,6 +14,8 @@ import androidx.appcompat.widget.Toolbar;
 //TODO - add dialog popups when critical changes are being made (dialog "Are You Sure" when deleting delivery etc)
 //TODO - remove change magazine from delivery edit menu
 //TODO - add scrolls to recyclerView
+//TODO - add checkboxes to delivery list view with selectable status od delivery
+//TODO - add magazine text to cart recycler view
 
 
 class MainActivity : AppCompatActivity() {

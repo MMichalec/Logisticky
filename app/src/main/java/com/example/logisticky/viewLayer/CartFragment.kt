@@ -1,10 +1,13 @@
 package com.example.logisticky.viewLayer
 
+import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,9 +25,10 @@ private const val ARG_PARAM2 = "param2"
  * Use the [CartFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class CartFragment : Fragment() {
+class CartFragment : Fragment(), View.OnClickListener {
     var testList = ArrayList<ProductItem2>()
-    val displayList = ArrayList<ProductItem2>()
+    var displayList = ArrayList<ProductItem2>()
+    val itemsToRemoveList = ArrayList<ProductItem2>()
     lateinit var recyclerView: RecyclerView
 
     // TODO: Rename and change types of parameters
@@ -37,6 +41,9 @@ class CartFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+        //Get list from database here
+        testList = generateDummyList(15) as ArrayList<ProductItem2>
     }
 
     override fun onCreateView(
@@ -49,15 +56,28 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        testList = generateDummyList(15) as ArrayList<ProductItem2>;
-        displayList.addAll(testList)
+        displayList = testList
 
         recyclerView = view?.findViewById(R.id.cart_recycleView)
         recyclerView?.adapter = ProductsAdapter2(displayList)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.setHasFixedSize(true)
 
+        view.findViewById<Button>(R.id.cartRemoveSelectedButton).setOnClickListener(this)
+
     }
+
+    override fun onClick(v: View?) {
+        when(v!!.id){
+            R.id.cartRemoveSelectedButton -> {
+                displayList.forEach {  if (it.isSelected) itemsToRemoveList.add(it) }
+                itemsToRemoveList.forEach{ displayList.remove(it)}
+                //TODO add removing items from database here
+                refreshFragment()
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
         inflater.inflate(R.menu.search, menu)
@@ -135,4 +155,13 @@ class CartFragment : Fragment() {
         }
         return list
     }
+
+    fun refreshFragment(){
+        val ft = requireFragmentManager().beginTransaction()
+        if (Build.VERSION.SDK_INT >= 26) {
+            ft.setReorderingAllowed(false)
+        }
+        ft.detach(this).attach(this).commit()
+    }
+
 }

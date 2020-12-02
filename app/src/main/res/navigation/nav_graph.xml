@@ -50,6 +50,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_settingsVersionFragment"
             app:destination="@id/settingsVersionFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_settingsDriversFragment"
+            app:destination="@id/settingsDriversFragment" />
     </fragment>
     <fragment
 
@@ -99,4 +102,9 @@
         android:name="com.example.logisticky.viewLayer.settingsVersionFragment"
         android:label="fragment_settings_version"
         tools:layout="@layout/fragment_settings_version" />
+    <fragment
+        android:id="@+id/settingsDriversFragment"
+        android:name="com.example.logisticky.viewLayer.settingsDriversFragment"
+        android:label="fragment_settings_drivers"
+        tools:layout="@layout/fragment_settings_drivers" />
 </navigation>

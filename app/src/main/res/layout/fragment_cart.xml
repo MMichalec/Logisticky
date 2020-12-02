@@ -14,7 +14,7 @@
         android:layout_above="@+id/searchProducts"
         android:clipToPadding="false"
         android:padding="10dp"
-        tools:listitem="@layout/product_list_item">
+        tools:listitem="@layout/product_list_item2">
 
     </androidx.recyclerview.widget.RecyclerView>
 
