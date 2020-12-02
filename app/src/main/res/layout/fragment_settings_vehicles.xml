@@ -7,67 +7,51 @@
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/drivers_recycleView"
+        android:id="@+id/vehicles_recycleView"
         android:layout_width="match_parent"
         android:layout_height="520dp"
         android:layout_above="@+id/searchProducts"
         android:clipToPadding="false"
         android:padding="10dp"
-        tools:listitem="@layout/product_list_item2"/>
+        tools:listitem="@layout/vehicle_list_item"/>
 
     <EditText
-        android:id="@+id/driverNameEditText"
-        android:layout_below="@id/drivers_recycleView"
+        android:id="@+id/vehicleEditText"
+        android:layout_below="@id/vehicles_recycleView"
         android:layout_width="185dp"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:inputType="text"
-        android:hint="Name"
+        android:hint="Plate numbers"
         />
 
-    <EditText
-        android:id="@+id/driverSurnameEditText"
-        android:layout_below="@id/drivers_recycleView"
-        android:layout_width="185dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="text"
-        android:layout_alignParentRight="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-
-        android:hint="Surname"
-        android:gravity="center"
-        android:imeOptions="actionDone"/>
 
     <Button
-        android:id="@+id/settingsAddDriverButton"
+        android:id="@+id/settingsAddVehicleButton"
         android:layout_width="185dp"
         android:layout_height="80dp"
-        android:layout_below="@id/driverSurnameEditText"
+        android:layout_below="@id/vehicleEditText"
         android:layout_alignParentLeft="true"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:text="Add driver"
+        android:text="Add vehicle"
         android:backgroundTint="@color/mainTile"
         />
 
     <Button
-        android:id="@+id/settingsRemoveDriverButton"
+        android:id="@+id/settingsRemoveVehicleButton"
         android:layout_width="185dp"
         android:layout_height="80dp"
-        android:layout_below="@id/driverNameEditText"
+        android:layout_below="@id/vehicleEditText"
 
         android:layout_alignParentRight="true"
         android:layout_marginStart="10dp"

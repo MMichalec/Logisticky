@@ -50,6 +50,7 @@ class SettingsFragment : Fragment(), View.OnClickListener {
         view.findViewById<Button>(R.id.settingsDiscountsButton).setOnClickListener(this)
         view.findViewById<Button>(R.id.settingsVersionButton).setOnClickListener(this)
         view.findViewById<Button>(R.id.settingsDriversButton).setOnClickListener(this)
+        view.findViewById<Button>(R.id.settingsVehiclesButtons).setOnClickListener(this)
 
     }
 
@@ -60,6 +61,7 @@ class SettingsFragment : Fragment(), View.OnClickListener {
             R.id.settingsDiscountsButton -> navController.navigate(R.id.action_settingsFragment_to_settingsDiscountFragment2)
             R.id.settingsVersionButton -> navController.navigate(R.id.action_settingsFragment_to_settingsVersionFragment)
             R.id.settingsDriversButton -> navController.navigate(R.id.action_settingsFragment_to_settingsDriversFragment)
+            R.id.settingsVehiclesButtons -> navController.navigate(R.id.action_settingsFragment_to_settingsVehiclesFragment)
             }
 
         }
