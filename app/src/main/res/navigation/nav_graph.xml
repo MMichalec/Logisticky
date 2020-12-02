@@ -44,6 +44,12 @@
         <action
             android:id="@+id/action_settingsFragment_to_settingsDefaultMagazineFragment2"
             app:destination="@id/settingsDefaultMagazineFragment2" />
+        <action
+            android:id="@+id/action_settingsFragment_to_settingsDiscountFragment2"
+            app:destination="@id/settingsDiscountFragment2" />
+        <action
+            android:id="@+id/action_settingsFragment_to_settingsVersionFragment"
+            app:destination="@id/settingsVersionFragment" />
     </fragment>
     <fragment
 
@@ -83,4 +89,14 @@
         android:name="com.example.logisticky.viewLayer.SettingsDefaultMagazineFragment"
         android:label="fragment_settings_default_magazine"
         tools:layout="@layout/fragment_settings_default_magazine" />
+    <fragment
+        android:id="@+id/settingsDiscountFragment2"
+        android:name="com.example.logisticky.viewLayer.SettingsDiscountFragment"
+        android:label="fragment_settings_discount"
+        tools:layout="@layout/fragment_settings_discount" />
+    <fragment
+        android:id="@+id/settingsVersionFragment"
+        android:name="com.example.logisticky.viewLayer.settingsVersionFragment"
+        android:label="fragment_settings_version"
+        tools:layout="@layout/fragment_settings_version" />
 </navigation>
