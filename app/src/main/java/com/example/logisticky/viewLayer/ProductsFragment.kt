@@ -1,6 +1,5 @@
 package com.example.logisticky.viewLayer
 
-import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -11,6 +10,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.logisticky.ProductsHandler
 import com.example.logisticky.ProductItem
 import com.example.logisticky.ProductsAdapter
 import com.example.logisticky.R
@@ -50,7 +50,11 @@ class ProductsFragment : Fragment() {
         }
 
         setHasOptionsMenu(true)
-        fetchJson()
+
+        //Fix stuff here
+        //fetchJson()
+        testList = ProductsHandler.getProductIdAndName()
+        isPreloaderVisible = false
 
 
 
@@ -96,6 +100,7 @@ class ProductsFragment : Fragment() {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
+
                 }
             }
     }

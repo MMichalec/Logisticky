@@ -1,0 +1,11 @@
+@startuml
+
+title __LOGISTICKY's Component Diagram__\n
+
+
+
+class MainActivity {}
+
+class Testerinio{}
+
+@enduml

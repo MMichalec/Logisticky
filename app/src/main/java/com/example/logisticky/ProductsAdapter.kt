@@ -35,8 +35,6 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
             false
         )
 
-
-
         return ProductsViewHolder(itemView)
     }
 
