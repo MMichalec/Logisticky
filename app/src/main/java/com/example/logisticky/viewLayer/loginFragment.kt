@@ -13,11 +13,18 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.example.logisticky.LoginActivity
 import com.example.logisticky.MainActivity
 import com.example.logisticky.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
+import kotlin.system.measureTimeMillis
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -65,32 +72,42 @@ class loginFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
+
         when (v!!.id) {
             R.id.logInButton -> {
 
                 val id = view?.findViewById<EditText>(R.id.editTextTextPersonName)?.text.toString()
                 val pw = view?.findViewById<EditText>(R.id.editTextTextPassword)?.text.toString()
 
+                CoroutineScope(IO).launch {
+
+                    val executionTime = measureTimeMillis {
+
+                        val communicationToServerStatus = async {
+
+                            activity?.runOnUiThread(object: Runnable{
+                                override fun run() {
+                                    view?.findViewById<ProgressBar>(R.id.loginLoader)?.visibility = View.VISIBLE
+                                }
+                            })
+
+                            fetchJson(id,pw)
+                        }.await()
 
 
-                fetchJson(id,pw)
+                        if (communicationToServerStatus == 200) {
 
-
-                //Get rid of this shit!!!
-                while (communicationToServerStatus == 0) { Thread.sleep(500)}
-
-                Toast.makeText(activity, communicationToServerStatus.toString(), Toast.LENGTH_LONG).show()
-
-
-                if (communicationToServerStatus == 200) {
-
-                    MainActivity.globalVar = true
-                    val intent = Intent(activity, MainActivity::class.java)
-                    startActivity(intent);
-                    activity?.finish()
-                } else {
-                    //Toast.makeText(activity, "Invalid ID or/and PW", Toast.LENGTH_LONG).show()
+                            MainActivity.globalVar = true
+                            val intent = Intent(activity, MainActivity::class.java)
+                            startActivity(intent);
+                            activity?.finish()
+                        } else {
+                            Toast.makeText(activity, "Invalid ID or/and PW", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                    println("Debug: Login in total elapsed time: $executionTime ms.")
                 }
+
             }
 
             R.id.registerButton -> navController.navigate(R.id.action_loginFragment_to_registerFragment)
@@ -118,7 +135,7 @@ class loginFragment : Fragment(), View.OnClickListener {
             }
     }
 
-    fun fetchJson(id:String, pw:String){
+    suspend fun fetchJson(id:String, pw:String):Int{
         println("Attempting to Fetch JSON")
 
         val url = "https://dystproapi.azurewebsites.net/auth/login"
@@ -135,43 +152,38 @@ class loginFragment : Fragment(), View.OnClickListener {
         val body: RequestBody = RequestBody.create(JSON, loginData.toString())
         val newRequest = Request.Builder().url(url).post(body).build()
 
-        client.newCall(newRequest).enqueue(object : Callback {
-
-            override fun onResponse(call: Call, response: Response) {
-                println("Data access succesful")
-
-
-
-                val body = response.body()?.string()
-                println(body)
-                val httpCode = response.code()
-                println(httpCode)
-
-
-                communicationToServerStatus = httpCode
-//                val gson = GsonBuilder().create()
-//                val listFromJson = gson.fromJson(body, ProductsFragment.ProductList::class.java)
+        val response = client.newCall(newRequest).execute()
+        //communicationToServerStatus= response.code()
+        println("Debug: ${response.code()}")
+//        client.newCall(newRequest).enqueue(object : Callback {
 //
-//                testList.addAll(listFromJson.products)
-//                isPreloaderVisible=false
-              // refreshFragment()
-
-            }
-
-            override fun onFailure(call: Call, e: IOException) {
-                println("Data not loaded")
-                communicationToServerStatus = 503
-            }
-        })
-
-    }
-
-    fun refreshFragment(){
-        val ft = requireFragmentManager().beginTransaction()
-        if (Build.VERSION.SDK_INT >= 26) {
-            ft.setReorderingAllowed(false)
-        }
-        ft.detach(this).attach(this).commit()
+//            override fun onResponse(call: Call, response: Response) {
+//                println("Data access succesful")
+//
+//                val body = response.body()?.string()
+//                println(body)
+//                val httpCode = response.code()
+//                println(httpCode)
+//
+//                communicationToServerStatus = httpCode
+//
+//
+//
+////                val gson = GsonBuilder().create()
+////                val listFromJson = gson.fromJson(body, ProductsFragment.ProductList::class.java)
+////
+////                testList.addAll(listFromJson.products)
+////                isPreloaderVisible=false
+//              // refreshFragment()
+//
+//            }
+//
+//            override fun onFailure(call: Call, e: IOException) {
+//                println("Data not loaded")
+//                communicationToServerStatus = 503
+//            }
+//        })
+        return response.code()
     }
 
 }
