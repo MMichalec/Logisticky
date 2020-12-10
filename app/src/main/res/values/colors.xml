@@ -12,4 +12,7 @@
     <color name="delivery">#1f6160</color>
     <color name="cart">#1f6149</color>
     <color name="accept">#36a353</color>
+    <color name="inputTexts">#494949</color>
+    <color name="hint">#978C8C</color>
+
 </resources>

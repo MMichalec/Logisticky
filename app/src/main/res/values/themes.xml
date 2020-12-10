@@ -17,9 +17,18 @@
     <style name="Theme.Logisticky.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+
     </style>
 
-    <style name="Theme.Logisticky.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.Logisticky.NoActionBar2">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+    </style>
+
+    <style name="Theme.Logisticky.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"
+
+        />
 
     <style name="Theme.Logisticky.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

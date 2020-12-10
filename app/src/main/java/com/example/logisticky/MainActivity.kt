@@ -22,8 +22,6 @@ import androidx.appcompat.widget.Toolbar;
 
 class MainActivity : AppCompatActivity() {
 
-    var isLoggedIn = false;
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

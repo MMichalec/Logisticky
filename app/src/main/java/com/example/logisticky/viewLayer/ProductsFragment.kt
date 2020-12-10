@@ -204,8 +204,6 @@ class ProductsFragment : Fragment() {
                 testList.add(ProductItem("COULD NOT LOAD DATA. CHECK YOUR NETWORK CONNECTION"))
             }
         })
-
-
     }
 
     fun refreshFragment(){
