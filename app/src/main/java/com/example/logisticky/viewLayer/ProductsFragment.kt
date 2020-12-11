@@ -64,15 +64,7 @@ class ProductsFragment : Fragment() {
 
 
     }
-    private fun loadData(){
 
-
-        val sharedPreferences: SharedPreferences? = this.activity?.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-
-        val savedString = sharedPreferences?.getString("STRING_KEY",null)
-
-        token = savedString
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -121,8 +113,8 @@ class ProductsFragment : Fragment() {
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.setHasFixedSize(true)
 
-        loadData()
-        println("Debug: $token")
+        token = this.activity?.let { TokenManager.loadData(it) }
+        println("Debug: Succesfuly shared token: $token")
 
     }
 

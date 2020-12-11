@@ -32,34 +32,16 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        if (!isUserLogged){
-            val intent = Intent(this, LoginActivity::class.java)
 
+        println("Debug " + TokenManager.loadData(this))
+        if (TokenManager.loadData(this) == null){
+
+            val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent);
             finish()
         }
-
-
-        //recieving value, now I just must send it
-        var token = intent.getStringExtra("TOKEN")
-        println("Debug: $token")
-
-        val sharedPreferences: SharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        editor.apply(){
-            putString("STRING_KEY", token)
-        }.apply()
-
-
     }
 
-//    private fun loadData(){
-//        val sharedPreferences: SharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
-//        val savedString = sharedPreferences.getString("STRING_KEY",null)
-//
-//        token = savedString
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.

@@ -1,5 +1,6 @@
 package com.example.logisticky.viewLayer
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.logisticky.MainActivity
 import com.example.logisticky.R
+import com.example.logisticky.TokenManager
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,8 +52,13 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
             R.id.cartButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_cartFragment)
             R.id.deliversButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_deliversFragment)
             R.id.logOutButton -> {
+                this.activity?.let { TokenManager.saveData(it,null) }
                 MainActivity.isUserLogged = false
-                startActivity(activity?.intent)
+                val intent = Intent(activity, MainActivity::class.java)
+
+                //intent.putExtra("TOKEN", token)
+                startActivity(intent);
+                activity?.finish()
             }
         }
     }

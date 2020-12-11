@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.logisticky.MainActivity
 import com.example.logisticky.R
+import com.example.logisticky.TokenManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
@@ -92,11 +93,10 @@ class loginFragment : Fragment(), View.OnClickListener {
 
 
                         if (communicationToServerStatus == 200) {
-
                             MainActivity.isUserLogged = true
                             val intent = Intent(activity, MainActivity::class.java)
-                            var token = "TEST TOKEN 123XD"
-                            intent.putExtra("TOKEN", token)
+
+                            //intent.putExtra("TOKEN", token)
                             startActivity(intent);
                             activity?.finish()
                         } else {
@@ -105,6 +105,8 @@ class loginFragment : Fragment(), View.OnClickListener {
                     }
                     println("Debug: Login in total elapsed time: $executionTime ms.")
                 }
+                var token = "TEST TOKEN 123XD"
+                this.activity?.let { TokenManager.saveData(it, token ) }
 
             }
 
