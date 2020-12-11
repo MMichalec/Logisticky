@@ -1,15 +1,12 @@
 package com.example.logisticky.viewLayer
 
-import android.app.Activity
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ProgressBar
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,10 +29,11 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class ProductsFragment : Fragment() {
-    var testList = ArrayList<ProductItem>()
+    var productsListForRecyclerView = ArrayList<ProductItem>()
     val displayList = ArrayList<ProductItem>()
+    lateinit var pAdapter: ProductsAdapter
 
-    var token:String? = ""
+    var token:String? = null
     var isPreloaderVisible = true;
 
 
@@ -53,15 +51,7 @@ class ProductsFragment : Fragment() {
         }
 
         setHasOptionsMenu(true)
-
-        //Fix stuff here
-        //fetchJson()
-        testList = ProductsHandler.getProductIdAndName()
-        isPreloaderVisible = false
-
-
-
-
+        token = this.activity?.let { TokenManager.loadData(it) }
 
     }
 
@@ -70,7 +60,6 @@ class ProductsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_products, container, false)
@@ -100,20 +89,10 @@ class ProductsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(!isPreloaderVisible)
-        {
-            view?.findViewById<ProgressBar>(R.id.productsLoader)?.visibility = View.GONE
-        } else view?.findViewById<ProgressBar>(R.id.productsLoader)?.visibility = View.VISIBLE
-
-        displayList.clear()
-        displayList.addAll(testList)
-
+        productsListForRecyclerView.clear()
+        fetchJson()
         recyclerView = view?.findViewById(R.id.products_recycleView)
-        recyclerView?.adapter = ProductsAdapter(displayList)
-        recyclerView?.layoutManager = LinearLayoutManager(activity)
-        recyclerView?.setHasFixedSize(true)
 
-        token = this.activity?.let { TokenManager.loadData(it) }
         println("Debug: Succesfuly shared token: $token")
 
     }
@@ -139,7 +118,7 @@ class ProductsFragment : Fragment() {
                     if (newText!!.isNotEmpty()) {
                         displayList.clear()
                         val search = newText.toLowerCase(Locale.getDefault())
-                        testList.forEach {
+                        productsListForRecyclerView.forEach {
 
                             if (it.name.toLowerCase(Locale.getDefault()).contains(search)) {
                                 displayList.add(it)
@@ -150,7 +129,7 @@ class ProductsFragment : Fragment() {
                         recyclerView.adapter!!.notifyDataSetChanged()
                     } else {
                         displayList.clear()
-                        displayList.addAll(testList)
+                        displayList.addAll(productsListForRecyclerView)
                         recyclerView.adapter!!.notifyDataSetChanged()
                     }
 
@@ -169,46 +148,69 @@ class ProductsFragment : Fragment() {
     }
 
     fun fetchJson(){
-        println("Attempting to Fetch JSON")
+        println("Debug : Attempting to Fetch JSON")
 
-        val url = "https://dystproapi.azurewebsites.net/products/names"
+        val url = "https://dystproapi.azurewebsites.net/products"
 
         val client = OkHttpClient()
 
-        val request = Request.Builder().url(url).build()
 
+        val request = Request.Builder().header("x-access-token", token).url(url).build()
+        println("Debug: token in fetchJson $token")
         client.newCall(request).enqueue(object : Callback {
 
             override fun onResponse(call: Call, response: Response) {
-                println("Data access succesful")
+                println("Debug: Data access succesful")
 
                 val body = response.body()?.string()
-                println(body)
+                println("Debug: $body")
 
                 val gson = GsonBuilder().create()
-                val listFromJson = gson.fromJson(body, ProductList::class.java)
+                val simpleProducts = gson.fromJson(body, ProductList::class.java)
 
-                testList.addAll(listFromJson.products)
+                simpleProducts.products.forEach{
+
+                    productsListForRecyclerView.add(ProductItem(it.name))
+
+                }
+
                 isPreloaderVisible=false
-                refreshFragment()
+
+                activity?.runOnUiThread(object : Runnable {
+                    override fun run() {
+                        displayList.clear()
+                        displayList.addAll(productsListForRecyclerView)
+
+                        pAdapter = ProductsAdapter(displayList)
+                        recyclerView?.adapter = pAdapter
+                        recyclerView?.layoutManager = LinearLayoutManager(activity)
+                        recyclerView?.setHasFixedSize(true)
+                        view?.findViewById<ProgressBar>(R.id.productsLoader)?.visibility = View.GONE
+                    }
+                })
+
 
             }
 
             override fun onFailure(call: Call, e: IOException) {
                 println("Data not loaded")
-                testList.add(ProductItem("COULD NOT LOAD DATA. CHECK YOUR NETWORK CONNECTION"))
+                productsListForRecyclerView.add(ProductItem("COULD NOT LOAD DATA. CHECK YOUR NETWORK CONNECTION"))
             }
         })
     }
 
-    fun refreshFragment(){
-        val ft = requireFragmentManager().beginTransaction()
-        if (Build.VERSION.SDK_INT >= 26) {
-            ft.setReorderingAllowed(false)
+    private fun findIdByProductName (name:String, list:ArrayList<SimpleProduct>): Int? {
+        list.forEach{
+            if (it.name == name) {
+                return it.product_id
+            }
         }
-        ft.detach(this).attach(this).commit()
+        return null
     }
 
-    class ProductList(var products: ArrayList<ProductItem>)
+
+    class ProductList(var products: ArrayList<SimpleProduct>)
+
+    class SimpleProduct(var name:String, var product_id: Int)
 
 }

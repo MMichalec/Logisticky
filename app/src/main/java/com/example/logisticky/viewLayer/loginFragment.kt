@@ -19,7 +19,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import okhttp3.*
+import okhttp3.MediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
 import org.json.JSONObject
 import kotlin.system.measureTimeMillis
 
@@ -35,7 +38,7 @@ private const val ARG_PARAM2 = "param2"
  */
 class loginFragment : Fragment(), View.OnClickListener {
     lateinit var navController: NavController
-
+    lateinit var token: String
 
 
     // TODO: Rename and change types of parameters
@@ -82,13 +85,14 @@ class loginFragment : Fragment(), View.OnClickListener {
 
                         val communicationToServerStatus = async {
 
-                            activity?.runOnUiThread(object: Runnable{
+                            activity?.runOnUiThread(object : Runnable {
                                 override fun run() {
-                                    view?.findViewById<ProgressBar>(R.id.loginLoader)?.visibility = View.VISIBLE
+                                    view?.findViewById<ProgressBar>(R.id.loginLoader)?.visibility =
+                                        View.VISIBLE
                                 }
                             })
 
-                            fetchJson(id,pw)
+                            fetchJson(id, pw)
                         }.await()
 
 
@@ -100,13 +104,19 @@ class loginFragment : Fragment(), View.OnClickListener {
                             startActivity(intent);
                             activity?.finish()
                         } else {
-                            Toast.makeText(activity, "Invalid ID or/and PW", Toast.LENGTH_LONG).show()
+                            Toast.makeText(activity, "Invalid ID or/and PW", Toast.LENGTH_LONG)
+                                .show()
+                        }
+                        activity.let {
+                            if (it != null) {
+                                TokenManager.saveData(it, token)
+                            }
                         }
                     }
                     println("Debug: Login in total elapsed time: $executionTime ms.")
                 }
-                var token = "TEST TOKEN 123XD"
-                this.activity?.let { TokenManager.saveData(it, token ) }
+
+
 
             }
 
@@ -141,7 +151,7 @@ class loginFragment : Fragment(), View.OnClickListener {
             }
     }
 
-    suspend fun fetchJson(id:String, pw:String):Int{
+    suspend fun fetchJson(id: String, pw: String):Int{
         println("Attempting to Fetch JSON")
 
         val url = "https://dystproapi.azurewebsites.net/auth/login"
@@ -161,6 +171,16 @@ class loginFragment : Fragment(), View.OnClickListener {
         val response = client.newCall(newRequest).execute()
         //communicationToServerStatus= response.code()
         println("Debug: ${response.code()}")
+
+        //println("Debug auth body : ${response.body()?.toString()}")
+
+        val jsonBody = response.body()?.string()
+        val json = JSONObject(jsonBody)
+        token = json.getString("token")
+
+
+        println("Debug auth token from body: $token}")
+
 //        client.newCall(newRequest).enqueue(object : Callback {
 //
 //            override fun onResponse(call: Call, response: Response) {
@@ -191,5 +211,7 @@ class loginFragment : Fragment(), View.OnClickListener {
 //        })
         return response.code()
     }
+
+    class AuthItem(var auth: Boolean, var token: String)
 
 }

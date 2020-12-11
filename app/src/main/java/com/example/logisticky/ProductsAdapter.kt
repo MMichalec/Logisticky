@@ -11,6 +11,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.get
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import com.example.logisticky.viewLayer.ProductsFragment
 import java.lang.Exception
 
 
@@ -18,7 +19,8 @@ import java.lang.Exception
 open class ProductsAdapter(private var exampleList: List<ProductItem>):
     RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
 
-
+    var currentItemName = ""
+     var pId: Int = 0;
 
 
     //Represents a single row in list
@@ -41,6 +43,7 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
     override fun onBindViewHolder(holder: ProductsViewHolder, position: Int) {
         val currentItem = exampleList[position]
 
+
         holder.textView1.text = currentItem.name
 //        holder.textView2.text = currentItem.text2
 //        holder.checkBox = currentItem.checkBox
@@ -48,13 +51,14 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
 
 
         holder.itemView.setOnClickListener{
-        var gName:String = currentItem.name
+
         var navController = Navigation.findNavController(it)
 
             //TODO This condition is bad. I am using exception handling to navigate to proper fragment. I need to implement something like if (previous fragment was this) then (go there)
             if(!TextUtils.isEmpty(currentItem.name)){
                 try {
-                    val bundle = bundleOf("productId" to currentItem.name)
+                    currentItemName = currentItem.name
+                    val bundle = bundleOf("productId" to pId.toString())
                     navController!!.navigate(
                         R.id.action_productsFragment_to_productInfoFragment,
                         bundle
@@ -74,5 +78,13 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
     }
 
     override fun getItemCount() = exampleList.size
+
+    fun setPid(productId:Int){
+        this.pId = productId
+    }
+
+    fun getProductName():String{
+        return currentItemName
+    }
 
 }
