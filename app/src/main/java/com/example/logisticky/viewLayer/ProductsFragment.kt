@@ -1,5 +1,8 @@
 package com.example.logisticky.viewLayer
 
+import android.app.Activity
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -10,10 +13,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.logisticky.ProductsHandler
-import com.example.logisticky.ProductItem
-import com.example.logisticky.ProductsAdapter
-import com.example.logisticky.R
+import com.example.logisticky.*
 import com.google.gson.GsonBuilder
 import okhttp3.*
 import java.io.IOException
@@ -34,7 +34,10 @@ private const val ARG_PARAM2 = "param2"
 class ProductsFragment : Fragment() {
     var testList = ArrayList<ProductItem>()
     val displayList = ArrayList<ProductItem>()
+
+    var token:String? = ""
     var isPreloaderVisible = true;
+
 
     lateinit var recyclerView: RecyclerView
 
@@ -61,23 +64,20 @@ class ProductsFragment : Fragment() {
 
 
     }
+    private fun loadData(){
 
-    private fun generateDummyList(size: Int): List<ProductItem>{
-        val list = ArrayList<ProductItem>()
 
-        val checkBox = CheckBox(activity)
-        for (i in 0 until size){
-            val item = ProductItem("Item $i")
-            list +=item
-        }
-        return list
+        val sharedPreferences: SharedPreferences? = this.activity?.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+
+        val savedString = sharedPreferences?.getString("STRING_KEY",null)
+
+        token = savedString
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
 
 
         // Inflate the layout for this fragment
@@ -120,6 +120,9 @@ class ProductsFragment : Fragment() {
         recyclerView?.adapter = ProductsAdapter(displayList)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
         recyclerView?.setHasFixedSize(true)
+
+        loadData()
+        println("Debug: $token")
 
     }
 
@@ -196,7 +199,7 @@ class ProductsFragment : Fragment() {
                 testList.addAll(listFromJson.products)
                 isPreloaderVisible=false
                 refreshFragment()
-                
+
             }
 
             override fun onFailure(call: Call, e: IOException) {

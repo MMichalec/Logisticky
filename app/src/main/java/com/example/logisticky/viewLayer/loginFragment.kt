@@ -1,7 +1,6 @@
 package com.example.logisticky.viewLayer
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,17 +12,14 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.example.logisticky.LoginActivity
 import com.example.logisticky.MainActivity
 import com.example.logisticky.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.*
 import org.json.JSONObject
-import java.io.IOException
 import kotlin.system.measureTimeMillis
 
 // TODO: Rename parameter arguments, choose names that match
@@ -39,7 +35,7 @@ private const val ARG_PARAM2 = "param2"
 class loginFragment : Fragment(), View.OnClickListener {
     lateinit var navController: NavController
 
-    var communicationToServerStatus = 0
+
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -97,8 +93,10 @@ class loginFragment : Fragment(), View.OnClickListener {
 
                         if (communicationToServerStatus == 200) {
 
-                            MainActivity.globalVar = true
+                            MainActivity.isUserLogged = true
                             val intent = Intent(activity, MainActivity::class.java)
+                            var token = "TEST TOKEN 123XD"
+                            intent.putExtra("TOKEN", token)
                             startActivity(intent);
                             activity?.finish()
                         } else {
@@ -115,7 +113,10 @@ class loginFragment : Fragment(), View.OnClickListener {
         }
     }
 
+
     companion object {
+
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -125,6 +126,9 @@ class loginFragment : Fragment(), View.OnClickListener {
          * @return A new instance of fragment loginFragment.
          */
         // TODO: Rename and change types and number of parameters
+
+
+
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             loginFragment().apply {

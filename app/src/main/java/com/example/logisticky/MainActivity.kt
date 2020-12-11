@@ -1,14 +1,15 @@
 package com.example.logisticky
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.Toolbar;
+import androidx.core.os.bundleOf
+import com.example.logisticky.viewLayer.ProductsFragment
 
 
 //TODO - change formating of date on deliveryInfoFragment and style texts. Check if you can give datepicker fullscreen
@@ -22,19 +23,43 @@ import androidx.appcompat.widget.Toolbar;
 
 class MainActivity : AppCompatActivity() {
 
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        if (!globalVar){
-            val intent = Intent(this, LoginActivity::class.java )
+        if (!isUserLogged){
+            val intent = Intent(this, LoginActivity::class.java)
 
             startActivity(intent);
             finish()
         }
+
+
+        //recieving value, now I just must send it
+        var token = intent.getStringExtra("TOKEN")
+        println("Debug: $token")
+
+        val sharedPreferences: SharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        editor.apply(){
+            putString("STRING_KEY", token)
+        }.apply()
+
+
     }
+
+//    private fun loadData(){
+//        val sharedPreferences: SharedPreferences = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+//        val savedString = sharedPreferences.getString("STRING_KEY",null)
+//
+//        token = savedString
+//    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -52,8 +77,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
     companion object {
-        var globalVar = false
-    }
+        var isUserLogged = false
 
+    }
 
 }

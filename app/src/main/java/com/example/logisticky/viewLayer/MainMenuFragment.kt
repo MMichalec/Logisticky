@@ -1,6 +1,5 @@
 package com.example.logisticky.viewLayer
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import com.example.logisticky.LoginActivity
 import com.example.logisticky.MainActivity
 import com.example.logisticky.R
 
@@ -52,7 +50,7 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
             R.id.cartButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_cartFragment)
             R.id.deliversButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_deliversFragment)
             R.id.logOutButton -> {
-                MainActivity.globalVar = false
+                MainActivity.isUserLogged = false
                 startActivity(activity?.intent)
             }
         }
