@@ -140,7 +140,7 @@ class DeliversFragment : Fragment() {
 
         val checkBox = CheckBox(activity)
         for (i in 0 until size){
-            val item = ProductItem("Delivery $i")
+            val item = ProductItem("Delivery $i", 0)
             list +=item
         }
         return list

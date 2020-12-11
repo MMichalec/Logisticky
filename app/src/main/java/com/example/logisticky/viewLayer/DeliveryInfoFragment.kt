@@ -270,7 +270,7 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
         val checkBox = CheckBox(activity)
         for (i in 0 until size){
-            val item = ProductItem("Item $i")
+            val item = ProductItem("Item $i", 0)
             list +=item
         }
         return list

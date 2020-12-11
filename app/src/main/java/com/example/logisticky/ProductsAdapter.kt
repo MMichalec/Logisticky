@@ -19,8 +19,7 @@ import java.lang.Exception
 open class ProductsAdapter(private var exampleList: List<ProductItem>):
     RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
 
-    var currentItemName = ""
-     var pId: Int = 0;
+
 
 
     //Represents a single row in list
@@ -57,8 +56,8 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
             //TODO This condition is bad. I am using exception handling to navigate to proper fragment. I need to implement something like if (previous fragment was this) then (go there)
             if(!TextUtils.isEmpty(currentItem.name)){
                 try {
-                    currentItemName = currentItem.name
-                    val bundle = bundleOf("productId" to pId.toString())
+
+                    val bundle = bundleOf("productId" to currentItem.productId.toString())
                     navController!!.navigate(
                         R.id.action_productsFragment_to_productInfoFragment,
                         bundle
@@ -79,12 +78,5 @@ open class ProductsAdapter(private var exampleList: List<ProductItem>):
 
     override fun getItemCount() = exampleList.size
 
-    fun setPid(productId:Int){
-        this.pId = productId
-    }
-
-    fun getProductName():String{
-        return currentItemName
-    }
 
 }

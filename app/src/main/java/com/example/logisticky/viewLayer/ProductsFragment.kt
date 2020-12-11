@@ -31,10 +31,9 @@ private const val ARG_PARAM2 = "param2"
 class ProductsFragment : Fragment() {
     var productsListForRecyclerView = ArrayList<ProductItem>()
     val displayList = ArrayList<ProductItem>()
-    lateinit var pAdapter: ProductsAdapter
 
     var token:String? = null
-    var isPreloaderVisible = true;
+
 
 
     lateinit var recyclerView: RecyclerView
@@ -170,19 +169,16 @@ class ProductsFragment : Fragment() {
 
                 simpleProducts.products.forEach{
 
-                    productsListForRecyclerView.add(ProductItem(it.name))
+                    productsListForRecyclerView.add(ProductItem(it.name, it.product_id))
 
                 }
-
-                isPreloaderVisible=false
 
                 activity?.runOnUiThread(object : Runnable {
                     override fun run() {
                         displayList.clear()
                         displayList.addAll(productsListForRecyclerView)
 
-                        pAdapter = ProductsAdapter(displayList)
-                        recyclerView?.adapter = pAdapter
+                        recyclerView?.adapter = ProductsAdapter(displayList)
                         recyclerView?.layoutManager = LinearLayoutManager(activity)
                         recyclerView?.setHasFixedSize(true)
                         view?.findViewById<ProgressBar>(R.id.productsLoader)?.visibility = View.GONE
@@ -194,18 +190,9 @@ class ProductsFragment : Fragment() {
 
             override fun onFailure(call: Call, e: IOException) {
                 println("Data not loaded")
-                productsListForRecyclerView.add(ProductItem("COULD NOT LOAD DATA. CHECK YOUR NETWORK CONNECTION"))
+                productsListForRecyclerView.add(ProductItem("COULD NOT LOAD DATA. CHECK YOUR NETWORK CONNECTION", 0) )
             }
         })
-    }
-
-    private fun findIdByProductName (name:String, list:ArrayList<SimpleProduct>): Int? {
-        list.forEach{
-            if (it.name == name) {
-                return it.product_id
-            }
-        }
-        return null
     }
 
 
