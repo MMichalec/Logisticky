@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
+import java.net.SocketTimeoutException
 import kotlin.math.roundToInt
 
 
@@ -69,10 +70,11 @@ class ProductInfoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view?.findViewById<TextView>(R.id.productName)?.text = productId
+
 
         CoroutineScope(Dispatchers.IO).launch {
 
+            try {
                 val dataFromAPI = async {
                     token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(it,productId.toInt()) }
                 }.await()
@@ -80,6 +82,10 @@ class ProductInfoFragment : Fragment() {
                 if (dataFromAPI?.responseCode == 200) {
                     updateProductInfoFragmentUI(dataFromAPI.warehouses, dataFromAPI.jsonProductObject)
                 }
+            }catch (e: SocketTimeoutException) {
+                view.findViewById<TextView>(R.id.noNetworkView).visibility = View.VISIBLE
+            }
+
         }
 
         //fetchJson()
@@ -302,13 +308,11 @@ class ProductInfoFragment : Fragment() {
     private fun updateProductInfoFragmentUI(warehouseList:ArrayList<Availability>, json_Product:JSONObject){
         activity?.runOnUiThread(object : Runnable {
             override fun run() {
-
+                view?.findViewById<ProgressBar>(R.id.productInfoLoader)?.visibility = View.GONE
                 //Setting up spinners ------------------------------------------------------
                 warehouseList.forEach{
                     spinnerArray.add(it.warehouseName)
                 }
-
-
 
                 val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
                     view!!.context, R.layout.spinner_item, spinnerArray
@@ -328,7 +332,8 @@ class ProductInfoFragment : Fragment() {
                         warehouseList.forEach{
                             if (it.warehouseName == spinnerArray[p2])
                             {
-                                view!!.findViewById<TextView>(R.id.productAmount).text = (it.amount.toString().toFloat() * json_Product.getString("unit_number").toFloat()).toString()
+                                view!!.findViewById<TextView>(R.id.productAmount).text = (it.amount.toString().toFloat() * json_Product.getString("unit_number").toFloat()).toString() + " ${json_Product.getString("unit_name")} "
+                                view!!.findViewById<TextView>(R.id.productAmountInPackages).text = "${it.amount.toInt()} p."
                             }
                         }
 
@@ -340,20 +345,16 @@ class ProductInfoFragment : Fragment() {
                 }
                 //--------------------------------------------------------------------------
 
+
+
                 view?.findViewById<TextView>(R.id.productName)?.text =
                     json_Product.getString(
                         "name"
                     )
-                view?.findViewById<TextView>(R.id.productPrice)?.text = "${
-                    json_Product.getString(
-                        "price"
-                    )
-                } zł."
-                view?.findViewById<TextView>(R.id.packing)?.text = "${
-                    json_Product.getString(
-                        "unit_number"
-                    )
-                } ${json_Product.getString("unit_name")}"
+                packingValue = json_Product.getString("unit_number").toDouble()
+                view?.findViewById<TextView>(R.id.productPrice)?.text = "${json_Product.getString("price")} zł/p."
+                view?.findViewById<TextView>(R.id.productPricePerUnit)?.text = (json_Product.getString("price").toFloat() / json_Product.getString("unit_number").toFloat()).toString() + " zł/${json_Product.getString("unit_name")}"
+                view?.findViewById<TextView>(R.id.packing)?.text = "Packing: ${json_Product.getString("unit_number")} ${json_Product.getString("unit_name")}"
 
 
                 //Autocalculating amounts of product

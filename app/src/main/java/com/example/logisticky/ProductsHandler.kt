@@ -62,6 +62,8 @@ class ProductsHandler {
                     productInfoBundle = ProductInfoFragmentBundle(warehouseList,json_Product,response.code())
                     return productInfoBundle
                 }
+
         }
+
     }
 
