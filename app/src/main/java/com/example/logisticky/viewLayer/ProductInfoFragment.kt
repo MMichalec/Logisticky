@@ -9,10 +9,10 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import android.widget.TextView.OnEditorActionListener
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import com.example.logisticky.R
 import com.example.logisticky.TokenManager
-import com.google.gson.GsonBuilder
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
@@ -77,14 +77,8 @@ class ProductInfoFragment : Fragment() {
 
 
 
-        spinnerArray.add("LODZ")
-        spinnerArray.add("WARSAW")
-        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            view.context, R.layout.spinner_item, spinnerArray
-        )
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_list)
-        val sItems = view.findViewById(R.id.magazinePicker) as Spinner
-        sItems.adapter = adapter
+
+
 
         fetchJson()
     }
@@ -129,85 +123,91 @@ class ProductInfoFragment : Fragment() {
                 val body = response.body()?.string()
                 println("Debug: $body")
 
-                val gson = GsonBuilder().create()
-                val warehousesAvailability = gson.fromJson(body, ProductsInfo::class.java)
-
-
-
 
                 val json = JSONObject(body)
                 val json_Product = json.getJSONObject("product")
 
+
+                var jsonArray_warehouseAvailability = json_Product.getJSONArray("availability")
+                val warehouseList = ArrayList<Availability>()
+                // Wyciąganie listy Availability z JSONObject("product")
+                for (i in 0 until jsonArray_warehouseAvailability.length()) {
+
+                    val warehouseObject = jsonArray_warehouseAvailability.getJSONObject(i)
+                    warehouseList.add(Availability(
+                        warehouseObject.getString("amount").toFloat(),
+                        warehouseObject.getString("product_warehouse_id").toInt(),
+                        warehouseObject.getString("warehouse_name")))
+                }
+
                 packingValue = json_Product.getDouble("unit_number")
 
+
+
+                //Updating UI
                 activity?.runOnUiThread(object : Runnable {
                     override fun run() {
 
-                        view?.findViewById<TextView>(R.id.productName)?.text = json_Product.getString("name")
-                        view?.findViewById<TextView>(R.id.productPrice)?.text = "${json_Product.getString("price")} zł."
-                        view?.findViewById<TextView>(R.id.packing)?.text = "${json_Product.getString("unit_number")} ${json_Product.getString("unit_name")}"
+                        //Setting up spinners ------------------------------------------------------
+                        warehouseList.forEach{
+                            spinnerArray.add(it.warehouseName)
+                        }
+
+
+
+                        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
+                            view!!.context, R.layout.spinner_item, spinnerArray
+                        )
+                        adapter.setDropDownViewResource(R.layout.spinner_dropdown_list)
+                        val sItems = view!!.findViewById(R.id.magazinePicker) as Spinner
+                        sItems.adapter = adapter
+                        sItems.onItemSelectedListener = object :
+                            AdapterView.OnItemSelectedListener {
+                            override fun onItemSelected(
+                                p0: AdapterView<*>?,
+                                p1: View?,
+                                p2: Int,
+                                p3: Long
+                            ) {
+
+                                warehouseList.forEach{
+                                    if (it.warehouseName == spinnerArray[p2])
+                                    {
+                                        view!!.findViewById<TextView>(R.id.productAmount).text = (it.amount.toString().toFloat() * json_Product.getString("unit_number").toFloat()).toString()
+                                    }
+                                }
+
+                            }
+
+                            override fun onNothingSelected(p0: AdapterView<*>?) {
+                                TODO("Not yet implemented")
+                            }
+                        }
+                        //--------------------------------------------------------------------------
+
+                        view?.findViewById<TextView>(R.id.productName)?.text =
+                            json_Product.getString(
+                                "name"
+                            )
+                        view?.findViewById<TextView>(R.id.productPrice)?.text = "${
+                            json_Product.getString(
+                                "price"
+                            )
+                        } zł."
+                        view?.findViewById<TextView>(R.id.packing)?.text = "${
+                            json_Product.getString(
+                                "unit_number"
+                            )
+                        } ${json_Product.getString("unit_name")}"
 
 
                         //Autocalculating amounts of product
                         val editTextAddAmount = view?.findViewById<EditText>(R.id.productAddAmount)
                         val editTextAddPackage = view?.findViewById<EditText>(R.id.productAddPackage)
 
-                        editTextAddAmount?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-                            when (actionId) {
-                                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS -> {
-                                    if (editTextAddAmount.text.isNotEmpty()) {
-                                        val inputedAmount = editTextAddAmount.text.toString().toDouble()
-
-
-                                        var roundedPackage = (inputedAmount / packingValue).roundToInt()
-                                        var roundedAmount = roundedPackage * packingValue
-
-                                        if (roundedPackage == 0) {
-                                            roundedPackage = 1
-                                            roundedAmount = packingValue
-                                            Toast.makeText(activity, "Value has been rounded", Toast.LENGTH_LONG).show()
-                                        }
-
-                                        if (inputedAmount - roundedAmount > 0.1)
-                                            Toast.makeText(activity, "Value has been rounded", Toast.LENGTH_LONG).show()
-
-                                        //hide keyboard after input
-                                        val imm =
-                                            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                                        imm.hideSoftInputFromWindow(view?.getWindowToken(), 0)
-
-                                        editTextAddAmount.setText(roundedAmount.toString())
-                                        editTextAddPackage?.setText(roundedPackage.toString())
-                                    }
-                                    return@OnEditorActionListener true
-                                }
-                            }
-                            false
-                        })
-
-                        editTextAddPackage?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-                            when (actionId) {
-                                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS -> {
-                                    if (editTextAddPackage.text.isNotEmpty()) {
-                                        val calculatedPackage = editTextAddPackage.text.toString().toDouble()
-                                        editTextAddAmount?.setText((calculatedPackage * packingValue).toString())
-
-
-                                        //hide keyboard after input
-                                        val imm =
-                                            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                                        imm.hideSoftInputFromWindow(view?.getWindowToken(), 0)
-
-                                    }
-                                    return@OnEditorActionListener true
-                                }
-                            }
-                            false
-                        })
-
-//                        warehousesAvailability.warehouses.forEach{
-//                            spinnerArray.add(it.warehouseName)
-//                        }
+                        if (editTextAddPackage != null && editTextAddAmount != null) {
+                            autoRoundingProductAdding(editTextAddAmount,editTextAddPackage)
+                        }
                     }
                 })
 
@@ -222,5 +222,73 @@ class ProductInfoFragment : Fragment() {
 
     class ProductsInfo(var warehouses: ArrayList<Availability>)
 
-    class Availability(var amount: Float, var warehouseId: Int, var warehouseName: String)
+    class Availability(var amount: Float, var product_warehouseId: Int, var warehouseName: String)
+
+    private fun autoRoundingProductAdding (editTextAddAmount: EditText, editTextAddPackage: EditText  ){
+
+        editTextAddAmount?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS -> {
+                    if (editTextAddAmount.text.isNotEmpty()) {
+                        val inputedAmount =
+                            editTextAddAmount.text.toString().toDouble()
+
+
+                        var roundedPackage =
+                            (inputedAmount / packingValue).roundToInt()
+                        var roundedAmount = roundedPackage * packingValue
+
+                        if (roundedPackage == 0) {
+                            roundedPackage = 1
+                            roundedAmount = packingValue
+                            Toast.makeText(
+                                activity,
+                                "Value has been rounded",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+
+                        if (inputedAmount - roundedAmount > 0.1)
+                            Toast.makeText(
+                                activity,
+                                "Value has been rounded",
+                                Toast.LENGTH_LONG
+                            ).show()
+
+                        //hide keyboard after input
+                        val imm =
+                            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(view?.getWindowToken(), 0)
+
+                        editTextAddAmount.setText(roundedAmount.toString())
+                        editTextAddPackage?.setText(roundedPackage.toString())
+                    }
+                    return@OnEditorActionListener true
+                }
+            }
+            false
+        })
+
+        editTextAddPackage?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS -> {
+                    if (editTextAddPackage.text.isNotEmpty()) {
+                        val calculatedPackage =
+                            editTextAddPackage.text.toString().toDouble()
+                        editTextAddAmount?.setText((calculatedPackage * packingValue).toString())
+
+
+                        //hide keyboard after input
+                        val imm =
+                            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(view?.getWindowToken(), 0)
+
+                    }
+                    return@OnEditorActionListener true
+                }
+            }
+            false
+        })
+
+    }
 }
