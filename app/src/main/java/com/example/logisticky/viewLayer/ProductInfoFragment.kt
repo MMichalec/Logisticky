@@ -9,10 +9,14 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import android.widget.TextView.OnEditorActionListener
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
+import com.example.logisticky.ProductsHandler
 import com.example.logisticky.R
 import com.example.logisticky.TokenManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
@@ -31,6 +35,7 @@ private const val ARG_PARAM2 = "param2"
  */
 class ProductInfoFragment : Fragment() {
     lateinit var productId:String
+    lateinit var xdd: ProductsHandler.ProductInfoFragmentBundle
 
     val spinnerArray: MutableList<String> = ArrayList()
     var packingValue = 1.0
@@ -66,21 +71,23 @@ class ProductInfoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         view?.findViewById<TextView>(R.id.productName)?.text = productId
 
+        CoroutineScope(Dispatchers.IO).launch {
+
+                val dataFromAPI = async {
+                    token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(it,productId.toInt()) }
+                }.await()
+
+                if (dataFromAPI?.responseCode == 200) {
+                    updateProductInfoFragmentUI(dataFromAPI.warehouses, dataFromAPI.jsonProductObject)
+                }
+        }
+
+        //fetchJson()
+
+//        val json_Product = productInfoBundle?.jsonProductObject
+//        val warehouseList = productInfoBundle?.warehouses
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-        fetchJson()
     }
 
 
@@ -105,7 +112,7 @@ class ProductInfoFragment : Fragment() {
             }
     }
 
-    fun fetchJson(){
+    private fun fetchJson(){
         println("Debug : Attempting to Fetch JSON")
 
         val url = "https://dystproapi.azurewebsites.net/products/$productId"
@@ -291,4 +298,74 @@ class ProductInfoFragment : Fragment() {
         })
 
     }
+
+    private fun updateProductInfoFragmentUI(warehouseList:ArrayList<Availability>, json_Product:JSONObject){
+        activity?.runOnUiThread(object : Runnable {
+            override fun run() {
+
+                //Setting up spinners ------------------------------------------------------
+                warehouseList.forEach{
+                    spinnerArray.add(it.warehouseName)
+                }
+
+
+
+                val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
+                    view!!.context, R.layout.spinner_item, spinnerArray
+                )
+                adapter.setDropDownViewResource(R.layout.spinner_dropdown_list)
+                val sItems = view!!.findViewById(R.id.magazinePicker) as Spinner
+                sItems.adapter = adapter
+                sItems.onItemSelectedListener = object :
+                    AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        p0: AdapterView<*>?,
+                        p1: View?,
+                        p2: Int,
+                        p3: Long
+                    ) {
+
+                        warehouseList.forEach{
+                            if (it.warehouseName == spinnerArray[p2])
+                            {
+                                view!!.findViewById<TextView>(R.id.productAmount).text = (it.amount.toString().toFloat() * json_Product.getString("unit_number").toFloat()).toString()
+                            }
+                        }
+
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        TODO("Not yet implemented")
+                    }
+                }
+                //--------------------------------------------------------------------------
+
+                view?.findViewById<TextView>(R.id.productName)?.text =
+                    json_Product.getString(
+                        "name"
+                    )
+                view?.findViewById<TextView>(R.id.productPrice)?.text = "${
+                    json_Product.getString(
+                        "price"
+                    )
+                } zł."
+                view?.findViewById<TextView>(R.id.packing)?.text = "${
+                    json_Product.getString(
+                        "unit_number"
+                    )
+                } ${json_Product.getString("unit_name")}"
+
+
+                //Autocalculating amounts of product
+                val editTextAddAmount = view?.findViewById<EditText>(R.id.productAddAmount)
+                val editTextAddPackage = view?.findViewById<EditText>(R.id.productAddPackage)
+
+                if (editTextAddPackage != null && editTextAddAmount != null) {
+                    autoRoundingProductAdding(editTextAddAmount,editTextAddPackage)
+                }
+            }
+        })
+    }
+
+
 }
