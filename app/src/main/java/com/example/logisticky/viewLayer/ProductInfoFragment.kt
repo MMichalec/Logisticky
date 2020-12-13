@@ -36,7 +36,7 @@ private const val ARG_PARAM2 = "param2"
  */
 class ProductInfoFragment : Fragment() {
     lateinit var productId:String
-    lateinit var xdd: ProductsHandler.ProductInfoFragmentBundle
+
 
     val spinnerArray: MutableList<String> = ArrayList()
     var packingValue = 1.0

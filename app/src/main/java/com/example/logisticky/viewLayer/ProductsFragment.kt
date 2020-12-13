@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -12,8 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import okhttp3.*
 import java.io.IOException
+import java.net.SocketTimeoutException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -89,10 +95,27 @@ class ProductsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         productsListForRecyclerView.clear()
-        fetchJson()
-        recyclerView = view?.findViewById(R.id.products_recycleView)
 
-        println("Debug: Succesfuly shared token: $token")
+
+        //fetchJson()
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            try {
+                val dataFromAPI = async {
+                    token?.let { ProductsHandler.getDataForProductsFragmentFromApi(it,productsListForRecyclerView) }
+                }.await()
+
+                if (dataFromAPI == 200) {
+                    updateProductsFragmentUI()
+                }
+            }catch (e: SocketTimeoutException) {
+                view.findViewById<TextView>(R.id.noNetworkView).visibility = View.VISIBLE
+            }
+
+        }
+
+        recyclerView = view?.findViewById(R.id.products_recycleView)
 
     }
 
@@ -191,6 +214,20 @@ class ProductsFragment : Fragment() {
             override fun onFailure(call: Call, e: IOException) {
                 println("Data not loaded")
                 productsListForRecyclerView.add(ProductItem("COULD NOT LOAD DATA. CHECK YOUR NETWORK CONNECTION", 0) )
+            }
+        })
+    }
+
+    private fun updateProductsFragmentUI(){
+        activity?.runOnUiThread(object : Runnable {
+            override fun run() {
+                displayList.clear()
+                displayList.addAll(productsListForRecyclerView)
+
+                recyclerView?.adapter = ProductsAdapter(displayList)
+                recyclerView?.layoutManager = LinearLayoutManager(activity)
+                recyclerView?.setHasFixedSize(true)
+                view?.findViewById<ProgressBar>(R.id.productsLoader)?.visibility = View.GONE
             }
         })
     }

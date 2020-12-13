@@ -3,6 +3,7 @@ package com.example.logisticky
 import android.view.View
 import android.widget.ProgressBar
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.viewLayer.ProductInfoFragment
 import com.example.logisticky.viewLayer.ProductsFragment
 import com.google.gson.GsonBuilder
@@ -21,6 +22,37 @@ class ProductsHandler {
     data class ProductInfoFragmentBundle(var warehouses: ArrayList<ProductInfoFragment.Availability>, var jsonProductObject: JSONObject, var responseCode:Int)
 
     companion object {
+
+        fun getDataForProductsFragmentFromApi (token:String, productListRecyclerView: ArrayList<ProductItem>):Int{
+            var productsListForRecyclerView = productListRecyclerView
+            var responseCode = 0
+
+                println("Debug : Attempting to Fetch JSON from ProductsFragment")
+                val url = "https://dystproapi.azurewebsites.net/products"
+                val client = OkHttpClient()
+
+
+                val request = Request.Builder().header("x-access-token", token).url(url).build()
+                println("Debug: token in fetchJson $token")
+                val response = client.newCall(request).execute()
+                responseCode = response.code()
+
+
+                        println("Debug: Data access succesful")
+
+                        val body = response.body()?.string()
+                        println("Debug: $body")
+
+                        val gson = GsonBuilder().create()
+                        val simpleProducts = gson.fromJson(body, ProductsFragment.ProductList::class.java)
+
+                        simpleProducts.products.forEach{
+
+                            productsListForRecyclerView.add(ProductItem(it.name, it.product_id))
+
+                        }
+            return responseCode
+        }
 
         fun getDataForProductInfoFragmentFromApi(token:String, productId: Int): ProductInfoFragmentBundle? {
             var productInfoBundle: ProductInfoFragmentBundle? = null
