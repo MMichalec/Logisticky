@@ -78,6 +78,7 @@ class ProductsHandler {
 
                     var jsonArray_warehouseAvailability = json_Product.getJSONArray("availability")
                     val warehouseList = ArrayList<ProductInfoFragment.Availability>()
+
                     // Wyciąganie listy Availability z JSONObject("product")
                     for (i in 0 until jsonArray_warehouseAvailability.length()) {
 

@@ -17,6 +17,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
 import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -36,6 +40,8 @@ class SettingsVehiclesFragment : Fragment(), View.OnClickListener {
     lateinit var recyclerView: RecyclerView
     var vehiclePlateNumber: String = "empty"
 
+    var token:String? = null
+
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -48,6 +54,7 @@ class SettingsVehiclesFragment : Fragment(), View.OnClickListener {
             param2 = it.getString(ARG_PARAM2)
         }
         testList.addAll( generateDummyList(15) as ArrayList<VehicleItem>)
+        token = this.activity?.let { TokenManager.loadData(it) }
     }
 
     override fun onCreateView(
@@ -60,6 +67,18 @@ class SettingsVehiclesFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val dataFromAPI = async {
+                token?.let { VehicleHandler.getDataForSettingsVehiclesFragmentFromApi(it) }
+
+            }.await()
+
+
+            }
+
+
 
         displayList = testList
 

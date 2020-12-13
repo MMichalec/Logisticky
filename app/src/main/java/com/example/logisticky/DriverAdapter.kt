@@ -41,14 +41,10 @@ class DriverAdapter (private var exampleList:List<DriverItem>):
 
         holder.checkBox.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                Toast.makeText(holder.itemView.context, currentItem.surname, Toast.LENGTH_LONG).show()
                 currentItem.isSelected= true
             }
         })
 
-        holder.itemView.setOnClickListener{
-            Toast.makeText(holder.itemView.context, "Value has been rounded", Toast.LENGTH_LONG).show()
-        }
     }
 
     override fun getItemCount() = exampleList.size

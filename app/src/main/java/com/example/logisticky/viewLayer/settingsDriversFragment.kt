@@ -15,6 +15,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
 import android.widget.TextView.OnEditorActionListener
 import com.example.logisticky.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -32,8 +37,9 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
     var displayList = ArrayList<DriverItem>()
     val itemsToRemoveList = ArrayList<DriverItem>()
     lateinit var recyclerView: RecyclerView
-    var driverName: String = "empty"
-    var driverSurname: String = "empty"
+    var driverListFromAPI = ArrayList<DriversHandler.Driver>()
+
+    var token:String? = null
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -46,7 +52,9 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
             param2 = it.getString(ARG_PARAM2)
         }
 
-        testList.addAll( generateDummyList(15) as ArrayList<DriverItem>)
+        token = this.activity?.let { TokenManager.loadData(it) }
+//        testList.addAll( generateDummyList(15) as ArrayList<DriverItem>)
+
     }
 
     override fun onCreateView(
@@ -59,66 +67,33 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        displayList = testList
-
-        recyclerView = view?.findViewById(R.id.drivers_recycleView)
-        recyclerView?.adapter = DriverAdapter(displayList)
-        recyclerView?.layoutManager = LinearLayoutManager(activity)
-        recyclerView?.setHasFixedSize(true)
-
-        var editTextName = view.findViewById<EditText>(R.id.driverNameEditText)
-        var editTextSurname = view.findViewById<EditText>(R.id.driverSurnameEditText)
-
-        editTextName.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-            when (actionId) {
-                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS -> {
-                    if(editTextName.text.isNotEmpty()){
-                        driverName=editTextName.text.toString()
 
 
-                        //hide keyboard after input
-                        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.hideSoftInputFromWindow(view?.getWindowToken(), 0)
 
-                    }
-                    return@OnEditorActionListener true
-                }
+        CoroutineScope(Dispatchers.IO).launch {
+
+                val dataFromAPI = async {
+                    token?.let { DriversHandler.getDataForSettingsDriversFragmentFromApi(it) }
+
+                }.await()
+
+            if (dataFromAPI != null) {
+                driverListFromAPI = dataFromAPI
             }
-            false
-        })
-
-        editTextName.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus) {}
-            else
-            {
-                if(editTextName.text.isNotEmpty()) driverName=editTextName.text.toString()
+            val checkBox = CheckBox(activity)
+            dataFromAPI?.forEach{
+                testList.add(DriverItem(it.name,it.surname,checkBox))
             }
-        }
-
-        editTextSurname.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-            when (actionId) {
-                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS  -> {
-                    if(editTextName.text.isNotEmpty()){
-                        driverSurname=editTextSurname.text.toString()
-
-                        //hide keyboard after input
-                        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.hideSoftInputFromWindow(view?.getWindowToken(), 0)
-
-                    }
-                    return@OnEditorActionListener true
-                }
+                updateSettingsDriversFragmentUI()
             }
-            false
-        })
 
-        editTextSurname.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus) {}
-            else
-            {
-                if(editTextSurname.text.isNotEmpty()) driverSurname=editTextSurname.text.toString()
-            }
-        }
+
+
+
+
+
+
+
 
 
 
@@ -130,21 +105,75 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v!!.id){
             R.id.settingsRemoveDriverButton -> {
+
+
+
+
                 displayList.forEach {  if (it.isSelected) itemsToRemoveList.add(it) }
+
+                driverListFromAPI.forEach{
+
+                    for (i in 0 until itemsToRemoveList.size){
+
+                        if (it.name == itemsToRemoveList[i].name && it.surname == itemsToRemoveList[i].surname){
+                            var idToDelete = it.driver_id
+                            CoroutineScope(Dispatchers.IO).launch {
+
+                                val dataFromAPI2 = async {
+
+                                    token?.let { DriversHandler.deleteDriver(it,idToDelete ) }
+                                }.await()
+
+
+
+                                println("Debug: Driver deletede code: $dataFromAPI2")
+                                updateSettingsDriversFragmentUI()
+                            }
+
+                        }
+
+                    }
+
+
+                }
+
                 itemsToRemoveList.forEach{ displayList.remove(it)}
-                //TODO add removing items from database here
-                refreshFragment()
+                activity?.runOnUiThread(object : Runnable {
+                    override fun run() {
+                        updateSettingsDriversFragmentUI()
+                    }
+                })
+
             }
 
             R.id.settingsAddDriverButton -> {
-                if (driverName != "empty" && driverSurname != "empty"){
-                testList.add(DriverItem(driverName.capitalize(),driverSurname.capitalize(), checkBox = CheckBox(activity) ))
-                    refreshFragment()
-                    Toast.makeText(activity, "Added new driver ${driverName.capitalize()} ${driverSurname.capitalize()}", Toast.LENGTH_LONG).show()
+
+                var editTextName = view?.findViewById<EditText>(R.id.driverNameEditText)?.text.toString().capitalize()
+                var editTextSurname = view?.findViewById<EditText>(R.id.driverSurnameEditText)?.text.toString().capitalize()
+
+                if (editTextName != "" && editTextSurname != ""){
+
+                    activity?.runOnUiThread(object : Runnable {
+                        override fun run() {
+                            testList.add(DriverItem(editTextName,editTextSurname, checkBox = CheckBox(activity) ))
+
+                            CoroutineScope(Dispatchers.IO).launch {
+
+                                val dataFromAPI = async {
+                                    token?.let { DriversHandler.addDriver(it, editTextName, editTextSurname) }
+                                }.await()
+                                updateSettingsDriversFragmentUI()
+                            }
+
+                        }
+                    })
+
+                    //TODO zrobić tak zebyt mozna bylo kasowac kierowcow zaraz po dodaniu - musze zaktualizowac listeKierowcowZApi
+
+                    Toast.makeText(activity, "Added new driver ${editTextName} ${editTextSurname}", Toast.LENGTH_LONG).show()
                     view?.findViewById<EditText>(R.id.driverSurnameEditText)?.text?.clear()
                     view?.findViewById<EditText>(R.id.driverNameEditText)?.text?.clear()
-            }
-                else{
+            } else{
                     Toast.makeText(activity, "Invalid name or surname input. Make sure you accepted inputed text.", Toast.LENGTH_LONG).show()
                 }
             }
@@ -170,16 +199,7 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
                 }
             }
     }
-    private fun generateDummyList(size: Int): List<DriverItem>{
-        val list = ArrayList<DriverItem>()
 
-        val checkBox = CheckBox(activity)
-        for (i in 0 until size){
-            val item = DriverItem("Name $i","Surname $i", checkBox)
-            list +=item
-        }
-        return list
-    }
 
     fun refreshFragment(){
         val ft = requireFragmentManager().beginTransaction()
@@ -187,5 +207,21 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
             ft.setReorderingAllowed(false)
         }
         ft.detach(this).attach(this).commit()
+    }
+
+    private fun updateSettingsDriversFragmentUI (){
+        activity?.runOnUiThread(object : Runnable {
+            override fun run() {
+
+                displayList = testList
+
+                recyclerView = view?.findViewById(R.id.drivers_recycleView)!!
+                recyclerView?.adapter = DriverAdapter(displayList)
+                recyclerView?.layoutManager = LinearLayoutManager(activity)
+                recyclerView?.setHasFixedSize(true)
+                view?.findViewById<ProgressBar>(R.id.driversLoader)?.visibility = View.GONE
+            }
+        })
+
     }
 }
