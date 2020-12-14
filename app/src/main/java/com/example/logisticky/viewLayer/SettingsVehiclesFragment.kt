@@ -38,7 +38,7 @@ class SettingsVehiclesFragment : Fragment(), View.OnClickListener {
     var displayList = ArrayList<VehicleItem>()
     val itemsToRemoveList = ArrayList<VehicleItem>()
     lateinit var recyclerView: RecyclerView
-    var vehiclePlateNumber: String = "empty"
+    var vehicleListFromAPI = ArrayList<VehicleHandler.Vehicle>()
 
     var token:String? = null
 
@@ -53,7 +53,7 @@ class SettingsVehiclesFragment : Fragment(), View.OnClickListener {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-        testList.addAll( generateDummyList(15) as ArrayList<VehicleItem>)
+
         token = this.activity?.let { TokenManager.loadData(it) }
     }
 
@@ -72,72 +72,87 @@ class SettingsVehiclesFragment : Fragment(), View.OnClickListener {
 
             val dataFromAPI = async {
                 token?.let { VehicleHandler.getDataForSettingsVehiclesFragmentFromApi(it) }
+                //token?.let { VehicleHandler.addVehicle(it,"abc1234") }
 
             }.await()
 
-
+            if (dataFromAPI != null) {
+                vehicleListFromAPI = dataFromAPI
+            }
+            val checkBox = CheckBox(activity)
+            dataFromAPI?.forEach{
+                testList.add(VehicleItem(it.registration_number,checkBox))
+            }
+                updateSettingsVehiclesFragmentUI()
             }
 
 
+        view.findViewById<Button>(R.id.settingsAddVehicleButton)?.setOnClickListener(this)
+        view.findViewById<Button>(R.id.settingsRemoveVehicleButton)?.setOnClickListener(this)
 
-        displayList = testList
-
-        recyclerView = view?.findViewById(R.id.vehicles_recycleView)
-        recyclerView?.adapter = VehicleAdapter(displayList)
-        recyclerView?.layoutManager = LinearLayoutManager(activity)
-        recyclerView?.setHasFixedSize(true)
-
-        var editTextPlateNumber = view.findViewById<EditText>(R.id.vehicleEditText)
-
-        editTextPlateNumber.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
-            when (actionId) {
-                EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS -> {
-                    if(editTextPlateNumber.text.isNotEmpty()){
-                        vehiclePlateNumber=editTextPlateNumber.text.toString()
-
-
-                        //hide keyboard after input
-                        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.hideSoftInputFromWindow(view?.getWindowToken(), 0)
-
-                    }
-                    return@OnEditorActionListener true
-                }
-            }
-            false
-        })
-
-        editTextPlateNumber.setOnFocusChangeListener { view, hasFocus ->
-            if (hasFocus) {}
-            else
-            {
-                if(editTextPlateNumber.text.isNotEmpty()) vehiclePlateNumber=editTextPlateNumber.text.toString()
-            }
-        }
-
-        view.findViewById<Button>(R.id.settingsAddVehicleButton).setOnClickListener(this)
-        view.findViewById<Button>(R.id.settingsRemoveVehicleButton).setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
         when(v!!.id){
             R.id.settingsRemoveVehicleButton -> {
+
                 displayList.forEach {  if (it.isSelected) itemsToRemoveList.add(it) }
+
+                vehicleListFromAPI.forEach{
+
+                    for (i in 0 until itemsToRemoveList.size){
+
+                        if (it.registration_number == itemsToRemoveList[i].plateNumber ){
+                            var idToDelete = it.vehicleId
+                            CoroutineScope(Dispatchers.IO).launch {
+
+                                val dataFromAPI2 = async {
+                                    token?.let { VehicleHandler.deleteVehicle(it,idToDelete ) }
+                                }.await()
+
+                                println("Debug: Driver deletede code: $dataFromAPI2")
+                                updateSettingsVehiclesFragmentUI()
+                            }
+                        }
+                    }
+                }
+
                 itemsToRemoveList.forEach{ displayList.remove(it)}
-                //TODO add removing items from database here
-                refreshFragment()
+                activity?.runOnUiThread(object : Runnable {
+                    override fun run() {
+                        updateSettingsVehiclesFragmentUI()
+                    }
+                })
             }
 
             R.id.settingsAddVehicleButton -> {
-                if (vehiclePlateNumber != "empty"){
-                    testList.add(VehicleItem(vehiclePlateNumber.toUpperCase(), checkBox = CheckBox(activity) ))
-                    refreshFragment()
-                    Toast.makeText(activity, "Added new vehicle: ${vehiclePlateNumber.toUpperCase()}", Toast.LENGTH_LONG).show()
+
+                var editTextPlateNumber = view?.findViewById<EditText>(R.id.vehicleEditText)?.text.toString().toUpperCase()
+
+                if (editTextPlateNumber != ""){
                     view?.findViewById<EditText>(R.id.vehicleEditText)?.text?.clear()
+
+                    activity?.runOnUiThread(object : Runnable {
+                        override fun run() {
+                            testList.add(VehicleItem(editTextPlateNumber, checkBox = CheckBox(activity) ))
+                            CoroutineScope(Dispatchers.IO).launch {
+
+                                val dataFromAPI = async {
+                                    token?.let {
+                                        VehicleHandler.addVehicle(
+                                            it,
+                                            editTextPlateNumber
+                                        )
+                                    }
+                                }.await()
+                                updateSettingsVehiclesFragmentUI()
+                            }
+                        }
+                    })
 
                 }
                 else{
-                    Toast.makeText(activity, "Invalid vehicle plate number input. Make sure you accepted inputed text.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "Invalid vehicle plate number input.", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -181,5 +196,20 @@ class SettingsVehiclesFragment : Fragment(), View.OnClickListener {
         }
         ft.detach(this).attach(this).commit()
     }
+
+
+    private fun updateSettingsVehiclesFragmentUI(){
+        activity?.runOnUiThread(object : Runnable {
+            override fun run() {
+
+                displayList = testList
+                recyclerView = view?.findViewById(R.id.vehicles_recycleView)!!
+                recyclerView?.adapter = VehicleAdapter(displayList)
+                recyclerView?.layoutManager = LinearLayoutManager(activity)
+                recyclerView?.setHasFixedSize(true)
+            }
+        })
+    }
+
 }
 

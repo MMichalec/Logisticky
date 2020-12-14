@@ -8,7 +8,7 @@ import org.json.JSONObject
 
 class VehicleHandler {
 
-    data class Vehicle (var registration_number:String)
+    data class Vehicle (var vehicleId:Int, var registration_number:String)
 
     companion object{
 
@@ -16,7 +16,7 @@ class VehicleHandler {
         fun getDataForSettingsVehiclesFragmentFromApi(token:String):ArrayList<VehicleHandler.Vehicle>{
             println("Debug : Attempting to Fetch JSON")
 
-            val url = "https://dystproapi.azurewebsites.net/vechicles"
+            val url = "https://dystproapi.azurewebsites.net/vehicles"
 
             val client = OkHttpClient()
 
@@ -41,6 +41,7 @@ class VehicleHandler {
                 val vehicleObject = jsonArray_Vehicles.getJSONObject(i)
                 vehicleList.add(
                     Vehicle(
+                        vehicleObject.getString("vehicle_id").toInt(),
                         vehicleObject.getString("registration_number")
                     )
                 )
@@ -49,31 +50,31 @@ class VehicleHandler {
             return vehicleList
         }
 
-        fun addDriver(token:String, name:String, surname:String):Int{
+        fun addVehicle(token:String, registration_number:String):Int{
 
             println("Attempting to Fetch JSON")
 
-            val url = "https://dystproapi.azurewebsites.net/drivers"
+            val url = "https://dystproapi.azurewebsites.net/vehicles"
 
             val client = OkHttpClient()
 
             val JSON = MediaType.parse("application/json;charset=utf-8")
 
-            val driverObject = JSONObject()
+            val vehicleObject = JSONObject()
 
-            val driverDataObject = JSONObject()
-
-
-            driverDataObject.put("name", name)
-            driverDataObject.put("surname",surname)
-
-            driverObject.put("driver", driverDataObject)
+            val vehicleDataObject = JSONObject()
 
 
-            println("Debug: ${driverObject}")
+            vehicleDataObject.put("registration_number", registration_number)
 
 
-            val body: RequestBody = RequestBody.create(JSON, driverObject.toString())
+            vehicleObject.put("vehicle", vehicleDataObject)
+
+
+            println("Debug: ${vehicleObject}")
+
+
+            val body: RequestBody = RequestBody.create(JSON, vehicleObject.toString())
             val newRequest = Request.Builder().header("x-access-token", token).url(url).post(body).build()
 
             val response = client.newCall(newRequest).execute()
@@ -90,13 +91,9 @@ class VehicleHandler {
 
             val client = OkHttpClient()
 
-            val JSON = MediaType.parse("application/json;charset=utf-8")
-
-
             val newRequest = Request.Builder().header("x-access-token", token).url(url).delete().build()
 
             val response = client.newCall(newRequest).execute()
-            //communicationToServerStatus= response.code()
             println("Debug: ${response.code()}")
 
             return response.code()

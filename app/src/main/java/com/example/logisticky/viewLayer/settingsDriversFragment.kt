@@ -53,7 +53,7 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
         }
 
         token = this.activity?.let { TokenManager.loadData(it) }
-//        testList.addAll( generateDummyList(15) as ArrayList<DriverItem>)
+
 
     }
 
@@ -87,16 +87,6 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
                 updateSettingsDriversFragmentUI()
             }
 
-
-
-
-
-
-
-
-
-
-
         view.findViewById<Button>(R.id.settingsRemoveDriverButton).setOnClickListener(this)
         view.findViewById<Button>(R.id.settingsAddDriverButton).setOnClickListener(this)
 
@@ -105,9 +95,6 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v!!.id){
             R.id.settingsRemoveDriverButton -> {
-
-
-
 
                 displayList.forEach {  if (it.isSelected) itemsToRemoveList.add(it) }
 
@@ -120,21 +107,14 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
                             CoroutineScope(Dispatchers.IO).launch {
 
                                 val dataFromAPI2 = async {
-
                                     token?.let { DriversHandler.deleteDriver(it,idToDelete ) }
                                 }.await()
-
-
 
                                 println("Debug: Driver deletede code: $dataFromAPI2")
                                 updateSettingsDriversFragmentUI()
                             }
-
                         }
-
                     }
-
-
                 }
 
                 itemsToRemoveList.forEach{ displayList.remove(it)}
@@ -156,7 +136,6 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
                     activity?.runOnUiThread(object : Runnable {
                         override fun run() {
                             testList.add(DriverItem(editTextName,editTextSurname, checkBox = CheckBox(activity) ))
-
                             CoroutineScope(Dispatchers.IO).launch {
 
                                 val dataFromAPI = async {
@@ -201,20 +180,12 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
     }
 
 
-    fun refreshFragment(){
-        val ft = requireFragmentManager().beginTransaction()
-        if (Build.VERSION.SDK_INT >= 26) {
-            ft.setReorderingAllowed(false)
-        }
-        ft.detach(this).attach(this).commit()
-    }
 
     private fun updateSettingsDriversFragmentUI (){
         activity?.runOnUiThread(object : Runnable {
             override fun run() {
 
                 displayList = testList
-
                 recyclerView = view?.findViewById(R.id.drivers_recycleView)!!
                 recyclerView?.adapter = DriverAdapter(displayList)
                 recyclerView?.layoutManager = LinearLayoutManager(activity)
