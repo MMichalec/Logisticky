@@ -9,14 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
 import android.widget.TextView.OnEditorActionListener
-import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -84,6 +81,7 @@ class SettingsVehiclesFragment : Fragment(), View.OnClickListener {
                 testList.add(VehicleItem(it.registration_number,checkBox))
             }
                 updateSettingsVehiclesFragmentUI()
+
             }
 
 
@@ -207,6 +205,8 @@ class SettingsVehiclesFragment : Fragment(), View.OnClickListener {
                 recyclerView?.adapter = VehicleAdapter(displayList)
                 recyclerView?.layoutManager = LinearLayoutManager(activity)
                 recyclerView?.setHasFixedSize(true)
+                view?.findViewById<ProgressBar>(R.id.vehiclesLoader)?.visibility = View.GONE
+
             }
         })
     }

@@ -82,7 +82,6 @@ class loginFragment : Fragment(), View.OnClickListener {
                 CoroutineScope(IO).launch {
 
                     val executionTime = measureTimeMillis {
-
                         val communicationToServerStatus = async {
 
                             activity?.runOnUiThread(object : Runnable {
@@ -100,7 +99,6 @@ class loginFragment : Fragment(), View.OnClickListener {
                             MainActivity.isUserLogged = true
                             val intent = Intent(activity, MainActivity::class.java)
 
-                            //intent.putExtra("TOKEN", token)
                             startActivity(intent);
                             activity?.finish()
                         } else {
@@ -151,7 +149,7 @@ class loginFragment : Fragment(), View.OnClickListener {
             }
     }
 
-    suspend fun fetchJson(id: String, pw: String):Int{
+    fun fetchJson(id: String, pw: String):Int{
         println("Attempting to Fetch JSON")
 
         val url = "https://dystproapi.azurewebsites.net/auth/login"
@@ -181,37 +179,9 @@ class loginFragment : Fragment(), View.OnClickListener {
 
         println("Debug auth token from body: $token}")
 
-//        client.newCall(newRequest).enqueue(object : Callback {
-//
-//            override fun onResponse(call: Call, response: Response) {
-//                println("Data access succesful")
-//
-//                val body = response.body()?.string()
-//                println(body)
-//                val httpCode = response.code()
-//                println(httpCode)
-//
-//                communicationToServerStatus = httpCode
-//
-//
-//
-////                val gson = GsonBuilder().create()
-////                val listFromJson = gson.fromJson(body, ProductsFragment.ProductList::class.java)
-////
-////                testList.addAll(listFromJson.products)
-////                isPreloaderVisible=false
-//              // refreshFragment()
-//
-//            }
-//
-//            override fun onFailure(call: Call, e: IOException) {
-//                println("Data not loaded")
-//                communicationToServerStatus = 503
-//            }
-//        })
         return response.code()
     }
 
-    class AuthItem(var auth: Boolean, var token: String)
+
 
 }

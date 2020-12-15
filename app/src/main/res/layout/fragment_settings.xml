@@ -81,7 +81,7 @@
         android:id="@+id/settingsVersionButton"
         android:layout_width="160dp"
         android:layout_height="160dp"
-        android:text="Version info"
+        android:text="Account permissions"
         app:backgroundTint="#343F4B"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

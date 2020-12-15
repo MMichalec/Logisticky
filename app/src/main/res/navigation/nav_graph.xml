@@ -26,6 +26,9 @@
         <action
             android:id="@+id/action_mainMenuFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_settingsVersionFragment"
+            app:destination="@id/settingsVersionFragment" />
     </fragment>
     <fragment
         android:id="@+id/productsFragment"
@@ -104,7 +107,7 @@
         android:id="@+id/settingsVersionFragment"
         android:name="com.example.logisticky.viewLayer.settingsVersionFragment"
         android:label="fragment_settings_version"
-        tools:layout="@layout/fragment_settings_version" />
+        tools:layout="@layout/fragment_settings_permissions" />
     <fragment
         android:id="@+id/settingsDriversFragment"
         android:name="com.example.logisticky.viewLayer.settingsDriversFragment"

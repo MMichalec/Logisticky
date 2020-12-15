@@ -50,41 +50,18 @@
         app:layout_constraintVertical_bias="0.0" />
 
 
-    <EditText
-        android:id="@+id/editTextTextMultiLine"
-        android:layout_width="match_parent"
-        android:layout_height="112dp"
-        android:layout_margin="20dp"
-        android:backgroundTint="@color/white"
-        android:ems="10"
-        android:gravity="start|top"
-        android:background="@drawable/rounded_textview2"
-        android:hint="Comment"
-        android:inputType="textMultiLine"
-        android:paddingTop="15dp"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textColorHint="@color/hint"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.4"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.575" />
-
     <Button
-        android:id="@+id/submitButton"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:layout_margin="20dp"
+        android:id="@+id/registerSendButton"
+        android:layout_width="288dp"
+        android:layout_height="48dp"
         android:backgroundTint="@color/accept"
         android:text="Register"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.581" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
