@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -45,26 +46,43 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        buttonState(false)
+        changeButtonsColor(R.color.hint)
+
         super.onViewCreated(view, savedInstanceState)
         token = this.activity?.let { TokenManager.loadData(it) }
 
         navController = Navigation.findNavController(view)
-        view.findViewById<Button>(R.id.settingsButton).setOnClickListener(this)
-        view.findViewById<Button>(R.id.productsButton).setOnClickListener(this)
-        view.findViewById<Button>(R.id.cartButton).setOnClickListener(this)
-        view.findViewById<Button>(R.id.deliversButton).setOnClickListener(this)
-        view.findViewById<Button>(R.id.logOutButton).setOnClickListener  (this)
+        view.findViewById<Button>(R.id.productsButton)?.setOnClickListener(this)
+        view.findViewById<Button>(R.id.cartButton)?.setOnClickListener(this)
+        view.findViewById<Button>(R.id.deliversButton)?.setOnClickListener(this)
+        view.findViewById<Button>(R.id.logOutButton)?.setOnClickListener(this)
+        view.findViewById<Button>(R.id.settingsButton)?.setOnClickListener(this)
+        buttonState(false)
 
         CoroutineScope(IO).launch {
             val role = async {
                 token?.let { TokenManager.getPermissions(it) }
             }.await()
 
-            if(role?.roles?.size == 0){
+            activity?.runOnUiThread(object: Runnable {
+                override fun run() {
+                    view.findViewById<ProgressBar>(R.id.mainMenuLoader).visibility = View.GONE
+                }
+            })
 
+            if(role?.roles?.size == 0){
                 activity?.runOnUiThread(object: Runnable {
                     override fun run() {
                         showInfoDialog()
+                    }
+                })
+            }else {
+                activity?.runOnUiThread(object: Runnable {
+                    override fun run() {
+                        buttonState(true)
+                        changeButtonsColor(R.color.mainTile)
+
                     }
                 })
             }
@@ -98,6 +116,19 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
         builder.setPositiveButton("Make request now", {dialogInterface: DialogInterface, i: Int -> navController.navigate(R.id.action_mainMenuFragment_to_settingsVersionFragment)})
         builder.setNeutralButton("Close",{ dialogInterface: DialogInterface, i: Int -> } )
         builder.show()
+    }
+
+    private fun buttonState (isEnabled:Boolean){
+        view?.findViewById<Button>(R.id.productsButton)?.isEnabled=isEnabled
+        view?.findViewById<Button>(R.id.cartButton)?.isEnabled=isEnabled
+        view?.findViewById<Button>(R.id.deliversButton)?.isEnabled=isEnabled
+    }
+
+    private fun changeButtonsColor (colorId : Int){
+
+        view?.findViewById<Button>(R.id.productsButton)?.setBackgroundColor(resources.getColor(colorId))
+        view?.findViewById<Button>(R.id.cartButton)?.setBackgroundColor(resources.getColor(colorId))
+        view?.findViewById<Button>(R.id.deliversButton)?.setBackgroundColor(resources.getColor(colorId))
     }
 
 

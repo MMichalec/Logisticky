@@ -18,15 +18,31 @@
             app:destination="@id/productsFragment"
             />
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_mainMenuFragment_to_cartFragment"
             app:destination="@id/cartFragment" />
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_mainMenuFragment_to_deliversFragment"
             app:destination="@id/deliversFragment" />
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_mainMenuFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_mainMenuFragment_to_settingsVersionFragment"
             app:destination="@id/settingsVersionFragment" />
     </fragment>
@@ -36,6 +52,10 @@
         android:label="fragment_products"
         tools:layout="@layout/fragment_products" >
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_productsFragment_to_productInfoFragment"
             app:destination="@id/productInfoFragment" />
     </fragment>
@@ -45,18 +65,38 @@
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" >
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_settingsFragment_to_settingsDefaultMagazineFragment2"
             app:destination="@id/settingsDefaultMagazineFragment2" />
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_settingsFragment_to_settingsDiscountFragment2"
             app:destination="@id/settingsDiscountFragment2" />
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_settingsFragment_to_settingsVersionFragment"
             app:destination="@id/settingsVersionFragment" />
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_settingsFragment_to_settingsDriversFragment"
             app:destination="@id/settingsDriversFragment" />
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_settingsFragment_to_settingsVehiclesFragment"
             app:destination="@id/settingsVehiclesFragment" />
     </fragment>
@@ -80,6 +120,10 @@
         android:name="com.example.logisticky.viewLayer.DeliversFragment"
         android:label="DeliversFragment" >
         <action
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_deliversFragment_to_deliveryInfoFragment"
             app:destination="@id/deliveryInfoFragment" />
     </fragment>

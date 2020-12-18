@@ -109,7 +109,7 @@ class TokenManager {
 
 
             val body: RequestBody = RequestBody.create(JSON, loginData.toString())
-            val newRequest = Request.Builder().url(url).post(body).build()
+            val newRequest = Request.Builder().header("x-access-token", token).url(url).post(body).build()
 
             val response = client.newCall(newRequest).execute()
 

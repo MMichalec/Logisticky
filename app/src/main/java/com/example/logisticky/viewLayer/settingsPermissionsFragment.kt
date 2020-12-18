@@ -97,6 +97,7 @@ class settingsVersionFragment : Fragment(),View.OnClickListener {
                         override fun run() {
                             if(postResponseCode == 200){
                                 Toast.makeText(activity, "Your request has been sent", Toast.LENGTH_LONG).show()
+                                view?.findViewById<EditText>(R.id.settingsPermissionsRequestComment)?.setText("Request has been sent!")
                             } else {
                                 Toast.makeText(activity, "Something went wrong! Try again!", Toast.LENGTH_LONG).show()
                             }
