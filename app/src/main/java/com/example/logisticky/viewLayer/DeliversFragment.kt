@@ -8,9 +8,11 @@ import android.widget.EditText
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.logisticky.ProductItem
-import com.example.logisticky.ProductsAdapter
-import com.example.logisticky.R
+import com.example.logisticky.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -29,6 +31,8 @@ class DeliversFragment : Fragment() {
     val displayList = ArrayList<ProductItem>()
     lateinit var recyclerView: RecyclerView
 
+    var token:String? = null
+
 
 
     // TODO: Rename and change types of parameters
@@ -41,6 +45,8 @@ class DeliversFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+        token = this.activity?.let { TokenManager.loadData(it) }
 
     }
 

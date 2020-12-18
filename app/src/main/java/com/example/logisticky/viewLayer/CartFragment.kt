@@ -3,15 +3,18 @@ package com.example.logisticky.viewLayer
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.widget.Button
+import android.widget.*
 import androidx.fragment.app.Fragment
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -30,6 +33,10 @@ class CartFragment : Fragment(), View.OnClickListener {
     var displayList = ArrayList<ProductItem2>()
     val itemsToRemoveList = ArrayList<ProductItem2>()
     lateinit var recyclerView: RecyclerView
+    var token:String? = null
+    lateinit var navController: NavController
+
+    var totalPrice: Float= 0.0F
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -43,7 +50,8 @@ class CartFragment : Fragment(), View.OnClickListener {
         }
 
         //Get list from database here
-        testList = generateDummyList(15) as ArrayList<ProductItem2>
+        testList = generateDummyList(1) as ArrayList<ProductItem2>
+        token = this.activity?.let { TokenManager.loadData(it) }
     }
 
     override fun onCreateView(
@@ -56,14 +64,33 @@ class CartFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        displayList = testList
+        navController = Navigation.findNavController(view)
 
-        recyclerView = view?.findViewById(R.id.cart_recycleView)
-        recyclerView?.adapter = ProductsAdapter2(displayList)
-        recyclerView?.layoutManager = LinearLayoutManager(activity)
-        recyclerView?.setHasFixedSize(true)
+        CoroutineScope(Dispatchers.IO).launch{
+
+            var dataFromAPI = async {
+                testList.clear()
+                token?.let { DeliverysHandler.getCartList(it) }
+                //token?.let { DeliverysHandler.addProductToCart(it,1,100) }
+
+            }.await()
+
+            println(dataFromAPI?.responseCode)
+
+            dataFromAPI?.cartProductsItemList?.forEach{
+                println("Debug: Product ${it.productName}, amount: ${it.amount},  ${it.warehouseName}")
+                val checkBox = CheckBox(activity)
+                testList.add(ProductItem2(it.productName, it.amount.toString(),checkBox))
+                totalPrice += it.price
+            }
+            updateUI()
+        }
+
+
+
 
         view.findViewById<Button>(R.id.cartRemoveSelectedButton).setOnClickListener(this)
+        view.findViewById<Button>(R.id.cartAddProductButton).setOnClickListener(this)
 
     }
 
@@ -73,8 +100,9 @@ class CartFragment : Fragment(), View.OnClickListener {
                 displayList.forEach {  if (it.isSelected) itemsToRemoveList.add(it) }
                 itemsToRemoveList.forEach{ displayList.remove(it)}
                 //TODO add removing items from database here
-                refreshFragment()
             }
+
+            R.id.cartAddProductButton -> navController.navigate(R.id.action_cartFragment_to_productsFragment)
         }
     }
 
@@ -164,4 +192,22 @@ class CartFragment : Fragment(), View.OnClickListener {
         ft.detach(this).attach(this).commit()
     }
 
+    private fun updateUI(){
+
+        activity?.runOnUiThread(object: Runnable {
+            override fun run() {
+                displayList = testList
+
+                recyclerView = view?.findViewById(R.id.cart_recycleView)!!
+                recyclerView?.adapter = ProductsAdapter2(displayList)
+                recyclerView?.layoutManager = LinearLayoutManager(activity)
+                recyclerView?.setHasFixedSize(true)
+
+                view!!.findViewById<TextView>(R.id.cartPriceText).text = String.format("%.2f", totalPrice )
+            }
+
+        })
+
+
+    }
 }

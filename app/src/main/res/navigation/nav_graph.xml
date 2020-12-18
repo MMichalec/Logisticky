@@ -114,7 +114,11 @@
     <fragment
         android:id="@+id/cartFragment"
         android:name="com.example.logisticky.viewLayer.CartFragment"
-        android:label="CartFragment" />
+        android:label="CartFragment" >
+        <action
+            android:id="@+id/action_cartFragment_to_productsFragment"
+            app:destination="@id/productsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/deliversFragment"
         android:name="com.example.logisticky.viewLayer.DeliversFragment"
