@@ -11,10 +11,12 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
+import com.google.gson.JsonObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -29,10 +31,10 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class CartFragment : Fragment(), View.OnClickListener {
-    var testList = ArrayList<ProductItem2>()
-    var displayList = ArrayList<ProductItem2>()
+    var testList = ArrayList<CartItem>()
+    var displayList = ArrayList<CartItem>()
     var cartItemsList = ArrayList<DeliverysHandler.CartProductItem>()
-    val itemsToRemoveList = ArrayList<ProductItem2>()
+    val itemsToRemoveList = ArrayList<CartItem>()
     lateinit var recyclerView: RecyclerView
     var token:String? = null
     lateinit var navController: NavController
@@ -77,13 +79,24 @@ class CartFragment : Fragment(), View.OnClickListener {
 
             }.await()
 
+
+
             println(dataFromAPI?.responseCode)
 
             cartItemsList = dataFromAPI!!.cartProductsItemList
             dataFromAPI?.cartProductsItemList?.forEach{
                 println("Debug: Product ${it.productName}, amount: ${it.amount}, ${it.warehouseName}")
                 val checkBox = CheckBox(activity)
-                testList.add(ProductItem2(it.productName, it.amount.toString(), it.reservationId.toString() ,checkBox))
+
+                var dataFromApi2 = async {
+                    getProductInfo(it.productId)
+                }.await()
+
+                val amount = dataFromApi2.getString("unit_number").toDouble() * it.amount
+                val unit = dataFromApi2.getString("unit_name")
+
+
+                testList.add(CartItem(it.productName, "W: ${it.warehouseName}", "Amount: ${it.amount} p. | $amount $unit,", it.reservationId, checkBox))
                 totalPrice += it.price
             }
             updateUI()
@@ -108,7 +121,7 @@ class CartFragment : Fragment(), View.OnClickListener {
                 cartItemsList.forEach{
                     for (i in 0 until itemsToRemoveList.size)
                     {
-                        if (it.reservationId == itemsToRemoveList[i].text3.toInt()) {
+                        if (it.reservationId == itemsToRemoveList[i].reservationId) {
                             totalPrice -= it.price
                             var idToDelete = it.reservationId
                             CoroutineScope(Dispatchers.IO).launch {
@@ -153,7 +166,7 @@ class CartFragment : Fragment(), View.OnClickListener {
                         val search = newText.toLowerCase(Locale.getDefault())
                         testList.forEach {
 
-                            if (it.text1.toLowerCase(Locale.getDefault()).contains(search)) {
+                            if (it.productName.toLowerCase(Locale.getDefault()).contains(search)) {
                                 displayList.add(it)
                             }
                         }
@@ -213,15 +226,25 @@ class CartFragment : Fragment(), View.OnClickListener {
                 displayList = testList
 
                 recyclerView = view?.findViewById(R.id.cart_recycleView)!!
-                recyclerView?.adapter = ProductsAdapter2(displayList)
+                recyclerView?.adapter = ProductsAdapter3(displayList)
                 recyclerView?.layoutManager = LinearLayoutManager(activity)
                 recyclerView?.setHasFixedSize(true)
 
-                view!!.findViewById<TextView>(R.id.cartPriceText).text = String.format("%.2f", totalPrice )
+                view!!.findViewById<TextView>(R.id.cartPriceText).text = "${String.format("%.2f", totalPrice )} PLN"
             }
 
         })
 
 
     }
-}
+
+    private fun getProductInfo(productId:Int): JSONObject {
+        lateinit var dataJsonProduct:JSONObject
+            val dataFromAPI = token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(it,productId) }
+                dataJsonProduct = dataFromAPI!!.jsonProductObject
+            return dataJsonProduct
+        }
+
+
+
+    }

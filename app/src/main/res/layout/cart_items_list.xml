@@ -12,7 +12,7 @@
         <TextView
             android:id="@+id/text_view_list1"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:gravity="left|center"
 
             android:text="Test item1"
@@ -20,24 +20,37 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/text_view_list3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center"
+            android:layout_below="@id/text_view_list1"
+            android:text="3631 m2 | 12 p."
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            />
+
 
         <TextView
             android:id="@+id/text_view_list2"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_toRightOf="@id/text_view_list1"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:layout_toRightOf="@id/text_view_list3"
+            android:layout_below="@id/text_view_list1"
             android:gravity="center"
-            android:text="LB"
-            android:padding="10dp"
-            android:textColor="@color/black"
-            android:textSize="18sp" />
 
+            android:text="LB"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
 
         <CheckBox
             android:id="@+id/productCheckBox"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="wrap_content"
             android:layout_alignParentRight="true"
+            android:layout_height="50dp"
+            android:layout_toRightOf="@id/text_view_list2"
             android:button="@null"
             android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
             android:gravity="center"

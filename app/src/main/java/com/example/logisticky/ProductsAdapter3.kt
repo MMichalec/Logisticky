@@ -1,7 +1,5 @@
 package com.example.logisticky
 
-
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,38 +9,36 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
-
-class ProductsAdapter2(private var exampleList: List<ProductItem2>):
-    RecyclerView.Adapter<ProductsAdapter2.ProductsViewHolder2>() {
-    private val items = ArrayList<ProductItem2>()
-
-
+class ProductsAdapter3(private var exampleList: List<CartItem>):
+    RecyclerView.Adapter<ProductsAdapter3.ProductsViewHolder3>()  {
 
     //Represents a single row in list
-    class ProductsViewHolder2(itemView: View):RecyclerView.ViewHolder(itemView){
+    class ProductsViewHolder3(itemView: View):RecyclerView.ViewHolder(itemView){
         val textView1: TextView = itemView.findViewById(R.id.text_view_list1)
         val textView2: TextView = itemView.findViewById(R.id.text_view_list2)
+        val textView3: TextView = itemView.findViewById(R.id.text_view_list3)
         var checkBox: CheckBox = itemView.findViewById(R.id.productCheckBox)
 
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsViewHolder2 {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsViewHolder3 {
         val itemView = LayoutInflater.from(parent.context).inflate(
-            R.layout.product_list_item2,
+            R.layout.cart_items_list,
             parent,
             false
         )
 
 
 
-        return ProductsViewHolder2(itemView)
+        return ProductsViewHolder3(itemView)
     }
 
-    override fun onBindViewHolder(holder: ProductsViewHolder2, position: Int) {
+    override fun onBindViewHolder(holder: ProductsViewHolder3, position: Int) {
         val currentItem = exampleList.get(position)
 
-        holder.textView1.text = currentItem.text1
-        holder.textView2.text = currentItem.text2
+        holder.textView1.text = currentItem.productName
+        holder.textView2.text = currentItem.magazineName
+        holder.textView3.text = currentItem.packageAmount
 
 
 
@@ -52,8 +48,8 @@ class ProductsAdapter2(private var exampleList: List<ProductItem2>):
 
         holder.checkBox.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                Toast.makeText(holder.itemView.context, currentItem.text1, Toast.LENGTH_LONG).show()
-                    currentItem.isSelected= true
+                Toast.makeText(holder.itemView.context, currentItem.productName, Toast.LENGTH_LONG).show()
+                currentItem.isSelected= true
             }
         })
 
@@ -68,5 +64,6 @@ class ProductsAdapter2(private var exampleList: List<ProductItem2>):
 
     override fun getItemCount() = exampleList.size
 
-
 }
+
+
