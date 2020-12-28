@@ -226,7 +226,7 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
                         testData = dataFromAPI
                         dataWarehouses = dataFromAPI.warehouses
                         dataJsonProduct = dataFromAPI.jsonProductObject
-                        updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
+                        //updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
                     }
 
                 }

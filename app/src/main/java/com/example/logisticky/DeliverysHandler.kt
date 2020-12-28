@@ -93,6 +93,24 @@ class DeliverysHandler {
 
         }
 
+        fun removeProductFromCart(token: String, id:Int): Int{
+            println("Attempting to Fetch JSON")
+
+            val url = "https://dystproapi.azurewebsites.net/reservations/$id"
+
+            val client = OkHttpClient()
+
+
+            val newRequest = Request.Builder().header("x-access-token", token).url(url).delete().build()
+
+            val response = client.newCall(newRequest).execute()
+            println("Debug: ${response.code()}")
+            println("Debug: ${response.body()}")
+            println("Debug: ${response.message()}")
+
+            return response.code()
+        }
+
 
     }
 

@@ -31,6 +31,7 @@ private const val ARG_PARAM2 = "param2"
 class CartFragment : Fragment(), View.OnClickListener {
     var testList = ArrayList<ProductItem2>()
     var displayList = ArrayList<ProductItem2>()
+    var cartItemsList = ArrayList<DeliverysHandler.CartProductItem>()
     val itemsToRemoveList = ArrayList<ProductItem2>()
     lateinit var recyclerView: RecyclerView
     var token:String? = null
@@ -50,7 +51,7 @@ class CartFragment : Fragment(), View.OnClickListener {
         }
 
         //Get list from database here
-        testList = generateDummyList(1) as ArrayList<ProductItem2>
+
         token = this.activity?.let { TokenManager.loadData(it) }
     }
 
@@ -59,7 +60,9 @@ class CartFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        totalPrice = 0.0F
         return inflater.inflate(R.layout.fragment_cart, container, false)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,16 +74,16 @@ class CartFragment : Fragment(), View.OnClickListener {
             var dataFromAPI = async {
                 testList.clear()
                 token?.let { DeliverysHandler.getCartList(it) }
-                //token?.let { DeliverysHandler.addProductToCart(it,1,100) }
 
             }.await()
 
             println(dataFromAPI?.responseCode)
 
+            cartItemsList = dataFromAPI!!.cartProductsItemList
             dataFromAPI?.cartProductsItemList?.forEach{
-                println("Debug: Product ${it.productName}, amount: ${it.amount},  ${it.warehouseName}")
+                println("Debug: Product ${it.productName}, amount: ${it.amount}, ${it.warehouseName}")
                 val checkBox = CheckBox(activity)
-                testList.add(ProductItem2(it.productName, it.amount.toString(),checkBox))
+                testList.add(ProductItem2(it.productName, it.amount.toString(), it.reservationId.toString() ,checkBox))
                 totalPrice += it.price
             }
             updateUI()
@@ -96,10 +99,31 @@ class CartFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v!!.id){
+
             R.id.cartRemoveSelectedButton -> {
-                displayList.forEach {  if (it.isSelected) itemsToRemoveList.add(it) }
-                itemsToRemoveList.forEach{ displayList.remove(it)}
+                displayList.forEach { if (it.isSelected) itemsToRemoveList.add(it) }
+                itemsToRemoveList.forEach { displayList.remove(it) }
                 //TODO add removing items from database here
+
+                cartItemsList.forEach{
+                    for (i in 0 until itemsToRemoveList.size)
+                    {
+                        if (it.reservationId == itemsToRemoveList[i].text3.toInt()) {
+                            totalPrice -= it.price
+                            var idToDelete = it.reservationId
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val dataFromApi2 = async {
+                                    token?.let { DeliverysHandler.removeProductFromCart(it, idToDelete) }
+
+                                }.await()
+                                println("Debug: Cart Item deleted code: $dataFromApi2")
+
+                            }
+
+                        }
+                    }
+                }
+                updateUI()
             }
 
             R.id.cartAddProductButton -> navController.navigate(R.id.action_cartFragment_to_productsFragment)
@@ -173,16 +197,6 @@ class CartFragment : Fragment(), View.OnClickListener {
             }
     }
 
-    private fun generateDummyList(size: Int): List<ProductItem2>{
-        val list = ArrayList<ProductItem2>()
-
-        val checkBox = CheckBox(activity)
-        for (i in 0 until size){
-            val item = ProductItem2("Item $i","Amount $i", checkBox)
-            list +=item
-        }
-        return list
-    }
 
     fun refreshFragment(){
         val ft = requireFragmentManager().beginTransaction()

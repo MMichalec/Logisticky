@@ -2,23 +2,30 @@ package com.example.logisticky
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
+import java.io.IOException
 
 class TokenManager {
 
-    class AuthMe(val responseCode:Int, val roles: ArrayList<String>?)
+    class AuthMe(val responseCode: Int, val roles: ArrayList<String>?)
 
     companion object {
 
 
         //TODO I think save data should be privet LoginFragment function not public avaible from handler
         fun saveData(activity: FragmentActivity, data: String?){
-            val sharedPreferences: SharedPreferences = activity.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+            val sharedPreferences: SharedPreferences = activity.getSharedPreferences(
+                "sharedPrefs",
+                Context.MODE_PRIVATE
+            )
             val editor = sharedPreferences.edit()
 
             editor.apply(){
@@ -27,9 +34,12 @@ class TokenManager {
         }
 
         fun loadData(activity: FragmentActivity):String? {
-            val sharedPreferences: SharedPreferences? = activity.getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE)
+            val sharedPreferences: SharedPreferences? = activity.getSharedPreferences(
+                "sharedPrefs",
+                Context.MODE_PRIVATE
+            )
 
-            val savedString = sharedPreferences?.getString("STRING_KEY",null)
+            val savedString = sharedPreferences?.getString("STRING_KEY", null)
 
             return savedString
         }
@@ -63,7 +73,7 @@ class TokenManager {
             return response.code()
         }
 
-        fun getPermissions(token:String):AuthMe{
+        fun getPermissions(token: String):AuthMe{
             var responseCode = 0
             var roles = ArrayList<String>()
 
@@ -118,7 +128,25 @@ class TokenManager {
             return response.code()
         }
 
-
+        fun isOnline(context: Context): Boolean {
+            val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                    return true
+                }
+            }
+            return false
+        }
 
     }
 }

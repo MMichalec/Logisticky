@@ -22,6 +22,7 @@ class ProductsAdapter2(private var exampleList: List<ProductItem2>):
     class ProductsViewHolder2(itemView: View):RecyclerView.ViewHolder(itemView){
         val textView1: TextView = itemView.findViewById(R.id.text_view_list1)
         val textView2: TextView = itemView.findViewById(R.id.text_view_list2)
+        val textView3: TextView = itemView.findViewById(R.id.text_view_list3)
         var checkBox: CheckBox = itemView.findViewById(R.id.productCheckBox)
 
     }
@@ -43,6 +44,7 @@ class ProductsAdapter2(private var exampleList: List<ProductItem2>):
 
         holder.textView1.text = currentItem.text1
         holder.textView2.text = currentItem.text2
+        holder.textView3.text = currentItem.text3
 
 
 

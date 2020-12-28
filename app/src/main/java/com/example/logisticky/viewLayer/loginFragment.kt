@@ -65,11 +65,16 @@ class loginFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        navController = Navigation.findNavController(view)
+        if (context?.let { TokenManager.isOnline(it) }!!) {
 
-        view.findViewById<Button>(R.id.logInButton).setOnClickListener(this)
-        view.findViewById<Button>(R.id.registerButton).setOnClickListener(this)
+            navController = Navigation.findNavController(view)
+
+            view.findViewById<Button>(R.id.logInButton).setOnClickListener(this)
+            view.findViewById<Button>(R.id.registerButton).setOnClickListener(this)
+
+        } else println("Debug: Check your network connection!")
     }
+
 
     override fun onClick(v: View?) {
 
@@ -79,8 +84,8 @@ class loginFragment : Fragment(), View.OnClickListener {
                 val id = view?.findViewById<EditText>(R.id.editTextTextPersonName)?.text.toString()
                 val pw = view?.findViewById<EditText>(R.id.editTextTextPassword)?.text.toString()
 
-                CoroutineScope(IO).launch {
 
+                CoroutineScope(IO).launch {
                     val executionTime = measureTimeMillis {
                         val communicationToServerStatus = async {
 

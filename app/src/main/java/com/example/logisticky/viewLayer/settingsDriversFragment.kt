@@ -97,11 +97,9 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
             R.id.settingsRemoveDriverButton -> {
 
                 displayList.forEach {  if (it.isSelected) itemsToRemoveList.add(it) }
-
                 driverListFromAPI.forEach{
 
                     for (i in 0 until itemsToRemoveList.size){
-
                         if (it.name == itemsToRemoveList[i].name && it.surname == itemsToRemoveList[i].surname){
                             var idToDelete = it.driver_id
                             CoroutineScope(Dispatchers.IO).launch {
