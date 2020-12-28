@@ -5,6 +5,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +29,7 @@ private const val ARG_PARAM2 = "param2"
  */
 class DeliversFragment : Fragment() {
     var testList = ArrayList<ProductItem>()
-    val displayList = ArrayList<ProductItem>()
+    var displayList = ArrayList<ProductItem>()
     lateinit var recyclerView: RecyclerView
 
     var token:String? = null
@@ -81,13 +82,23 @@ class DeliversFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        testList = generateDummyList(15) as ArrayList<ProductItem>;
-        displayList.addAll(testList)
+        CoroutineScope(Dispatchers.IO).launch {
+            val dataFromApi2 = async {
+                testList.clear()
+                token?.let { DeliverysHandler.getAllDeliverys(it) }
 
-        recyclerView = view?.findViewById(R.id.delivers_recycleView)
-        recyclerView?.adapter = ProductsAdapter(displayList)
-        recyclerView?.layoutManager = LinearLayoutManager(activity)
-        recyclerView?.setHasFixedSize(true)
+            }.await()
+            println("Debug: Make Delivery code: $dataFromApi2")
+            dataFromApi2?.deliverysList?.forEach{
+
+                testList.add(ProductItem(it.deliveryId.toString(), 0))
+                updateUI()
+
+            }
+        }
+
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -150,5 +161,24 @@ class DeliversFragment : Fragment() {
             list +=item
         }
         return list
+    }
+
+    private fun updateUI(){
+        activity?.runOnUiThread(object: Runnable {
+            override fun run() {
+                displayList = testList
+
+                recyclerView = view!!.findViewById(R.id.delivers_recycleView)
+                recyclerView?.adapter = ProductsAdapter(displayList)
+                recyclerView?.layoutManager = LinearLayoutManager(activity)
+                recyclerView?.setHasFixedSize(true)
+
+            }
+
+        })
+
+
+
+
     }
 }

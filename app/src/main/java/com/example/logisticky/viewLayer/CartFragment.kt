@@ -12,11 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
 import com.google.gson.JsonObject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.json.JSONObject
+import java.lang.Runnable
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -107,26 +105,31 @@ class CartFragment : Fragment(), View.OnClickListener {
 
         view.findViewById<Button>(R.id.cartRemoveSelectedButton).setOnClickListener(this)
         view.findViewById<Button>(R.id.cartAddProductButton).setOnClickListener(this)
+        view.findViewById<Button>(R.id.cartMakeDeliveryButton).setOnClickListener(this)
 
     }
 
     override fun onClick(v: View?) {
-        when(v!!.id){
+        when (v!!.id) {
 
             R.id.cartRemoveSelectedButton -> {
                 displayList.forEach { if (it.isSelected) itemsToRemoveList.add(it) }
                 itemsToRemoveList.forEach { displayList.remove(it) }
                 //TODO add removing items from database here
 
-                cartItemsList.forEach{
-                    for (i in 0 until itemsToRemoveList.size)
-                    {
+                cartItemsList.forEach {
+                    for (i in 0 until itemsToRemoveList.size) {
                         if (it.reservationId == itemsToRemoveList[i].reservationId) {
                             totalPrice -= it.price
                             var idToDelete = it.reservationId
                             CoroutineScope(Dispatchers.IO).launch {
                                 val dataFromApi2 = async {
-                                    token?.let { DeliverysHandler.removeProductFromCart(it, idToDelete) }
+                                    token?.let {
+                                        DeliverysHandler.removeProductFromCart(
+                                            it,
+                                            idToDelete
+                                        )
+                                    }
 
                                 }.await()
                                 println("Debug: Cart Item deleted code: $dataFromApi2")
@@ -140,6 +143,19 @@ class CartFragment : Fragment(), View.OnClickListener {
             }
 
             R.id.cartAddProductButton -> navController.navigate(R.id.action_cartFragment_to_productsFragment)
+
+            R.id.cartMakeDeliveryButton -> {
+                var reservationList = ArrayList<Int>()
+                reservationList.add(1033)
+                reservationList.add(1034)
+                CoroutineScope(Dispatchers.IO).launch {
+                    val dataFromApi2 = async {
+                        token?.let { DeliverysHandler.addDelivery(it, 909, 250, reservationList) }
+
+                    }.await()
+                    println("Debug: Make Delivery code: $dataFromApi2")
+                }
+            }
         }
     }
 
