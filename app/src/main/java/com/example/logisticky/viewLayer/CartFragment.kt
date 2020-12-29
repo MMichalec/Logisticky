@@ -1,6 +1,5 @@
 package com.example.logisticky.viewLayer
 
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.*
@@ -12,7 +11,6 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
-import com.google.gson.JsonObject
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.lang.Runnable
@@ -146,7 +144,9 @@ class CartFragment : Fragment(), View.OnClickListener {
             R.id.cartAddProductButton -> navController.navigate(R.id.action_cartFragment_to_productsFragment)
 
             R.id.cartMakeDeliveryButton -> {
+
                 var reservationList = ArrayList<Int>()
+                reservationList.clear()
                 displayList.forEach {
                     if (it.isSelected)
                     {
@@ -156,22 +156,22 @@ class CartFragment : Fragment(), View.OnClickListener {
 
                 }
 
-
                 //TODO display something if user did not check a signle item
 
                 val delIdString = "127"
-                CoroutineScope(Dispatchers.IO).launch {
-                    val dataFromApi2 = async {
-                        token?.let { DeliverysHandler.addDelivery(it, 909, 250, reservationList) }
-
-                    }.await()
-                    println("Debug: Make Delivery code: $dataFromApi2")
-                    //updateUI()
-                }
+//                CoroutineScope(Dispatchers.IO).launch {
+//                    val dataFromApi2 = async {
+//                        token?.let { DeliverysHandler.addDelivery(it, 909, 250, reservationList) }
+//
+//                    }.await()
+//                    println("Debug: Make Delivery code: $dataFromApi2")
+//                    //updateUI()
+//                }
 
 
                 val bundle = bundleOf("deliveryId" to delIdString)
-                navController.navigate(R.id.action_cartFragment_to_deliveryInfoFragment, bundle)
+                bundle.putIntegerArrayList("reservationsIdList", reservationList)
+                navController.navigate(R.id.action_cartFragment_to_makeDeliveryFragment, bundle)
             }
 
         }

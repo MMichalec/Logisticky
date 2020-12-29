@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/productsFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".viewLayer.ProductsFragment">
+
+<!--    <TextView-->
+<!--        android:id="@+id/deliveryId"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:paddingTop="5dp"-->
+<!--        android:textSize="24dp"-->
+<!--        android:text="TextView" />-->
+
+<!--    <EditText-->
+<!--        android:gravity="center"-->
+<!--        android:id="@+id/deliveryDatePicker"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_below="@id/deliveryMagazinePicker"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:ems="10"-->
+<!--        android:inputType="date"-->
+<!--        android:focusable="false"-->
+<!--        android:clickable="true"-->
+<!--        android:editable="false"/>-->
+
+<!--    <Spinner-->
+<!--        android:gravity="center"-->
+<!--        android:id="@+id/deliveryDriverPicker"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:spinnerMode="dropdown"-->
+<!--        android:layout_below="@id/deliveryDatePicker"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.606"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.219"-->
+<!--        />-->
+
+<!--    <Spinner-->
+<!--        android:gravity="center"-->
+<!--        android:id="@+id/deliveryVehiclePicker"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:spinnerMode="dropdown"-->
+<!--        android:layout_below="@id/deliveryDriverPicker"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.606"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="0.219"-->
+<!--        />-->
+
+<!--    <TextView-->
+<!--        android:gravity="center"-->
+<!--        android:id="@+id/deliveryMagazinePicker"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="10dp"-->
+<!--        android:textColor="@color/black"-->
+<!--        android:text="ELO ELO"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.606"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        android:layout_below="@id/deliveryId"-->
+<!--        app:layout_constraintVertical_bias="0.219" />-->
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:background="@color/hint"-->
+<!--        android:id="@+id/delivery_recycleView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="200dp"-->
+<!--        android:layout_margin="5dp"-->
+<!--        android:scrollbarAlwaysDrawVerticalTrack="true"-->
+<!--        android:layout_below="@id/deliveryVehiclePicker"-->
+<!--        android:clipToPadding="false"-->
+<!--        android:padding="10dp"-->
+<!--        tools:listitem="@layout/product_list_item">-->
+
+<!--    </androidx.recyclerview.widget.RecyclerView>-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/deliveryAmountText"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@id/delivery_recycleView"-->
+<!--        android:layout_margin="20dp"-->
+<!--        android:background="@drawable/rounded_textview"-->
+<!--        android:gravity="center"-->
+<!--        android:padding="10dp"-->
+<!--        android:text="1273.20 PLN"-->
+<!--        android:textColor="@color/white"-->
+<!--        android:textSize="30sp" />-->
+
+<!--    &lt;!&ndash;    <Button&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:id="@+id/deliveryAddProductButton"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:layout_width="185dp"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:layout_height="80dp"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:layout_below="@id/deliveryAmountText"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:layout_alignParentLeft="true"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:layout_marginStart="10dp"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:layout_marginTop="10dp"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:layout_marginEnd="10dp"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:layout_marginBottom="10dp"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:gravity="center"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:text="Add product"&ndash;&gt;-->
+<!--    &lt;!&ndash;        android:backgroundTint="@color/mainTile"&ndash;&gt;-->
+<!--    &lt;!&ndash;        />&ndash;&gt;-->
+
+<!--    <Button-->
+<!--        android:id="@+id/deliveryEditButton"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="80dp"-->
+<!--        android:layout_below="@id/deliveryAmountText"-->
+
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        android:layout_marginTop="10dp"-->
+
+<!--        android:layout_marginEnd="10dp"-->
+<!--        android:layout_marginBottom="10dp"-->
+<!--        android:gravity="center"-->
+<!--        android:backgroundTint="@color/mainTile"-->
+<!--        android:text="Edit"-->
+<!--        />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/deliveryAddProduct"-->
+<!--        android:layout_width="120dp"-->
+<!--        android:layout_height="80dp"-->
+<!--        android:layout_below="@id/deliveryAmountText"-->
+
+<!--        android:layout_alignParentLeft="true"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        android:layout_marginTop="10dp"-->
+
+<!--        android:layout_marginEnd="10dp"-->
+<!--        android:layout_marginBottom="10dp"-->
+<!--        android:gravity="center"-->
+<!--        android:backgroundTint="@color/mainTile"-->
+<!--        android:text="Add Product"-->
+<!--        android:visibility="gone"/>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/deliveryCancel"-->
+<!--        android:layout_width="120dp"-->
+<!--        android:layout_height="80dp"-->
+<!--        android:layout_below="@id/deliveryAmountText"-->
+
+<!--        android:layout_alignParentRight="true"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        android:layout_marginTop="10dp"-->
+
+<!--        android:layout_marginEnd="10dp"-->
+<!--        android:layout_marginBottom="10dp"-->
+<!--        android:gravity="center"-->
+<!--        android:backgroundTint="#b33939"-->
+<!--        android:text="Cancel delivery"-->
+<!--        android:visibility="gone"/>-->
+
+<!--    <Button-->
+<!--        android:id="@+id/deliverySaveEdit"-->
+<!--        android:layout_width="120dp"-->
+<!--        android:layout_height="80dp"-->
+<!--        android:layout_below="@id/deliveryAmountText"-->
+<!--        android:layout_marginStart="10dp"-->
+<!--        android:layout_marginTop="10dp"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_marginEnd="10dp"-->
+<!--        android:layout_marginBottom="10dp"-->
+<!--        android:gravity="center"-->
+<!--        android:backgroundTint="#36a353"-->
+<!--        android:text="Save Changes"-->
+<!--        android:visibility="gone"/>-->
+
+
+</RelativeLayout>

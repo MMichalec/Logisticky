@@ -2,10 +2,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
+    android:id="@+id/productsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".viewLayer.ProductsFragment">
+
+    <TextView
+        android:id="@+id/deliveryMagazinePicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/deliveryId"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text="ELO ELO"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.606"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.219" />
 
     <TextView
         android:id="@+id/deliveryId"
@@ -44,7 +62,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.219"
-         />
+
+        />
 
     <Spinner
         android:gravity="center"
@@ -61,21 +80,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.219"
         />
-
-    <TextView
-        android:gravity="center"
-        android:id="@+id/deliveryMagazinePicker"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textColor="@color/black"
-        android:text="ELO ELO"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.606"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_below="@id/deliveryId"
-        app:layout_constraintVertical_bias="0.219" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:background="@color/hint"
@@ -104,58 +108,9 @@
         android:textColor="@color/white"
         android:textSize="30sp" />
 
-<!--    <Button-->
-<!--        android:id="@+id/deliveryAddProductButton"-->
-<!--        android:layout_width="185dp"-->
-<!--        android:layout_height="80dp"-->
-<!--        android:layout_below="@id/deliveryAmountText"-->
-<!--        android:layout_alignParentLeft="true"-->
-<!--        android:layout_marginStart="10dp"-->
-<!--        android:layout_marginTop="10dp"-->
-<!--        android:layout_marginEnd="10dp"-->
-<!--        android:layout_marginBottom="10dp"-->
-<!--        android:gravity="center"-->
-<!--        android:text="Add product"-->
-<!--        android:backgroundTint="@color/mainTile"-->
-<!--        />-->
-
-    <Button
-        android:id="@+id/deliveryEditButton"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_below="@id/deliveryAmountText"
-
-        android:layout_alignParentRight="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center"
-        android:backgroundTint="@color/mainTile"
-        android:text="Edit"
-        />
-
-    <Button
-        android:id="@+id/deliveryAddProduct"
-        android:layout_width="120dp"
-        android:layout_height="80dp"
-        android:layout_below="@id/deliveryAmountText"
-
-        android:layout_alignParentLeft="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center"
-        android:backgroundTint="@color/mainTile"
-        android:text="Add Product"
-        android:visibility="gone"/>
-
     <Button
         android:id="@+id/deliveryCancel"
-        android:layout_width="120dp"
+        android:layout_width="190dp"
         android:layout_height="80dp"
         android:layout_below="@id/deliveryAmountText"
 
@@ -167,12 +122,13 @@
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:backgroundTint="#b33939"
-        android:text="Cancel delivery"
-        android:visibility="gone"/>
+        android:text="Cancel"
+        />
 
     <Button
-        android:id="@+id/deliverySaveEdit"
-        android:layout_width="120dp"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/deliveryCreate"
+        android:layout_width="190dp"
         android:layout_height="80dp"
         android:layout_below="@id/deliveryAmountText"
         android:layout_marginStart="10dp"
@@ -182,8 +138,8 @@
         android:layout_marginBottom="10dp"
         android:gravity="center"
         android:backgroundTint="#36a353"
-        android:text="Save Changes"
-        android:visibility="gone"/>
+        android:text="Create delivery"
+        />
 
 
 </RelativeLayout>

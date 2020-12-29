@@ -7,6 +7,7 @@ import android.widget.CheckBox
 import android.widget.CompoundButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 
 class ProductsAdapter3(private var exampleList: List<CartItem>):
@@ -18,6 +19,7 @@ class ProductsAdapter3(private var exampleList: List<CartItem>):
         val textView2: TextView = itemView.findViewById(R.id.text_view_list2)
         val textView3: TextView = itemView.findViewById(R.id.text_view_list3)
         var checkBox: CheckBox = itemView.findViewById(R.id.productCheckBox)
+
 
     }
 
@@ -41,6 +43,13 @@ class ProductsAdapter3(private var exampleList: List<CartItem>):
         holder.textView3.text = currentItem.packageAmount
 
 
+        if(!currentItem.isVisible){
+            holder.checkBox.visibility = View.GONE
+        }
+
+
+
+
 
         //Making recyclerView remember checkboxes without multiplicating them
         holder.checkBox.setOnCheckedChangeListener(null)
@@ -52,6 +61,10 @@ class ProductsAdapter3(private var exampleList: List<CartItem>):
                 currentItem.isSelected= true
             }
         })
+
+
+
+
 
 
 

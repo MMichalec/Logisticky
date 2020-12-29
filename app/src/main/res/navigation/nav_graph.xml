@@ -121,8 +121,8 @@
             android:id="@+id/action_cartFragment_to_productsFragment"
             app:destination="@id/productsFragment" />
         <action
-            android:id="@+id/action_cartFragment_to_deliveryInfoFragment"
-            app:destination="@id/deliveryInfoFragment" />
+            android:id="@+id/action_cartFragment_to_makeDeliveryFragment"
+            app:destination="@id/makeDeliveryFragment" />
     </fragment>
     <fragment
         android:id="@+id/deliversFragment"
@@ -173,4 +173,8 @@
         android:id="@+id/settingsVehiclesFragment"
         android:name="com.example.logisticky.viewLayer.SettingsVehiclesFragment"
         android:label="SettingsVehiclesFragment" />
+    <fragment
+        android:id="@+id/makeDeliveryFragment"
+        android:name="com.example.logisticky.viewLayer.MakeDeliveryFragment"
+        android:label="MakeDeliveryFragment" />
 </navigation>
