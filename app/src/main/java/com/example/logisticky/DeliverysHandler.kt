@@ -16,6 +16,8 @@ class DeliverysHandler {
     data class CartProductItem (var reservationId:Int, val productWarehouseId: Int, val productId: Int, val amount: Int, val price:Float, val productName:String, var warehouseName:String )
     data class DeliverysData (var deliveryId:Int, var state:String, var date:String, var pickupDate:String)
     data class DeliverysFragmentBundle (var responseCode:Int, var deliverysList: ArrayList<DeliverysData>)
+    data class DeliveryProduct (val name:String, val amount:Int, val price: Float)
+    data class DeliveryInfoFragmentBundle (val driverName:String, val driverSurname:String, val vehiclePlateNumber: String, var  productsList: ArrayList<DeliveryProduct>)
 
     companion object {
         fun getCartList (token:String):CartFragmentBundle {
@@ -145,9 +147,16 @@ class DeliverysHandler {
             val newRequest = Request.Builder().header("x-access-token", token).url(url).post(body).build()
 
             val response = client.newCall(newRequest).execute()
-            println("Debug: ${response.code()}")
-            println("Debug: ${response.body()}")
+            println("Debug:  ${response.code()}")
+            println("Debug: Check me out here ${response.body().toString()}")
             println("Debug: ${response.message()}")
+
+
+//            val json = JSONObject ("${response.body().toString()}")
+//            val dispatchObject = json.getJSONObject("dispatch")
+//            val dispatchId = dispatchObject.getString("dispatch_id")
+
+
 
             return response.code()
         }
@@ -191,9 +200,73 @@ class DeliverysHandler {
             return bundle
         }
 
+        fun getDeliveryInfo(token: String, deliveryId: Int): DeliveryInfoFragmentBundle{
+            val url = "https://dystproapi.azurewebsites.net/dispatches/$deliveryId"
+            val client = OkHttpClient()
+
+
+            val request = Request.Builder().header("x-access-token", token).url(url).build()
+            println("Debug: token in fetchJson $token")
+
+            val response = client.newCall(request).execute()
+
+
+            val body = response.body()?.string()
+            println("Debug: $body")
+
+
+            val dataFromJson = JSONObject(body)
+            val json = dataFromJson.getJSONObject("dispatch")
+            var jsonArray_productsList = json.getJSONArray("dispatched_products")
+
+            val deliverysList = ArrayList<DeliveryProduct>()
+
+            for (i in 0 until jsonArray_productsList.length()) {
+
+                val deliveryObject = jsonArray_productsList.getJSONObject(i)
+                deliverysList.add(
+                    DeliveryProduct(
+                        deliveryObject.getString("name"),
+                        deliveryObject.getString("amount").toInt(),
+                        deliveryObject.getString("price").toFloat()
+
+                    )
+                )
+            }
+
+            //var deliverysList = ArrayList<DeliveryProduct>()
+
+            val jsonDriver = json.getJSONObject("driver")
+            val jsonDriverName = jsonDriver.getString("name")
+            val jsonDriverSurname = jsonDriver.getString("surname")
+
+            val jsonVehicle = json.getJSONObject("vehicle")
+            val jsonVehiclePlateNumber = jsonVehicle.getString("registration_number")
+
+            var bundle = DeliveryInfoFragmentBundle (jsonDriverName, jsonDriverSurname, jsonVehiclePlateNumber, deliverysList)
+            return bundle;
+        }
+
+        fun deleteDelivery(token: String, id:Int): Int{
+            println("Attempting to Fetch JSON")
+
+            val url = "https://dystproapi.azurewebsites.net/dispatches/$id"
+
+            val client = OkHttpClient()
+
+            val newRequest = Request.Builder().header("x-access-token", token).url(url).delete().build()
+
+            val response = client.newCall(newRequest).execute()
+            //communicationToServerStatus= response.code()
+            println("Debug: ${response.code()}")
+
+            return response.code()
+        }
+
+        }
 
 
         }
 
-    }
+
 

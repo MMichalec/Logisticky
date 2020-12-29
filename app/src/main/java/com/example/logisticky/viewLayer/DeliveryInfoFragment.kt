@@ -9,11 +9,14 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.logisticky.*
 
-import com.example.logisticky.ProductItem
-import com.example.logisticky.ProductsAdapter
-import com.example.logisticky.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 // TODO: Change recycler view when in edit mode (with button mode), implement proper date picker (with dialog pop-up)
@@ -32,8 +35,12 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
     var isViewMode = true;
     var testList = ArrayList<ProductItem>()
     lateinit var recyclerView: RecyclerView
+    var token:String? = null
+    lateinit var currentDriver:String
+    lateinit var currentVehicle:String
+
     lateinit var spinnerDrivers:Spinner
-    lateinit var spinnerMagazines:Spinner
+//    lateinit var spinnerMagazines:Spinner
     lateinit var spinnerVehicles:Spinner
 
     var day = 0
@@ -47,13 +54,14 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
     //Had to initialize multiple variables because if I used one there were weird interactions when clicking spinner (visualy showed as all spinners clicked at once)
     lateinit var driverSpinnerBackground:Drawable
     lateinit var vehicleSpinnerBackground:Drawable
-    lateinit var magazineSpinnerBackground:Drawable
+    //lateinit var magazineSpinnerBackground:Drawable
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
     lateinit var deliveryId:String
+    lateinit var warehouseName:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +70,11 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
             param2 = it.getString(ARG_PARAM2)
         }
 
+        token = this.activity?.let { TokenManager.loadData(it) }
         deliveryId = requireArguments().getString("deliveryId").toString()
+
+         //TODO: Get warehouse from dispatch
+        //warehouseName = requireArguments().getString("warehouseName").toString()
 
     }
 
@@ -82,86 +94,28 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
         super.onViewCreated(view, savedInstanceState)
         pickDate()
 
+        CoroutineScope(Dispatchers.IO).launch {
+            val dataFromApi2 = async {
+                testList.clear()
+                token?.let { DeliverysHandler.getDeliveryInfo(it, deliveryId.toInt()) }
 
-        view.findViewById<TextView>(R.id.deliveryId)?.text =deliveryId
-        view.findViewById<TextView>(R.id.deliveryDatePicker)?.text = "TU BEDZIE DATA ZAMOWIENIA!"
-
-        //Disabled in view-only mode. Will be enabled in edit mode
-        view.findViewById<TextView>(R.id.deliveryDatePicker).isEnabled=false
-
-        //get magazines from databases to this array VV
-        val magazinesList: MutableList<String> = ArrayList()
-
-        //PLACEHOLDERS
-        magazinesList.add("LODZ")
-        magazinesList.add("WARSAW")
-        //PLACEHOLDERS
-
-        val magazinesAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            view.context, R.layout.support_simple_spinner_dropdown_item, magazinesList
-        )
-        magazinesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-        spinnerMagazines = view.findViewById(R.id.deliveryMagazinePicker) as Spinner
-        spinnerMagazines.adapter = magazinesAdapter
-
-
-        //get drivers from databases to this array VV
-        val driversList: MutableList<String> = ArrayList()
-
-        //PLACEHOLDERS
-        driversList.add("Adam")
-        driversList.add("Jacek")
-        //PLACEHOLDERS
-
-        val driversAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            view.context, R.layout.support_simple_spinner_dropdown_item, driversList
-        )
-        driversAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-        spinnerDrivers = view.findViewById(R.id.deliveryDriverPicker) as Spinner
-        spinnerDrivers.adapter = driversAdapter
-
-        //get vehicle from databases to this array VV
-        val vehiclesList: MutableList<String> = ArrayList()
-
-        //PLACEHOLDERS
-        vehiclesList.add("EL085YL")
-        vehiclesList.add("EL3934Y")
-        //PLACEHOLDERS
-
-        val vehiclesAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            view.context, R.layout.support_simple_spinner_dropdown_item, vehiclesList
-        )
-        vehiclesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-        spinnerVehicles = view.findViewById(R.id.deliveryVehiclePicker) as Spinner
-        spinnerVehicles.adapter = vehiclesAdapter
-
-        //Disabling spinners in view-only mode. Will be reenebling them when go into edit mode
+            }.await()
 
 
 
-
-        //Setting up recycler view
-
-        //Populate this list with products for this delivery from DB VV
-        testList = generateDummyList(15) as ArrayList<ProductItem>;
-
-
-        recyclerView = view?.findViewById(R.id.delivery_recycleView)
-        recyclerView?.adapter = ProductsAdapter(testList)
-        recyclerView?.layoutManager = LinearLayoutManager(activity)
-        recyclerView?.setHasFixedSize(true)
+            dataFromApi2?.productsList?.forEach{
+                testList.add(ProductItem(it.name, 0))
+            }
+            println("Debug: Hardcore stuff \n Driver: ${dataFromApi2?.driverName} ${dataFromApi2?.driverSurname}, Vehicle: ${dataFromApi2?.vehiclePlateNumber} ")
+            updateUI(dataFromApi2!!.driverName, dataFromApi2.driverSurname,dataFromApi2.vehiclePlateNumber)
+            currentDriver = "${dataFromApi2!!.driverName} ${dataFromApi2.driverSurname}"
+            currentVehicle = dataFromApi2.vehiclePlateNumber
+        }
 
 
-        view.findViewById<Button>(R.id.deliveryEditButton).setOnClickListener(this)
-        view.findViewById<Button>(R.id.deliverySaveEdit).setOnClickListener(this)
-
-        driverSpinnerBackground = spinnerDrivers.getBackground()
-        vehicleSpinnerBackground = spinnerVehicles.getBackground()
-        magazineSpinnerBackground = spinnerMagazines.getBackground()
-
-
-
-        updateMode()
+        view?.findViewById<Button>(R.id.deliveryEditButton)?.setOnClickListener(this)
+        view?.findViewById<Button>(R.id.deliverySaveEdit)?.setOnClickListener(this)
+        view.findViewById<Button>(R.id.deliveryCancel).setOnClickListener(this)
 
 
 
@@ -172,6 +126,16 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
             R.id.deliveryEditButton -> (changeMode())
             R.id.deliverySaveEdit -> (changeMode())
 
+            R.id.deliveryCancel -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val dataFromApi = async {
+                        testList.clear()
+                        token?.let { DeliverysHandler.deleteDelivery(it, deliveryId.toInt()) }
+
+                    }.await()
+                    println ("Debug: Deleting delivery response code $dataFromApi")
+                }
+            }
         }
     }
 
@@ -210,9 +174,9 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
             spinnerVehicles.isEnabled = false
             spinnerVehicles.isClickable = false
 
-            spinnerMagazines.background = null;
-            spinnerMagazines.isEnabled = false
-            spinnerMagazines.isClickable = false
+//            spinnerMagazines.background = null;
+//            spinnerMagazines.isEnabled = false
+//            spinnerMagazines.isClickable = false
 
             view?.findViewById<TextView>(R.id.deliveryDatePicker)?.isEnabled = false
 
@@ -233,14 +197,108 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
             spinnerVehicles.isEnabled = true
             spinnerVehicles.isClickable = true
 
-            spinnerMagazines.background = magazineSpinnerBackground
-            spinnerMagazines.isEnabled = true
-            spinnerMagazines.isClickable = true
+//            spinnerMagazines.background = magazineSpinnerBackground
+//            spinnerMagazines.isEnabled = true
+//            spinnerMagazines.isClickable = true
 
             view?.findViewById<TextView>(R.id.deliveryDatePicker)?.isEnabled = true
         }
     }
 
+    private fun updateUI(driverName:String, driverSurname:String, vehiclePlateNumber:String){
+
+        activity?.runOnUiThread(object: Runnable {
+            override fun run() {
+                view?.findViewById<TextView>(R.id.deliveryId)?.text =deliveryId
+                view?.findViewById<TextView>(R.id.deliveryDatePicker)?.text = "TU BEDZIE DATA ZAMOWIENIA!"
+
+                //Disabled in view-only mode. Will be enabled in edit mode
+                view?.findViewById<TextView>(R.id.deliveryDatePicker)?.isEnabled=false
+
+//                //get magazines from databases to this array VV
+//                val magazinesList: MutableList<String> = ArrayList()
+//
+//                //PLACEHOLDERS
+//                magazinesList.add("LODZ")
+//                magazinesList.add("WARSAW")
+//                //PLACEHOLDERS
+//
+//                val magazinesAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+//                    view?.context!!, R.layout.support_simple_spinner_dropdown_item, magazinesList
+//                )
+//                magazinesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+//                spinnerMagazines = view?.findViewById(R.id.deliveryMagazinePicker) as Spinner
+//                spinnerMagazines.adapter = magazinesAdapter
+
+                view?.findViewById<TextView>(R.id.deliveryMagazinePicker)?.text = "PUT WAREHOUSE NAME HERE"
+
+
+                //get drivers from databases to this array VV
+                var driversList: MutableList<String> = ArrayList()
+
+                //PLACEHOLDERS
+
+
+
+                driversList = getAllDrivers()
+                driversList.add("$driverName $driverSurname")
+
+
+                //PLACEHOLDERS
+
+                val driversAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+                    view?.context!!, R.layout.support_simple_spinner_dropdown_item, driversList
+                )
+                driversAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+                spinnerDrivers = view?.findViewById(R.id.deliveryDriverPicker) as Spinner
+                spinnerDrivers.adapter = driversAdapter
+
+                //get vehicle from databases to this array VV
+                var vehiclesList: MutableList<String> = ArrayList()
+
+                //PLACEHOLDERS
+                vehiclesList = getAllVehicles()
+                vehiclesList.add(vehiclePlateNumber)
+                //PLACEHOLDERS
+
+                val vehiclesAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+                    view?.context!!, R.layout.support_simple_spinner_dropdown_item, vehiclesList
+                )
+                vehiclesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+                spinnerVehicles = view?.findViewById(R.id.deliveryVehiclePicker) as Spinner
+                spinnerVehicles.adapter = vehiclesAdapter
+
+                //Disabling spinners in view-only mode. Will be reenebling them when go into edit mode
+
+
+
+
+                //Setting up recycler view
+
+                //Populate this list with products for this delivery from DB VV
+
+
+
+                recyclerView = view?.findViewById(R.id.delivery_recycleView)!!
+                recyclerView?.adapter = ProductsAdapter(testList)
+                recyclerView?.layoutManager = LinearLayoutManager(activity)
+                recyclerView?.setHasFixedSize(true)
+
+
+                driverSpinnerBackground = spinnerDrivers.getBackground()
+                vehicleSpinnerBackground = spinnerVehicles.getBackground()
+//                magazineSpinnerBackground = spinnerMagazines.getBackground()
+
+
+
+                updateMode()
+            }
+
+        })
+
+
+
+    }
 
 
     companion object {
@@ -307,6 +365,48 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
         view?.findViewById<EditText>(R.id.deliveryDatePicker)?.setText("$savedDay-$savedMonth-$savedYear")
 
 
+    }
+
+    private fun getAllDrivers():ArrayList<String>{
+
+       val driversList = ArrayList<String>()
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val dataFromAPI = async {
+                token?.let { DriversHandler.getDataForSettingsDriversFragmentFromApi(it) }
+
+            }.await()
+
+            if (dataFromAPI != null) {
+                dataFromAPI?.forEach{
+                    if("${it.name} ${it.surname}" != currentDriver)
+                    driversList.add("${it.name} ${it.surname}")
+                }
+            }
+        }
+        return driversList
+    }
+
+    private fun getAllVehicles():ArrayList<String>{
+
+        val vehiclesList = ArrayList<String>()
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val dataFromAPI = async {
+                token?.let { VehicleHandler.getDataForSettingsVehiclesFragmentFromApi(it) }
+
+            }.await()
+
+            if (dataFromAPI != null) {
+                dataFromAPI?.forEach{
+                    if(it.registration_number != currentVehicle)
+                        vehiclesList.add(it.registration_number)
+                }
+            }
+        }
+        return vehiclesList
     }
 
 

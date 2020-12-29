@@ -178,6 +178,7 @@ class loginFragment : Fragment(), View.OnClickListener {
         //println("Debug auth body : ${response.body()?.toString()}")
 
         val jsonBody = response.body()?.string()
+        println("Debug $jsonBody}")
         val json = JSONObject(jsonBody)
         token = json.getString("token")
 

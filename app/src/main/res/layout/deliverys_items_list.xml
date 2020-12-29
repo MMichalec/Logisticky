@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/text_view_deliveryId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center"
+
+            android:text="854936"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_view_deliveryStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center"
+            android:paddingLeft="10dp"
+            android:layout_toRightOf="@id/text_view_deliveryId"
+
+            android:text="STATUS: CANCELLED"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_view_creationDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center"
+            android:layout_below="@id/text_view_deliveryId"
+            android:text="Creation date 10-12-2020"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            />
+
+
+        <TextView
+            android:id="@+id/text_view_pickupDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:layout_toRightOf="@id/text_view_creationDate"
+            android:layout_below="@id/text_view_deliveryId"
+            android:gravity="center"
+
+            android:text="Due date: 12-12-2020"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

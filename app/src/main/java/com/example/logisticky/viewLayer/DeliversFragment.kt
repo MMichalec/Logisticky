@@ -28,8 +28,8 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class DeliversFragment : Fragment() {
-    var testList = ArrayList<ProductItem>()
-    var displayList = ArrayList<ProductItem>()
+    var testList = ArrayList<DeliveryItem>()
+    var displayList = ArrayList<DeliveryItem>()
     lateinit var recyclerView: RecyclerView
 
     var token:String? = null
@@ -91,7 +91,7 @@ class DeliversFragment : Fragment() {
             println("Debug: Make Delivery code: $dataFromApi2")
             dataFromApi2?.deliverysList?.forEach{
 
-                testList.add(ProductItem(it.deliveryId.toString(), 0))
+                testList.add(DeliveryItem(it.deliveryId, it.state, "Created: ${it.date.take(10)},", "Due date: ${it.pickupDate.take(10)}"))
                 updateUI()
 
             }
@@ -124,7 +124,7 @@ class DeliversFragment : Fragment() {
                         val search = newText.toLowerCase(Locale.getDefault())
                         testList.forEach {
 
-                            if (it.name.toLowerCase(Locale.getDefault()).contains(search)) {
+                            if (it.deliveryId.toString().toLowerCase(Locale.getDefault()).contains(search)) {
                                 displayList.add(it)
                             }
                         }
@@ -152,24 +152,16 @@ class DeliversFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun generateDummyList(size: Int): List<ProductItem>{
-        val list = ArrayList<ProductItem>()
 
-        val checkBox = CheckBox(activity)
-        for (i in 0 until size){
-            val item = ProductItem("Delivery $i", 0)
-            list +=item
-        }
-        return list
-    }
 
     private fun updateUI(){
         activity?.runOnUiThread(object: Runnable {
             override fun run() {
-                displayList = testList
+
+                displayList = testList.reversed() as ArrayList<DeliveryItem>
 
                 recyclerView = view!!.findViewById(R.id.delivers_recycleView)
-                recyclerView?.adapter = ProductsAdapter(displayList)
+                recyclerView?.adapter = DeliverysAdapter(displayList)
                 recyclerView?.layoutManager = LinearLayoutManager(activity)
                 recyclerView?.setHasFixedSize(true)
 

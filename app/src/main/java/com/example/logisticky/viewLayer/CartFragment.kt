@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -146,16 +147,33 @@ class CartFragment : Fragment(), View.OnClickListener {
 
             R.id.cartMakeDeliveryButton -> {
                 var reservationList = ArrayList<Int>()
-                reservationList.add(1033)
-                reservationList.add(1034)
+                displayList.forEach {
+                    if (it.isSelected)
+                    {
+                        reservationList.add(it.reservationId)
+
+                    }
+
+                }
+
+
+                //TODO display something if user did not check a signle item
+
+                val delIdString = "127"
                 CoroutineScope(Dispatchers.IO).launch {
                     val dataFromApi2 = async {
                         token?.let { DeliverysHandler.addDelivery(it, 909, 250, reservationList) }
 
                     }.await()
                     println("Debug: Make Delivery code: $dataFromApi2")
+                    //updateUI()
                 }
+
+
+                val bundle = bundleOf("deliveryId" to delIdString)
+                navController.navigate(R.id.action_cartFragment_to_deliveryInfoFragment, bundle)
             }
+
         }
     }
 
@@ -227,19 +245,16 @@ class CartFragment : Fragment(), View.OnClickListener {
     }
 
 
-    fun refreshFragment(){
-        val ft = requireFragmentManager().beginTransaction()
-        if (Build.VERSION.SDK_INT >= 26) {
-            ft.setReorderingAllowed(false)
-        }
-        ft.detach(this).attach(this).commit()
-    }
+
 
     private fun updateUI(){
 
         activity?.runOnUiThread(object: Runnable {
             override fun run() {
+
                 displayList = testList
+
+
 
                 recyclerView = view?.findViewById(R.id.cart_recycleView)!!
                 recyclerView?.adapter = ProductsAdapter3(displayList)

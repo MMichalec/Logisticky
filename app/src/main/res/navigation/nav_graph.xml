@@ -110,6 +110,8 @@
         <argument android:name="productId"
             android:defaultValue="none"/>
 
+
+
     </fragment>
     <fragment
         android:id="@+id/cartFragment"
@@ -118,6 +120,9 @@
         <action
             android:id="@+id/action_cartFragment_to_productsFragment"
             app:destination="@id/productsFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_deliveryInfoFragment"
+            app:destination="@id/deliveryInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/deliversFragment"
@@ -138,6 +143,9 @@
         tools:layout="@layout/fragment_delivery_info" >
 
         <argument android:name="deliveryId"
+            android:defaultValue="None"/>
+
+        <argument android:name="warehouseName"
             android:defaultValue="None"/>
 
     </fragment>

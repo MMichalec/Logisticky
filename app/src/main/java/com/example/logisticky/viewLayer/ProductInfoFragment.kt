@@ -108,10 +108,10 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
 
                 CoroutineScope(Dispatchers.IO).launch {
                     async {
-
                         token?.let { DeliverysHandler.addProductToCart(it, warehouseProductId, amount) }
 
                     }.await()
+                    //todo update current amount of packages after adding product to cart
                     updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
                 }
             }

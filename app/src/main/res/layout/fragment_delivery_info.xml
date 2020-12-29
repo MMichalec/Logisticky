@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="@color/black"
+        android:paddingTop="5dp"
         android:textSize="24dp"
         android:text="TextView" />
 
@@ -20,7 +21,7 @@
         android:gravity="center"
         android:id="@+id/deliveryDatePicker"
         android:layout_width="match_parent"
-        android:layout_below="@id/deliveryId"
+        android:layout_below="@id/deliveryMagazinePicker"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:ems="10"
@@ -61,26 +62,29 @@
         app:layout_constraintVertical_bias="0.219"
         />
 
-    <Spinner
+    <TextView
         android:gravity="center"
         android:id="@+id/deliveryMagazinePicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:spinnerMode="dropdown"
+        android:textColor="@color/black"
+        android:text="ELO ELO"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.606"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_below="@id/deliveryVehiclePicker"
+        android:layout_below="@id/deliveryId"
         app:layout_constraintVertical_bias="0.219" />
 
     <androidx.recyclerview.widget.RecyclerView
-
+        android:background="@color/hint"
         android:id="@+id/delivery_recycleView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_below="@id/deliveryMagazinePicker"
+        android:layout_margin="5dp"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:layout_below="@id/deliveryVehiclePicker"
         android:clipToPadding="false"
         android:padding="10dp"
         tools:listitem="@layout/product_list_item">
