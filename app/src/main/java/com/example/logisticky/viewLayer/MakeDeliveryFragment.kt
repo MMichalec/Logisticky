@@ -124,7 +124,6 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 val checkBox = CheckBox(activity)
 
 
-
                 var dataFromApi2 = async {
                     getProductInfo(it.productId)
                 }.await()
@@ -140,7 +139,6 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                         testList.add(CartItem(it.productName, "W: ${it.warehouseName}", "Amount: ${it.amount} p. | $amount $unit,", it.reservationId, checkBox, false))
                         totalPrice += it.price
                     }
-
                 }
 
             }
@@ -178,11 +176,11 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                         println("Debug: Make Delivery code: $dataFromApi2")
                         //updateUI()
                     }
+                navController.navigate(R.id.action_makeDeliveryFragment_to_deliversFragment)
                 }
 
 
-            R.id.deliveryCancel -> { //navigate back to fucktown city
-                }
+            R.id.deliveryCancel -> { navController.navigate(R.id.action_makeDeliveryFragment_to_cartFragment)}
 
             }
         }

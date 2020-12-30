@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -31,9 +32,12 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.OnDateSetListener {
+    var cartItemsList = ArrayList<DeliverysHandler.CartProductItem>()
+    var totalPrice: Float= 0.0F
+    var productsForDeliveryList =  ArrayList<String>()
 
     var isViewMode = true;
-    var testList = ArrayList<ProductItem>()
+    var testList = ArrayList<CartItem>()
     lateinit var recyclerView: RecyclerView
     var token:String? = null
     lateinit var currentDriver:String
@@ -101,10 +105,8 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
             }.await()
 
-
-
             dataFromApi2?.productsList?.forEach{
-                testList.add(ProductItem(it.name, 0))
+                productsForDeliveryList.add(it.name)
             }
             println("Debug: Hardcore stuff \n Driver: ${dataFromApi2?.driverName} ${dataFromApi2?.driverSurname}, Vehicle: ${dataFromApi2?.vehiclePlateNumber} ")
             updateUI(dataFromApi2!!.driverName, dataFromApi2.driverSurname,dataFromApi2.vehiclePlateNumber)
@@ -112,9 +114,48 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
             currentVehicle = dataFromApi2.vehiclePlateNumber
         }
 
+        CoroutineScope(Dispatchers.IO).launch{
 
-        view?.findViewById<Button>(R.id.deliveryEditButton)?.setOnClickListener(this)
-        view?.findViewById<Button>(R.id.deliverySaveEdit)?.setOnClickListener(this)
+            var dataFromAPI = async {
+                testList.clear()
+                token?.let { DeliverysHandler.getCartList(it) }
+
+            }.await()
+
+
+
+            println(dataFromAPI?.responseCode)
+
+            cartItemsList = dataFromAPI!!.cartProductsItemList
+            dataFromAPI?.cartProductsItemList?.forEach{
+                println("Debug: Product ${it.productName}, amount: ${it.amount}, ${it.warehouseName}")
+                val checkBox = CheckBox(activity)
+
+                warehouseName = dataFromAPI.cartProductsItemList[0].warehouseName
+
+                var dataFromApi2 = async {
+                    getProductInfo(it.productId)
+                }.await()
+
+                val amount = dataFromApi2.getString("unit_number").toDouble() * it.amount
+                val unit = dataFromApi2.getString("unit_name")
+
+
+                productsForDeliveryList.forEach{it2 ->
+
+                    if (it.productName == it2)
+                    {
+                        testList.add(CartItem(it.productName, "W: ${it.warehouseName}", "Amount: ${it.amount} p. | $amount $unit,", it.reservationId, checkBox, false))
+                        totalPrice += it.price
+                    }
+                }
+
+            }
+            updateUI("Pick driver","", "PICK VEHICLE")
+        }
+
+
+
         view.findViewById<Button>(R.id.deliveryCancel).setOnClickListener(this)
 
 
@@ -123,8 +164,7 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
     override fun onClick(v: View?) {
         when(v!!.id){
-            R.id.deliveryEditButton -> (changeMode())
-            R.id.deliverySaveEdit -> (changeMode())
+
 
             R.id.deliveryCancel -> {
                 CoroutineScope(Dispatchers.IO).launch {
@@ -160,10 +200,11 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
         if (isViewMode){
 
-            view?.findViewById<Button>(R.id.deliveryAddProduct)?.visibility = View.GONE
             view?.findViewById<Button>(R.id.deliveryCancel)?.visibility = View.GONE
-            view?.findViewById<Button>(R.id.deliverySaveEdit)?.visibility = View.GONE
-            view?.findViewById<Button>(R.id.deliveryEditButton)?.visibility = View.VISIBLE
+//            view?.findViewById<Button>(R.id.deliveryAddProduct)?.visibility = View.GONE
+//
+//            view?.findViewById<Button>(R.id.deliverySaveEdit)?.visibility = View.GONE
+//            view?.findViewById<Button>(R.id.deliveryEditButton)?.visibility = View.VISIBLE
 
             spinnerDrivers.background = null;
             spinnerDrivers.isEnabled = false
@@ -183,10 +224,11 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
         }
         else{
-            view?.findViewById<Button>(R.id.deliveryAddProduct)?.visibility = View.VISIBLE
             view?.findViewById<Button>(R.id.deliveryCancel)?.visibility = View.VISIBLE
-            view?.findViewById<Button>(R.id.deliverySaveEdit)?.visibility = View.VISIBLE
-            view?.findViewById<Button>(R.id.deliveryEditButton)?.visibility = View.GONE
+//            view?.findViewById<Button>(R.id.deliveryAddProduct)?.visibility = View.VISIBLE
+//
+//            view?.findViewById<Button>(R.id.deliverySaveEdit)?.visibility = View.VISIBLE
+//            view?.findViewById<Button>(R.id.deliveryEditButton)?.visibility = View.GONE
 
             spinnerDrivers.background = driverSpinnerBackground
             spinnerDrivers.isEnabled = true
@@ -230,43 +272,43 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 //                spinnerMagazines = view?.findViewById(R.id.deliveryMagazinePicker) as Spinner
 //                spinnerMagazines.adapter = magazinesAdapter
 
-                view?.findViewById<TextView>(R.id.deliveryMagazinePicker)?.text = "PUT WAREHOUSE NAME HERE"
+                view?.findViewById<TextView>(R.id.deliveryMagazinePicker)?.text = warehouseName
 
 
                 //get drivers from databases to this array VV
-                var driversList: MutableList<String> = ArrayList()
-
-                //PLACEHOLDERS
-
-
-
-                driversList = getAllDrivers()
-                driversList.add("$driverName $driverSurname")
-
-
-                //PLACEHOLDERS
-
-                val driversAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
-                    view?.context!!, R.layout.support_simple_spinner_dropdown_item, driversList
-                )
-                driversAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-                spinnerDrivers = view?.findViewById(R.id.deliveryDriverPicker) as Spinner
-                spinnerDrivers.adapter = driversAdapter
-
-                //get vehicle from databases to this array VV
-                var vehiclesList: MutableList<String> = ArrayList()
-
-                //PLACEHOLDERS
-                vehiclesList = getAllVehicles()
-                vehiclesList.add(vehiclePlateNumber)
-                //PLACEHOLDERS
-
-                val vehiclesAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
-                    view?.context!!, R.layout.support_simple_spinner_dropdown_item, vehiclesList
-                )
-                vehiclesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
-                spinnerVehicles = view?.findViewById(R.id.deliveryVehiclePicker) as Spinner
-                spinnerVehicles.adapter = vehiclesAdapter
+//                var driversList: MutableList<String> = ArrayList()
+//
+//                //PLACEHOLDERS
+//
+//
+//
+//                driversList = getAllDrivers()
+//                driversList.add("$driverName $driverSurname")
+//
+//
+//                //PLACEHOLDERS
+//
+//                val driversAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+//                    view?.context!!, R.layout.support_simple_spinner_dropdown_item, driversList
+//                )
+//                driversAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+//                spinnerDrivers = view?.findViewById(R.id.deliveryDriverPicker) as Spinner
+//                spinnerDrivers.adapter = driversAdapter
+//
+//                //get vehicle from databases to this array VV
+//                var vehiclesList: MutableList<String> = ArrayList()
+//
+//                //PLACEHOLDERS
+//                vehiclesList = getAllVehicles()
+//                vehiclesList.add(vehiclePlateNumber)
+//                //PLACEHOLDERS
+//
+//                val vehiclesAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+//                    view?.context!!, R.layout.support_simple_spinner_dropdown_item, vehiclesList
+//                )
+//                vehiclesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
+//                spinnerVehicles = view?.findViewById(R.id.deliveryVehiclePicker) as Spinner
+//                spinnerVehicles.adapter = vehiclesAdapter
 
                 //Disabling spinners in view-only mode. Will be reenebling them when go into edit mode
 
@@ -280,18 +322,18 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
 
                 recyclerView = view?.findViewById(R.id.delivery_recycleView)!!
-                recyclerView?.adapter = ProductsAdapter(testList)
+                recyclerView?.adapter = ProductsAdapter3(testList)
                 recyclerView?.layoutManager = LinearLayoutManager(activity)
                 recyclerView?.setHasFixedSize(true)
 
 
-                driverSpinnerBackground = spinnerDrivers.getBackground()
-                vehicleSpinnerBackground = spinnerVehicles.getBackground()
+//                driverSpinnerBackground = spinnerDrivers.getBackground()
+//                vehicleSpinnerBackground = spinnerVehicles.getBackground()
 //                magazineSpinnerBackground = spinnerMagazines.getBackground()
 
 
 
-                updateMode()
+               // updateMode()
             }
 
         })
@@ -407,6 +449,13 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
             }
         }
         return vehiclesList
+    }
+
+    private fun getProductInfo(productId:Int): JSONObject {
+        lateinit var dataJsonProduct: JSONObject
+        val dataFromAPI = token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(it,productId) }
+        dataJsonProduct = dataFromAPI!!.jsonProductObject
+        return dataJsonProduct
     }
 
 
