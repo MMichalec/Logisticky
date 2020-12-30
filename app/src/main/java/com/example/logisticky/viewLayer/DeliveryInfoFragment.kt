@@ -131,7 +131,6 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 println("Debug: Product ${it.productName}, amount: ${it.amount}, ${it.warehouseName}")
                 val checkBox = CheckBox(activity)
 
-                warehouseName = dataFromAPI.cartProductsItemList[0].warehouseName
 
                 var dataFromApi2 = async {
                     getProductInfo(it.productId)
@@ -272,7 +271,7 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 //                spinnerMagazines = view?.findViewById(R.id.deliveryMagazinePicker) as Spinner
 //                spinnerMagazines.adapter = magazinesAdapter
 
-                view?.findViewById<TextView>(R.id.deliveryMagazinePicker)?.text = warehouseName
+                view?.findViewById<TextView>(R.id.deliveryMagazinePicker)?.text = "PUT WAREHOUSE NAME HERE"
 
 
                 //get drivers from databases to this array VV

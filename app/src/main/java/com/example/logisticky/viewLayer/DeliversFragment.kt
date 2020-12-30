@@ -2,11 +2,9 @@ package com.example.logisticky.viewLayer
 
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.Fragment
-import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.TextView
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
@@ -14,6 +12,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -91,7 +92,25 @@ class DeliversFragment : Fragment() {
             println("Debug: Make Delivery code: $dataFromApi2")
             dataFromApi2?.deliverysList?.forEach{
 
-                testList.add(DeliveryItem(it.deliveryId, it.state, "Created: ${it.date.take(10)},", "Due date: ${it.pickupDate.take(10)}"))
+                testList.add(DeliveryItem(it.deliveryId, it.state, "Created: ${it.date},", "Due date: ${it.pickupDate.take(10)}"))
+
+                val timeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
+
+                val offsetDateTime: OffsetDateTime =
+                    OffsetDateTime.parse (it.date, timeFormatter)
+
+                val date = Date.from (Instant.from(offsetDateTime))
+
+
+                //tu dobrze pokazuje czas
+                val cal = Calendar.getInstance()
+                cal.time = date
+                val hours = cal.get(Calendar.HOUR)
+                val mins = cal.get(Calendar.MINUTE)
+
+                System.out.println("Debug date $hours:$mins")
+
+
                 updateUI()
 
             }

@@ -1,5 +1,7 @@
 package com.example.logisticky.viewLayer
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.*
 import android.widget.*
@@ -148,17 +150,19 @@ class CartFragment : Fragment(), View.OnClickListener {
                 var reservationList = ArrayList<Int>()
                 reservationList.clear()
                 displayList.forEach {
-                    if (it.isSelected)
-                    {
+                    if (it.isSelected) {
                         reservationList.add(it.reservationId)
 
                     }
 
                 }
+                if (reservationList.isEmpty()) {
+                    showInfoDialog("No products selected. Please select at least one product.")
+                } else {
 
-                //TODO display something if user did not check a signle item
+                    //TODO display something if user did not check a signle item
 
-                val delIdString = "127"
+                    val delIdString = "127"
 //                CoroutineScope(Dispatchers.IO).launch {
 //                    val dataFromApi2 = async {
 //                        token?.let { DeliverysHandler.addDelivery(it, 909, 250, reservationList) }
@@ -169,9 +173,10 @@ class CartFragment : Fragment(), View.OnClickListener {
 //                }
 
 
-                val bundle = bundleOf("deliveryId" to delIdString)
-                bundle.putIntegerArrayList("reservationsIdList", reservationList)
-                navController.navigate(R.id.action_cartFragment_to_makeDeliveryFragment, bundle)
+                    val bundle = bundleOf("deliveryId" to delIdString)
+                    bundle.putIntegerArrayList("reservationsIdList", reservationList)
+                    navController.navigate(R.id.action_cartFragment_to_makeDeliveryFragment, bundle)
+                }
             }
 
         }
@@ -276,6 +281,12 @@ class CartFragment : Fragment(), View.OnClickListener {
             return dataJsonProduct
         }
 
-
+    fun showInfoDialog(message:String){
+        val builder = AlertDialog.Builder(this.activity)
+        builder.setTitle ("")
+        builder.setMessage (message)
+        builder.setPositiveButton("Okay",{ dialogInterface: DialogInterface, i: Int -> Toast.makeText(activity, "Okay!", Toast.LENGTH_LONG).show()} )
+        builder.show()
+    }
 
     }
