@@ -118,7 +118,7 @@ class DeliverysHandler {
             return response.code()
         }
 
-        fun addDelivery(token:String, driverId:Int, vehicleId:Int, reservationsList:ArrayList<Int>):Int {
+        fun addDelivery(token:String, driverId:Int, vehicleId:Int,pickupDate: String?, reservationsList:ArrayList<Int>):Int {
 
             println("Attempting to Fetch JSON")
 
@@ -135,12 +135,15 @@ class DeliverysHandler {
 
             deliveryObject.put("driver_id", driverId)
             deliveryObject.put("vehicle_id", vehicleId)
+            if(pickupDate!=null){
+                deliveryObject.put("pickup_planned_date", pickupDate)
+            }
             deliveryObject.put("reservations_ids", deliveryReservationsList )
 
             fullDeliveryObject.put("dispatch", deliveryObject)
 
 
-            println("Debug: ${fullDeliveryObject}")
+            println("Debug: Check me out here${fullDeliveryObject}")
 
 
             val body: RequestBody = RequestBody.create(JSON, fullDeliveryObject.toString())
@@ -148,7 +151,7 @@ class DeliverysHandler {
 
             val response = client.newCall(newRequest).execute()
             println("Debug:  ${response.code()}")
-            println("Debug: Check me out here ${response.body().toString()}")
+            println("Debug:  ${response.body().toString()}")
             println("Debug: ${response.message()}")
 
 

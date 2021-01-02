@@ -89,28 +89,36 @@ class DeliversFragment : Fragment() {
                 token?.let { DeliverysHandler.getAllDeliverys(it) }
 
             }.await()
+
+
             println("Debug: Make Delivery code: $dataFromApi2")
             dataFromApi2?.deliverysList?.forEach{
 
-                testList.add(DeliveryItem(it.deliveryId, it.state, "Created: ${it.date},", "Due date: ${it.pickupDate.take(10)}"))
 
-                val timeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
-
-                val offsetDateTime: OffsetDateTime =
-                    OffsetDateTime.parse (it.date, timeFormatter)
-
-                val date = Date.from (Instant.from(offsetDateTime))
-
-
-                //tu dobrze pokazuje czas
-                val cal = Calendar.getInstance()
-                cal.time = date
-                val hours = cal.get(Calendar.HOUR)
-                val mins = cal.get(Calendar.MINUTE)
-
-                System.out.println("Debug date $hours:$mins")
+//                val timeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
+//
+//                val offsetDateTime: OffsetDateTime =
+//                    OffsetDateTime.parse (it.date, timeFormatter)
+//
+//                val date = Date.from (Instant.from(offsetDateTime))
+//
+//
+//                //tu dobrze pokazuje czas
+//                val cal = Calendar.getInstance()
+//                cal.time = date
+//                val hours = cal.get(Calendar.HOUR)
+//                val mins = cal.get(Calendar.MINUTE)
 
 
+
+                val createdDate = getDateFromIso8601String(it.date)
+                val createdDateString = "Created: ${it.date.take(10)}, ${String.format("%02d:%02d", createdDate.get(Calendar.HOUR_OF_DAY), createdDate.get(Calendar.MINUTE))} |"
+                val pickupDate = getDateFromIso8601String(it.pickupDate)
+                val pickupDateString = "Due date: ${it.pickupDate.take(10)}, ${String.format("%02d:%02d", pickupDate.get(Calendar.HOUR_OF_DAY), pickupDate.get(Calendar.MINUTE))}"
+
+                testList.add(DeliveryItem(it.deliveryId, it.state, createdDateString, pickupDateString))
+
+                println(it.date)
                 updateUI()
 
             }
@@ -188,8 +196,21 @@ class DeliversFragment : Fragment() {
 
         })
 
+    }
+    fun getDateFromIso8601String (date:String):Calendar{
+        val timeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
+
+        val offsetDateTime: OffsetDateTime =
+            OffsetDateTime.parse (date, timeFormatter)
+
+        val date = Date.from (Instant.from(offsetDateTime))
 
 
-
+        //tu dobrze pokazuje czas
+        val cal = Calendar.getInstance()
+        cal.time = date
+//    val hours = cal.get(Calendar.HOUR)
+//    val mins = cal.get(Calendar.MINUTE)
+        return cal
     }
 }

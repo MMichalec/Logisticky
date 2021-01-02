@@ -7,6 +7,19 @@
     android:layout_height="match_parent"
     tools:context=".viewLayer.ProductsFragment">
 
+    <ProgressBar
+        android:id="@+id/productInfoLoader"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.587" />
+
     <TextView
         android:id="@+id/deliveryMagazinePicker"
         android:layout_width="match_parent"
@@ -17,7 +30,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:text="ELO ELO"
+        android:text="-"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,7 +46,7 @@
         android:textColor="@color/black"
         android:paddingTop="5dp"
         android:textSize="24dp"
-        android:text="TextView" />
+        android:text="" />
 
     <EditText
         android:gravity="center"
@@ -104,7 +117,7 @@
         android:background="@drawable/rounded_textview"
         android:gravity="center"
         android:padding="10dp"
-        android:text="1273.20 PLN"
+        android:text="-"
         android:textColor="@color/white"
         android:textSize="30sp" />
 

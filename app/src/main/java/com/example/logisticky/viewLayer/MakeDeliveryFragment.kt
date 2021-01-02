@@ -1,6 +1,8 @@
 package com.example.logisticky.viewLayer
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -9,6 +11,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.view.forEach
+import androidx.core.view.get
+import androidx.core.view.size
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,17 +44,25 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
     var cartItemsList = ArrayList<DeliverysHandler.CartProductItem>()
     lateinit var recyclerView: RecyclerView
 
+    var isoDateString: String?= null
+
     var totalPrice: Float= 0.0F
 
     lateinit var navController: NavController
 
     var token:String? = null
-    lateinit var currentDriver:String
-    lateinit var currentVehicle:String
+    lateinit var defaultDriverSpinnerText:String
+    lateinit var defaultVehicleSpinnerText:String
 
     lateinit var spinnerDrivers: Spinner
     //    lateinit var spinnerMagazines:Spinner
     lateinit var spinnerVehicles: Spinner
+
+    var foundDriver = false
+    var foundVehicle = false
+
+    var firstDriverSwap = true
+    var firstVehicleSwap = true
 
     var day = 0
     var month = 0
@@ -99,11 +112,12 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
         pickDate()
+        view.findViewById<RecyclerView>(R.id.delivery_recycleView).visibility = View.INVISIBLE
 
         //Get products from dbs by ids
 
-            currentDriver = "PICK DRIVER"
-            currentVehicle = "PICK VEHICLE"
+            defaultDriverSpinnerText = "PICK DRIVER"
+            defaultVehicleSpinnerText = "PICK VEHICLE"
 
 
         CoroutineScope(Dispatchers.IO).launch{
@@ -119,7 +133,9 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
             println(dataFromAPI?.responseCode)
 
             cartItemsList = dataFromAPI!!.cartProductsItemList
+            warehouseName = dataFromAPI!!.cartProductsItemList[0].warehouseName
             dataFromAPI?.cartProductsItemList?.forEach{
+
                 println("Debug: Product ${it.productName}, amount: ${it.amount}, ${it.warehouseName}")
                 val checkBox = CheckBox(activity)
 
@@ -142,7 +158,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 }
 
             }
-            updateUI("Pick driver","", "PICK VEHICLE")
+            updateUI(defaultDriverSpinnerText, defaultVehicleSpinnerText)
         }
 
         view.findViewById<Button>(R.id.deliveryCreate).setOnClickListener(this)
@@ -153,44 +169,88 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
         when(v!!.id){
             R.id.deliveryCreate -> {
 
-                val pickedDriverString = spinnerDrivers.selectedItem.toString();
+                println(isoDateString)
+
+
+                var pickedDriverString = defaultDriverSpinnerText
                 var pickedDriverId = 0
 
-                fullDriversList.forEach{
-                    if(pickedDriverString == "${it.name} ${it.surname}") pickedDriverId = it.driver_id
+                if (firstDriverSwap && spinnerDrivers.selectedItemPosition > 0){
+
+                        var spinnerPickedNumber = spinnerDrivers.selectedItemPosition-1 as Int
+                        spinnerDrivers.setSelection(spinnerPickedNumber)
+                        pickedDriverString = spinnerDrivers.selectedItem.toString()
+                        firstDriverSwap = false
+
+                } else {
+                    pickedDriverString = spinnerDrivers.selectedItem.toString()
                 }
 
-                val pickedVehicleString = spinnerVehicles.selectedItem.toString()
+
+
+                var pickedVehicleString = defaultVehicleSpinnerText
                 var pickedVehicleId = 0
 
-                fullVehiclesList.forEach{
-                    if (pickedVehicleString == it.registration_number) pickedVehicleId = it.vehicleId
+                if (firstVehicleSwap && spinnerVehicles.selectedItemPosition > 0){
+
+                    var spinnerPickedNumber = spinnerVehicles.selectedItemPosition-1 as Int
+                    spinnerVehicles.setSelection(spinnerPickedNumber)
+                    pickedVehicleString = spinnerVehicles.selectedItem.toString()
+                    firstVehicleSwap=false
+
+                }else {
+                    pickedVehicleString = spinnerVehicles.selectedItem.toString()
                 }
 
+                if (pickedDriverString == defaultDriverSpinnerText || pickedVehicleString == defaultVehicleSpinnerText){
+                    showInfoDialog("Please pick driver and a vehicle.")
+                }else {
+
+                    fullDriversList.forEach {
+                        if (pickedDriverString == "${it.name} ${it.surname}")
+                            pickedDriverId = it.driver_id
+                    }
+
+
+
+                    fullVehiclesList.forEach {
+                        if (pickedVehicleString == it.registration_number)
+                            pickedVehicleId = it.vehicleId
+                    }
 
                     CoroutineScope(Dispatchers.IO).launch {
                         val dataFromApi2 = async {
-                            token?.let { DeliverysHandler.addDelivery(it, pickedDriverId, pickedVehicleId, productsForDeliveryList) }
+                            token?.let {
+                                DeliverysHandler.addDelivery(
+                                    it,
+                                    pickedDriverId,
+                                    pickedVehicleId,
+                                    isoDateString,
+                                    productsForDeliveryList
+                                )
+                            }
 
                         }.await()
                         println("Debug: Make Delivery code: $dataFromApi2")
                         //updateUI()
                     }
-                navController.navigate(R.id.action_makeDeliveryFragment_to_deliversFragment)
+                    navController.navigate(R.id.action_makeDeliveryFragment_to_deliversFragment)
                 }
-
+            }
 
             R.id.deliveryCancel -> { navController.navigate(R.id.action_makeDeliveryFragment_to_cartFragment)}
 
             }
+
         }
 
-    private fun updateUI(driverName:String, driverSurname:String, vehiclePlateNumber:String){
+    private fun updateUI(driverName:String, vehiclePlateNumber:String){
 
         activity?.runOnUiThread(object: Runnable {
             override fun run() {
                 view?.findViewById<TextView>(R.id.deliveryId)?.text =deliveryId
-                view?.findViewById<TextView>(R.id.deliveryDatePicker)?.text = "TU BEDZIE DATA ZAMOWIENIA!"
+
+                view?.findViewById<TextView>(R.id.deliveryDatePicker)?.text = "DATA + 7 dni"
 
                 //Disabled in view-only mode. Will be enabled in edit mode
 
@@ -210,7 +270,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 //                spinnerMagazines = view?.findViewById(R.id.deliveryMagazinePicker) as Spinner
 //                spinnerMagazines.adapter = magazinesAdapter
 
-                view?.findViewById<TextView>(R.id.deliveryMagazinePicker)?.text = "PUT WAREHOUSE NAME HERE"
+                view?.findViewById<TextView>(R.id.deliveryMagazinePicker)?.text = warehouseName
 
 
                 //get drivers from databases to this array VV
@@ -218,10 +278,15 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
                 //PLACEHOLDERS
 
-
-
                 driversList = getAllDrivers()
-                driversList.add("$driverName $driverSurname")
+
+                var ixa= driversList.indexOf("$driverName")
+                println("Debug fuck spinners : $ixa ")
+                driversList.add("$driverName")
+
+
+
+
 
 
                 //PLACEHOLDERS
@@ -232,6 +297,19 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 driversAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
                 spinnerDrivers = view?.findViewById(R.id.deliveryDriverPicker) as Spinner
                 spinnerDrivers.adapter = driversAdapter
+
+                spinnerDrivers.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+
+                        if(foundDriver) driversList.remove("$driverName")
+                        else foundDriver = true
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        TODO("Not yet implemented")
+                    }
+                }
+
 
                 //get vehicle from databases to this array VV
                 var vehiclesList: MutableList<String> = ArrayList()
@@ -247,6 +325,19 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 vehiclesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
                 spinnerVehicles = view?.findViewById(R.id.deliveryVehiclePicker) as Spinner
                 spinnerVehicles.adapter = vehiclesAdapter
+                spinnerVehicles.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
+                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                        if (foundVehicle) vehiclesList.remove("$vehiclePlateNumber")
+                        else foundVehicle=true
+
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        TODO("Not yet implemented")
+                    }
+                }
+
+
 
                 //Disabling spinners in view-only mode. Will be reenebling them when go into edit mode
 
@@ -261,7 +352,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
                 displayList = testList
 
-
+                view!!.findViewById<RecyclerView>(R.id.delivery_recycleView).visibility = View.VISIBLE
                 recyclerView = view?.findViewById(R.id.delivery_recycleView)!!
                 recyclerView?.adapter = ProductsAdapter3(displayList)
                 recyclerView?.layoutManager = LinearLayoutManager(activity)
@@ -304,13 +395,16 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
     override fun onDateSet(p0: DatePicker?, p1: Int, p2: Int, p3: Int) {
         savedDay = p3
-        savedMonth = p2
+        val formatedDay = String.format("%02d", p3)
+        savedMonth = p2+1
+        val formatedMonth = String.format("%02d", p2+1)
         savedYear = p1
 
         getDateTimeCalendar()
 
-        view?.findViewById<EditText>(R.id.deliveryDatePicker)?.setText("$savedDay-$savedMonth-$savedYear")
-
+        view?.findViewById<EditText>(R.id.deliveryDatePicker)?.setText("$formatedDay-$formatedMonth-$savedYear")
+        isoDateString = "${savedYear}-${formatedMonth}-${formatedDay}T22:59:00.000Z"
+        println("Debug: Iso date string $isoDateString")
 
     }
 
@@ -327,7 +421,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
             if (dataFromAPI != null) {
                 dataFromAPI?.forEach{
-                    if("${it.name} ${it.surname}" != currentDriver)
+                    if("${it.name} ${it.surname}" != defaultDriverSpinnerText)
                         driversList.add("${it.name} ${it.surname}")
                 }
             }
@@ -351,7 +445,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
             if (dataFromAPI != null) {
                 dataFromAPI?.forEach{
-                    if(it.registration_number != currentVehicle)
+                    if(it.registration_number != defaultVehicleSpinnerText)
                         vehiclesList.add(it.registration_number)
                 }
             }
@@ -367,6 +461,14 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
         val dataFromAPI = token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(it,productId) }
         dataJsonProduct = dataFromAPI!!.jsonProductObject
         return dataJsonProduct
+    }
+
+    fun showInfoDialog(message:String){
+        val builder = AlertDialog.Builder(this.activity)
+        builder.setTitle ("")
+        builder.setMessage (message)
+        builder.setPositiveButton("Okay",{ dialogInterface: DialogInterface, i: Int -> Toast.makeText(activity, "Okay!", Toast.LENGTH_LONG).show()} )
+        builder.show()
     }
 
 
