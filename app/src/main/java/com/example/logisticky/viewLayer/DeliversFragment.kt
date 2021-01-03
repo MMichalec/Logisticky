@@ -159,9 +159,11 @@ class DeliversFragment : Fragment() {
                 )
 
                 println(it.date)
-                updateUI()
+
 
             }
+            testList.reverse()
+            updateUI()
         }
 
 
