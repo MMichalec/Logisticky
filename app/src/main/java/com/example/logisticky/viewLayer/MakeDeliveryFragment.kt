@@ -5,15 +5,13 @@ import android.app.DatePickerDialog
 import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.view.forEach
-import androidx.core.view.get
-import androidx.core.view.size
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,8 +22,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -148,11 +148,20 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 val unit = dataFromApi2.getString("unit_name")
 
 
-                productsForDeliveryList.forEach{it2 ->
+                productsForDeliveryList.forEach{ it2 ->
 
                     if (it.reservationId == it2)
                     {
-                        testList.add(CartItem(it.productName, "W: ${it.warehouseName}", "Amount: ${it.amount} p. | $amount $unit,", it.reservationId, checkBox, false))
+                        testList.add(
+                            CartItem(
+                                it.productName,
+                                "W: ${it.warehouseName}",
+                                "Amount: ${it.amount} p. | $amount $unit,",
+                                it.reservationId,
+                                checkBox,
+                                false
+                            )
+                        )
                         totalPrice += it.price
                     }
                 }
@@ -175,36 +184,35 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 var pickedDriverString = defaultDriverSpinnerText
                 var pickedDriverId = 0
 
-                if (firstDriverSwap && spinnerDrivers.selectedItemPosition > 0){
+                if (firstDriverSwap && spinnerDrivers.selectedItemPosition > 0) {
 
-                        var spinnerPickedNumber = spinnerDrivers.selectedItemPosition-1 as Int
-                        spinnerDrivers.setSelection(spinnerPickedNumber)
-                        pickedDriverString = spinnerDrivers.selectedItem.toString()
-                        firstDriverSwap = false
+                    var spinnerPickedNumber = spinnerDrivers.selectedItemPosition - 1 as Int
+                    spinnerDrivers.setSelection(spinnerPickedNumber)
+                    pickedDriverString = spinnerDrivers.selectedItem.toString()
+                    firstDriverSwap = false
 
                 } else {
                     pickedDriverString = spinnerDrivers.selectedItem.toString()
                 }
 
 
-
                 var pickedVehicleString = defaultVehicleSpinnerText
                 var pickedVehicleId = 0
 
-                if (firstVehicleSwap && spinnerVehicles.selectedItemPosition > 0){
+                if (firstVehicleSwap && spinnerVehicles.selectedItemPosition > 0) {
 
-                    var spinnerPickedNumber = spinnerVehicles.selectedItemPosition-1 as Int
+                    var spinnerPickedNumber = spinnerVehicles.selectedItemPosition - 1 as Int
                     spinnerVehicles.setSelection(spinnerPickedNumber)
                     pickedVehicleString = spinnerVehicles.selectedItem.toString()
-                    firstVehicleSwap=false
+                    firstVehicleSwap = false
 
-                }else {
+                } else {
                     pickedVehicleString = spinnerVehicles.selectedItem.toString()
                 }
 
-                if (pickedDriverString == defaultDriverSpinnerText || pickedVehicleString == defaultVehicleSpinnerText){
+                if (pickedDriverString == defaultDriverSpinnerText || pickedVehicleString == defaultVehicleSpinnerText) {
                     showInfoDialog("Please pick driver and a vehicle.")
-                }else {
+                } else {
 
                     fullDriversList.forEach {
                         if (pickedDriverString == "${it.name} ${it.surname}")
@@ -238,19 +246,30 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 }
             }
 
-            R.id.deliveryCancel -> { navController.navigate(R.id.action_makeDeliveryFragment_to_cartFragment)}
+            R.id.deliveryCancel -> {
+                navController.navigate(R.id.action_makeDeliveryFragment_to_cartFragment)
+            }
 
             }
 
         }
 
-    private fun updateUI(driverName:String, vehiclePlateNumber:String){
+    private fun updateUI(driverName: String, vehiclePlateNumber: String){
 
-        activity?.runOnUiThread(object: Runnable {
+
+        activity?.runOnUiThread(object : Runnable {
             override fun run() {
-                view?.findViewById<TextView>(R.id.deliveryId)?.text =deliveryId
+                view?.findViewById<TextView>(R.id.deliveryId)?.text = deliveryId
 
-                view?.findViewById<TextView>(R.id.deliveryDatePicker)?.text = "DATA + 7 dni"
+                var dateFormat = SimpleDateFormat("dd/MM/yyyy");
+                val currentDate = Date()
+                val calendar = Calendar.getInstance()
+                calendar.time = currentDate
+                calendar.add(Calendar.DAY_OF_MONTH, 7)
+
+                val defaultDeliveryDate = calendar.time
+
+                view!!.findViewById<TextView>(R.id.deliveryDatePicker).text = dateFormat.format(defaultDeliveryDate)
 
                 //Disabled in view-only mode. Will be enabled in edit mode
 
@@ -280,13 +299,9 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
                 driversList = getAllDrivers()
 
-                var ixa= driversList.indexOf("$driverName")
+                var ixa = driversList.indexOf("$driverName")
                 println("Debug fuck spinners : $ixa ")
                 driversList.add("$driverName")
-
-
-
-
 
 
                 //PLACEHOLDERS
@@ -298,17 +313,23 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 spinnerDrivers = view?.findViewById(R.id.deliveryDriverPicker) as Spinner
                 spinnerDrivers.adapter = driversAdapter
 
-                spinnerDrivers.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                spinnerDrivers.onItemSelectedListener =
+                    object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            p0: AdapterView<*>?,
+                            p1: View?,
+                            p2: Int,
+                            p3: Long
+                        ) {
 
-                        if(foundDriver) driversList.remove("$driverName")
-                        else foundDriver = true
-                    }
+                            if (foundDriver) driversList.remove("$driverName")
+                            else foundDriver = true
+                        }
 
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                        TODO("Not yet implemented")
+                        override fun onNothingSelected(p0: AdapterView<*>?) {
+                            TODO("Not yet implemented")
+                        }
                     }
-                }
 
 
                 //get vehicle from databases to this array VV
@@ -325,23 +346,26 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 vehiclesAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item)
                 spinnerVehicles = view?.findViewById(R.id.deliveryVehiclePicker) as Spinner
                 spinnerVehicles.adapter = vehiclesAdapter
-                spinnerVehicles.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                        if (foundVehicle) vehiclesList.remove("$vehiclePlateNumber")
-                        else foundVehicle=true
+                spinnerVehicles.onItemSelectedListener =
+                    object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            p0: AdapterView<*>?,
+                            p1: View?,
+                            p2: Int,
+                            p3: Long
+                        ) {
+                            if (foundVehicle) vehiclesList.remove("$vehiclePlateNumber")
+                            else foundVehicle = true
 
+                        }
+
+                        override fun onNothingSelected(p0: AdapterView<*>?) {
+                            TODO("Not yet implemented")
+                        }
                     }
-
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                        TODO("Not yet implemented")
-                    }
-                }
-
 
 
                 //Disabling spinners in view-only mode. Will be reenebling them when go into edit mode
-
-
 
 
                 //Setting up recycler view
@@ -350,14 +374,27 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
 
 
+
+
+
+
+
+
+
                 displayList = testList
 
-                view!!.findViewById<RecyclerView>(R.id.delivery_recycleView).visibility = View.VISIBLE
+                view!!.findViewById<RecyclerView>(R.id.delivery_recycleView).visibility =
+                    View.VISIBLE
                 recyclerView = view?.findViewById(R.id.delivery_recycleView)!!
                 recyclerView?.adapter = ProductsAdapter3(displayList)
                 recyclerView?.layoutManager = LinearLayoutManager(activity)
                 recyclerView?.setHasFixedSize(true)
-                view!!.findViewById<TextView>(R.id.deliveryAmountText).text = "${String.format("%.2f", totalPrice )} PLN"
+                view!!.findViewById<TextView>(R.id.deliveryAmountText).text = "${
+                    String.format(
+                        "%.2f",
+                        totalPrice
+                    )
+                } PLN"
 
 
                 driverSpinnerBackground = spinnerDrivers.getBackground()
@@ -397,12 +434,12 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
         savedDay = p3
         val formatedDay = String.format("%02d", p3)
         savedMonth = p2+1
-        val formatedMonth = String.format("%02d", p2+1)
+        val formatedMonth = String.format("%02d", p2 + 1)
         savedYear = p1
 
         getDateTimeCalendar()
 
-        view?.findViewById<EditText>(R.id.deliveryDatePicker)?.setText("$formatedDay-$formatedMonth-$savedYear")
+        view?.findViewById<EditText>(R.id.deliveryDatePicker)?.setText("$formatedDay/$formatedMonth/$savedYear")
         isoDateString = "${savedYear}-${formatedMonth}-${formatedDay}T22:59:00.000Z"
         println("Debug: Iso date string $isoDateString")
 
@@ -456,18 +493,22 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
         return vehiclesList
     }
 
-    private fun getProductInfo(productId:Int): JSONObject {
+    private fun getProductInfo(productId: Int): JSONObject {
         lateinit var dataJsonProduct: JSONObject
-        val dataFromAPI = token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(it,productId) }
+        val dataFromAPI = token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(
+            it,
+            productId
+        ) }
         dataJsonProduct = dataFromAPI!!.jsonProductObject
         return dataJsonProduct
     }
 
-    fun showInfoDialog(message:String){
+    fun showInfoDialog(message: String){
         val builder = AlertDialog.Builder(this.activity)
-        builder.setTitle ("")
-        builder.setMessage (message)
-        builder.setPositiveButton("Okay",{ dialogInterface: DialogInterface, i: Int -> Toast.makeText(activity, "Okay!", Toast.LENGTH_LONG).show()} )
+        builder.setTitle("")
+        builder.setMessage(message)
+        builder.setPositiveButton("Okay") { dialogInterface: DialogInterface, i: Int ->
+        }
         builder.show()
     }
 

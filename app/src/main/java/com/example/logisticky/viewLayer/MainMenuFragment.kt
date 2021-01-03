@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.example.logisticky.MainActivity
@@ -33,6 +34,7 @@ private const val ARG_PARAM2 = "param2"
  */
 class MainMenuFragment : Fragment(), View.OnClickListener {
 
+
     lateinit var navController: NavController
     var token:String? = null
 
@@ -40,11 +42,19 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
 
+
     ): View? {
         return inflater.inflate(R.layout.fragment_main_menu, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+             val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+                showInfoDialog("Are you sure you want to close application?")
+            }
+            this.requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback);
+
+
 
         buttonState(false)
         changeButtonsColor(R.color.hint)
@@ -129,6 +139,18 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
         view?.findViewById<Button>(R.id.productsButton)?.setBackgroundColor(resources.getColor(colorId))
         view?.findViewById<Button>(R.id.cartButton)?.setBackgroundColor(resources.getColor(colorId))
         view?.findViewById<Button>(R.id.deliversButton)?.setBackgroundColor(resources.getColor(colorId))
+    }
+
+    fun showInfoDialog(message: String){
+        val builder = AlertDialog.Builder(this.activity)
+        builder.setTitle("")
+        builder.setMessage(message)
+        builder.setPositiveButton("Yes") { dialogInterface: DialogInterface, i: Int ->
+            activity?.finish()
+        }
+        builder.setNeutralButton("Cancel") {dialogInterface: DialogInterface, i: Int ->
+        }
+        builder.show()
     }
 
 

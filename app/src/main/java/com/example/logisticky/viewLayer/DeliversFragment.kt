@@ -3,8 +3,12 @@ package com.example.logisticky.viewLayer
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
+import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
@@ -29,12 +33,12 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class DeliversFragment : Fragment() {
+    lateinit var navController: NavController
     var testList = ArrayList<DeliveryItem>()
     var displayList = ArrayList<DeliveryItem>()
     lateinit var recyclerView: RecyclerView
 
-    var token:String? = null
-
+    var token: String? = null
 
 
     // TODO: Rename and change types of parameters
@@ -43,12 +47,29 @@ class DeliversFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //fragmentManager?.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        val callersName = getCallerFragment()
+        if (callersName == "4-2131230873" ){
+            val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+                navController.navigate(R.id.action_deliversFragment_to_mainMenuFragment)
+                clearBackStack()
+            }
+            this.requireActivity().onBackPressedDispatcher.addCallback(this, callback);
+        }
+
+
+
+
+
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
 
         token = this.activity?.let { TokenManager.loadData(it) }
+
+
 
     }
 
@@ -82,6 +103,7 @@ class DeliversFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navController = Navigation.findNavController(view)
 
         CoroutineScope(Dispatchers.IO).launch {
             val dataFromApi2 = async {
@@ -92,7 +114,7 @@ class DeliversFragment : Fragment() {
 
 
             println("Debug: Make Delivery code: $dataFromApi2")
-            dataFromApi2?.deliverysList?.forEach{
+            dataFromApi2?.deliverysList?.forEach {
 
 
 //                val timeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
@@ -110,20 +132,37 @@ class DeliversFragment : Fragment() {
 //                val mins = cal.get(Calendar.MINUTE)
 
 
-
                 val createdDate = getDateFromIso8601String(it.date)
-                val createdDateString = "Created: ${it.date.take(10)}, ${String.format("%02d:%02d", createdDate.get(Calendar.HOUR_OF_DAY), createdDate.get(Calendar.MINUTE))} |"
+                val createdDateString = "Created: ${it.date.take(10)}, ${
+                    String.format(
+                        "%02d:%02d", createdDate.get(
+                            Calendar.HOUR_OF_DAY
+                        ), createdDate.get(Calendar.MINUTE)
+                    )
+                } |"
                 val pickupDate = getDateFromIso8601String(it.pickupDate)
-                val pickupDateString = "Due date: ${it.pickupDate.take(10)}, ${String.format("%02d:%02d", pickupDate.get(Calendar.HOUR_OF_DAY), pickupDate.get(Calendar.MINUTE))}"
+                val pickupDateString = "Due date: ${it.pickupDate.take(10)}, ${
+                    String.format(
+                        "%02d:%02d", pickupDate.get(
+                            Calendar.HOUR_OF_DAY
+                        ), pickupDate.get(Calendar.MINUTE)
+                    )
+                }"
 
-                testList.add(DeliveryItem(it.deliveryId, it.state, createdDateString, pickupDateString))
+                testList.add(
+                    DeliveryItem(
+                        it.deliveryId,
+                        it.state,
+                        createdDateString,
+                        pickupDateString
+                    )
+                )
 
                 println(it.date)
                 updateUI()
 
             }
         }
-
 
 
     }
@@ -133,10 +172,11 @@ class DeliversFragment : Fragment() {
         inflater.inflate(R.menu.search, menu)
         val menuItem = menu!!.findItem(R.id.searchProducts)
 
-        if(menuItem != null){
+        if (menuItem != null) {
 
             val searchView = menuItem.actionView as SearchView
-            val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+            val editText =
+                searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
             editText.hint = "Search Your Product..."
 
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -151,7 +191,10 @@ class DeliversFragment : Fragment() {
                         val search = newText.toLowerCase(Locale.getDefault())
                         testList.forEach {
 
-                            if (it.deliveryId.toString().toLowerCase(Locale.getDefault()).contains(search)) {
+                            if (it.deliveryId.toString().toLowerCase(Locale.getDefault()).contains(
+                                    search
+                                )
+                            ) {
                                 displayList.add(it)
                             }
                         }
@@ -180,12 +223,11 @@ class DeliversFragment : Fragment() {
     }
 
 
-
-    private fun updateUI(){
-        activity?.runOnUiThread(object: Runnable {
+    private fun updateUI() {
+        activity?.runOnUiThread(object : Runnable {
             override fun run() {
 
-                displayList = testList.reversed() as ArrayList<DeliveryItem>
+                displayList = testList
 
                 recyclerView = view!!.findViewById(R.id.delivers_recycleView)
                 recyclerView?.adapter = DeliverysAdapter(displayList)
@@ -197,13 +239,14 @@ class DeliversFragment : Fragment() {
         })
 
     }
-    fun getDateFromIso8601String (date:String):Calendar{
+
+    fun getDateFromIso8601String(date: String): Calendar {
         val timeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
 
         val offsetDateTime: OffsetDateTime =
-            OffsetDateTime.parse (date, timeFormatter)
+            OffsetDateTime.parse(date, timeFormatter)
 
-        val date = Date.from (Instant.from(offsetDateTime))
+        val date = Date.from(Instant.from(offsetDateTime))
 
 
         //tu dobrze pokazuje czas
@@ -212,5 +255,23 @@ class DeliversFragment : Fragment() {
 //    val hours = cal.get(Calendar.HOUR)
 //    val mins = cal.get(Calendar.MINUTE)
         return cal
+    }
+
+    private fun getCallerFragment(): String? {
+        val fm: FragmentManager? = fragmentManager
+        val count = requireFragmentManager().backStackEntryCount
+        if (fm != null) {
+            return fm.getBackStackEntryAt(count - 1).name
+        } else return null
+    }
+
+    private fun clearBackStack() {
+        val manager: FragmentManager? = getFragmentManager()
+        if (manager != null) {
+            if (manager.backStackEntryCount > 0) {
+                val first = manager.getBackStackEntryAt(0)
+                manager.popBackStack(first.id, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            }
+        }
     }
 }
