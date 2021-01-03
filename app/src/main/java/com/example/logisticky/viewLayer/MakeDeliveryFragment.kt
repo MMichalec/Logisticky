@@ -23,6 +23,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -43,6 +47,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
     var displayList = ArrayList<CartItem>()
     var cartItemsList = ArrayList<DeliverysHandler.CartProductItem>()
     lateinit var recyclerView: RecyclerView
+    lateinit var defaultDeliveryDate:Date
 
     var isoDateString: String?= null
 
@@ -267,7 +272,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
                 calendar.time = currentDate
                 calendar.add(Calendar.DAY_OF_MONTH, 7)
 
-                val defaultDeliveryDate = calendar.time
+                defaultDeliveryDate = calendar.time
 
                 view!!.findViewById<TextView>(R.id.deliveryDatePicker).text = dateFormat.format(defaultDeliveryDate)
 
@@ -439,8 +444,30 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
         getDateTimeCalendar()
 
-        view?.findViewById<EditText>(R.id.deliveryDatePicker)?.setText("$formatedDay/$formatedMonth/$savedYear")
-        isoDateString = "${savedYear}-${formatedMonth}-${formatedDay}T22:59:00.000Z"
+        isoDateString = "${savedYear}-${formatedMonth}-${formatedDay}T23:59:00.000Z"
+
+        val currentDateTime = LocalDateTime.now()
+        val timeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
+        val offsetDateTime: OffsetDateTime = OffsetDateTime.parse(isoDateString, timeFormatter)
+        val offsetDateTime2: OffsetDateTime = OffsetDateTime.parse(currentDateTime.toString()+"Z", timeFormatter)
+        val cal = Calendar.getInstance()
+        val cal2 = Calendar.getInstance()
+        val date = Date.from(Instant.from(offsetDateTime))
+        val date2 = Date.from(Instant.from(offsetDateTime2))
+        cal.time = date
+        cal2.time = date2
+
+        if(cal.time.before(cal2.time))
+        {
+            showInfoDialog("Date can't be from the past.")
+            isoDateString=null
+        }else {
+            view?.findViewById<EditText>(R.id.deliveryDatePicker)?.setText("$formatedDay/$formatedMonth/$savedYear")
+            isoDateString = "${savedYear}-${formatedMonth}-${formatedDay}T22:59:00.000Z"
+        }
+
+
+
         println("Debug: Iso date string $isoDateString")
 
     }
@@ -503,7 +530,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
         return dataJsonProduct
     }
 
-    fun showInfoDialog(message: String){
+    private fun showInfoDialog(message: String){
         val builder = AlertDialog.Builder(this.activity)
         builder.setTitle("")
         builder.setMessage(message)

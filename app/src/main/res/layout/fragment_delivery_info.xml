@@ -17,9 +17,9 @@
         android:textSize="24dp"
         android:text="TextView" />
 
-    <EditText
+    <TextView
         android:gravity="center"
-        android:id="@+id/deliveryDatePicker"
+        android:id="@+id/deliveryDate"
         android:layout_width="match_parent"
         android:layout_below="@id/deliveryMagazinePicker"
         android:layout_height="wrap_content"
@@ -27,16 +27,17 @@
         android:ems="10"
         android:inputType="date"
         android:focusable="false"
+        android:textColor="@color/black"
         />
 
     <TextView
         android:gravity="center"
-        android:id="@+id/deliveryDriverPicker"
+        android:textColor="@color/black"
+        android:id="@+id/deliveryDriver"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:spinnerMode="dropdown"
-        android:layout_below="@id/deliveryDatePicker"
+        android:layout_below="@id/deliveryDate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.606"
@@ -47,12 +48,12 @@
 
     <TextView
         android:gravity="center"
-        android:id="@+id/deliveryVehiclePicker"
+        android:textColor="@color/black"
+        android:id="@+id/deliveryVehicle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:spinnerMode="dropdown"
-        android:layout_below="@id/deliveryDriverPicker"
+        android:layout_below="@id/deliveryDriver"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.606"
@@ -83,7 +84,7 @@
         android:layout_height="200dp"
         android:layout_margin="5dp"
         android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:layout_below="@id/deliveryVehiclePicker"
+        android:layout_below="@id/deliveryVehicle"
         android:clipToPadding="false"
         android:padding="10dp"
         tools:listitem="@layout/product_list_item">

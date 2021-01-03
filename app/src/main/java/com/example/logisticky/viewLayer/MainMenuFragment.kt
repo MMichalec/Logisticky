@@ -141,7 +141,7 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
         view?.findViewById<Button>(R.id.deliversButton)?.setBackgroundColor(resources.getColor(colorId))
     }
 
-    fun showInfoDialog(message: String){
+    private fun showInfoDialog(message: String){
         val builder = AlertDialog.Builder(this.activity)
         builder.setTitle("")
         builder.setMessage(message)

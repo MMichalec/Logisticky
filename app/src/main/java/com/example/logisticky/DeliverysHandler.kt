@@ -7,6 +7,9 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -17,7 +20,7 @@ class DeliverysHandler {
     data class DeliverysData (var deliveryId:Int, var state:String, var date:String, var pickupDate:String)
     data class DeliverysFragmentBundle (var responseCode:Int, var deliverysList: ArrayList<DeliverysData>)
     data class DeliveryProduct (val name:String, val amount:Int, val price: Float)
-    data class DeliveryInfoFragmentBundle (val driverName:String, val driverSurname:String, val vehiclePlateNumber: String, var  productsList: ArrayList<DeliveryProduct>)
+    data class DeliveryInfoFragmentBundle (val date:String, val driverName:String, val driverSurname:String, val vehiclePlateNumber: String, var  productsList: ArrayList<DeliveryProduct>)
 
     companion object {
         fun getCartList (token:String):CartFragmentBundle {
@@ -239,6 +242,21 @@ class DeliverysHandler {
 
             //var deliverysList = ArrayList<DeliveryProduct>()
 
+            val jsonPickupDate = json.getString("pickup_planned_date")
+
+            val timeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME
+            val offsetDateTime: OffsetDateTime = OffsetDateTime.parse(jsonPickupDate, timeFormatter)
+            val cal = Calendar.getInstance()
+            val date = Date.from(Instant.from(offsetDateTime))
+            cal.time = date
+
+            val dateString = "Due date: ${jsonPickupDate.take(10)}, ${String.format("%02d:%02d", cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE)
+                )
+            }"
+
+
+            //tu dobrze pokazuje czas
+
             val jsonDriver = json.getJSONObject("driver")
             val jsonDriverName = jsonDriver.getString("name")
             val jsonDriverSurname = jsonDriver.getString("surname")
@@ -246,7 +264,7 @@ class DeliverysHandler {
             val jsonVehicle = json.getJSONObject("vehicle")
             val jsonVehiclePlateNumber = jsonVehicle.getString("registration_number")
 
-            var bundle = DeliveryInfoFragmentBundle (jsonDriverName, jsonDriverSurname, jsonVehiclePlateNumber, deliverysList)
+            var bundle = DeliveryInfoFragmentBundle (dateString,jsonDriverName, jsonDriverSurname, jsonVehiclePlateNumber, deliverysList)
             return bundle;
         }
 

@@ -50,7 +50,8 @@ class DeliversFragment : Fragment() {
 
         //fragmentManager?.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         val callersName = getCallerFragment()
-        if (callersName == "4-2131230873" ){
+        //TODO callers name is changing. Need to find out what this name means
+        if (callersName == "4-2131230874" ){
             val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
                 navController.navigate(R.id.action_deliversFragment_to_mainMenuFragment)
                 clearBackStack()

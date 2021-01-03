@@ -19,6 +19,8 @@ import com.example.logisticky.viewLayer.ProductsFragment
 //TODO - add preloaders when data is downloaded from DB
 //TODO - make check when creating delivery from cartFragment if all checked items are from the same warehouse
 //TODO - make sure the date of new delivery is not from the past
+//TODO - get warehouse name for delivery info product
+//TODO - add amount in unit to DeliveryInfoFragment. Currently shows only in packages. If dispatch would return also product ID I could grab that data from other endpoint
 
 
 
