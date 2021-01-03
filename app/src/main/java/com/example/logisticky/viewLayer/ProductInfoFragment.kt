@@ -45,6 +45,7 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
     lateinit var dataJsonProduct: JSONObject
     lateinit var testData: ProductsHandler.ProductInfoFragmentBundle
 
+    var unitType = "u"
 
     val spinnerArray: MutableList<String> = ArrayList()
     var packingValue = 1.0
@@ -92,7 +93,10 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
                     testData = dataFromAPI
                     dataWarehouses = dataFromAPI.warehouses
                     dataJsonProduct = dataFromAPI.jsonProductObject
+                    unitType = dataJsonProduct.getString("unit_name")
+
                     updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
+
                 }
 
         }
@@ -111,8 +115,10 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
                         token?.let { DeliverysHandler.addProductToCart(it, warehouseProductId, amount) }
 
                     }.await()
-                    //todo update current amount of packages after adding product to cart
-                    updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
+                    view?.findViewById<TextView>(R.id.productAmountInPackages)?.text = (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt()  - amount).toString() +" p."
+                    //view?.findViewById<TextView>(R.id.productAmount)?.text =  (view?.findViewById<TextView>(R.id.productAmount)?.text.toString().filter { it.isDigit() || it.equals(".") }.toFloat() -  view?.findViewById<TextView>(R.id.productAddAmount)?.text.toString().toFloat()).toString() + " $unitType"
+                    view?.findViewById<TextView>(R.id.productAmount)?.text = (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt() * packingValue).toString() +" $unitType"
+                    //updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
                 }
             }
         }
@@ -213,25 +219,24 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
         activity?.runOnUiThread(object : Runnable {
             override fun run() {
 
-                //really stupid workaround TODO: fix this stupid workaround
-                CoroutineScope(Dispatchers.IO).launch {
 
+//                CoroutineScope(Dispatchers.IO).launch {
+//
+//                    val dataFromAPI = async {
+//                        token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(it,productId.toInt()) }
+//                    }.await()
+//
+//                    if (dataFromAPI?.responseCode == 200) {
+//
+//                        testData = dataFromAPI
+//                        dataWarehouses = dataFromAPI.warehouses
+//                        dataJsonProduct = dataFromAPI.jsonProductObject
+//                        //updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
+//                    }
+//
+//                }
 
-                    val dataFromAPI = async {
-                        token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(it,productId.toInt()) }
-                    }.await()
-
-                    if (dataFromAPI?.responseCode == 200) {
-
-                        testData = dataFromAPI
-                        dataWarehouses = dataFromAPI.warehouses
-                        dataJsonProduct = dataFromAPI.jsonProductObject
-                        //updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
-                    }
-
-                }
-
-
+                view?.findViewById<EditText>(R.id.productAddAmount)?.hint = unitType
                 view?.findViewById<ProgressBar>(R.id.productInfoLoader)?.visibility = View.GONE
                 //Setting up spinners ------------------------------------------------------
                 spinnerArray.clear()
@@ -254,6 +259,7 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
                         p2: Int,
                         p3: Long
                     ) {
+
 
                         warehouseList.forEach{
                             if (it.warehouseName == spinnerArray[p2])

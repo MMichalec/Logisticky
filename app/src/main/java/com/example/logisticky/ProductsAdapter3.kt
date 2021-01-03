@@ -57,7 +57,6 @@ class ProductsAdapter3(private var exampleList: List<CartItem>):
 
         holder.checkBox.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
             override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                Toast.makeText(holder.itemView.context, currentItem.productName, Toast.LENGTH_LONG).show()
                 currentItem.isSelected= true
             }
         })

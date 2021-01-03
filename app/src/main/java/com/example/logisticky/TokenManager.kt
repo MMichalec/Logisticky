@@ -148,6 +148,26 @@ class TokenManager {
             return false
         }
 
+        fun getDiscount(token: String):Int{
+            val url = "https://dystproapi.azurewebsites.net/distributor/discount"
+
+            val client = OkHttpClient()
+
+            val request = Request.Builder().header("x-access-token", token).url(url).build()
+            println("Debug: token in fetchJson $token")
+
+            val response = client.newCall(request).execute()
+
+            println("Debug: Data access succesful URL: $url")
+
+            val body = response.body()?.string()
+
+            println("Debug: Discount: ${response.code()}")
+            val json = JSONObject(body)
+            val discount = json.getString("discount").toInt()
+            return discount
+        }
+
     }
 }
 

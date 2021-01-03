@@ -39,6 +39,8 @@ class CartFragment : Fragment(), View.OnClickListener {
     lateinit var navController: NavController
 
     var totalPrice: Float= 0.0F
+    var priceToSubstract = 0.0F
+
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -61,7 +63,7 @@ class CartFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        totalPrice = 0.0F
+
         return inflater.inflate(R.layout.fragment_cart, container, false)
 
     }
@@ -114,16 +116,35 @@ class CartFragment : Fragment(), View.OnClickListener {
         when (v!!.id) {
 
             R.id.cartRemoveSelectedButton -> {
+                itemsToRemoveList.clear()
                 displayList.forEach { if (it.isSelected) itemsToRemoveList.add(it) }
                 itemsToRemoveList.forEach { displayList.remove(it) }
                 //TODO add removing items from database here
 
+//                val testList = ArrayList<Int>()
+//                val testList2 =ArrayList<Int>()
+//
+//                itemsToRemoveList.forEach{
+//                    testList.add(it.reservationId)
+//                }
+//
+//                cartItemsList.forEach{
+//                    testList2.add(it.reservationId)
+//                }
+//
+//                testList.intersect(testList2).forEach{id ->
+//                    println("Debug: reservationsIdToDelete $id")
+//                }
+
+                //its ugly. You can do this with the use of intersect as above
                 cartItemsList.forEach {
-                    for (i in 0 until itemsToRemoveList.size) {
-                        if (it.reservationId == itemsToRemoveList[i].reservationId) {
+                    itemsToRemoveList.forEach() {itRemoveList ->
+                        if (it.reservationId == itRemoveList.reservationId) {
+                            println("Debug: Cart Item deleted code: ${it.productName}")
                             totalPrice -= it.price
                             var idToDelete = it.reservationId
                             CoroutineScope(Dispatchers.IO).launch {
+
                                 val dataFromApi2 = async {
                                     token?.let {
                                         DeliverysHandler.removeProductFromCart(
@@ -131,12 +152,9 @@ class CartFragment : Fragment(), View.OnClickListener {
                                             idToDelete
                                         )
                                     }
-
                                 }.await()
-                                println("Debug: Cart Item deleted code: $dataFromApi2")
-
+                                println("Debug: Cart Item deleted code: ${it.productName}")
                             }
-
                         }
                     }
                 }
@@ -265,6 +283,7 @@ class CartFragment : Fragment(), View.OnClickListener {
                 recyclerView?.adapter = ProductsAdapter3(displayList)
                 recyclerView?.layoutManager = LinearLayoutManager(activity)
                 recyclerView?.setHasFixedSize(true)
+
 
                 view!!.findViewById<TextView>(R.id.cartPriceText).text = "${String.format("%.2f", totalPrice )} PLN"
             }

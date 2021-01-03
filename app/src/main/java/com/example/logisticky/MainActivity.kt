@@ -12,13 +12,14 @@ import androidx.core.os.bundleOf
 import com.example.logisticky.viewLayer.ProductsFragment
 
 
-//TODO - change formating of date on deliveryInfoFragment and style texts. Check if you can give datepicker fullscreen
+
 //TODO - add dialog popups when critical changes are being made (dialog "Are You Sure" when deleting delivery etc)
-//TODO - remove change magazine from delivery edit menu
 //TODO - add scrolls to recyclerView
-//TODO - add checkboxes to delivery list view with selectable status od delivery
-//TODO - add magazine text to cart recycler view
+//TODO - add checkboxes to delivery list view with selectable status fd delivery
 //TODO - add preloaders when data is downloaded from DB
+//TODO - make check when creating delivery from cartFragment if all checked items are from the same warehouse
+//TODO - make sure the date of new delivery is not from the past
+
 
 
 class MainActivity : AppCompatActivity() {
