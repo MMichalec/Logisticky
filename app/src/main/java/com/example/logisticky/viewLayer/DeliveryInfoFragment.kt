@@ -132,6 +132,9 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
 
         activity?.runOnUiThread(object: Runnable {
             override fun run() {
+
+                view?.findViewById<ProgressBar>(R.id.deliveryInfoLoader)?.visibility = View.GONE
+
                 view?.findViewById<TextView>(R.id.deliveryAmountText)?.text = "${String.format("%.2f", totalPrice )} PLN"
                 view?.findViewById<TextView>(R.id.deliveryId)?.text ="Delivery ID: $deliveryId"
                 view?.findViewById<TextView>(R.id.deliveryDriver)?.text = "Driver: $currentDriver"

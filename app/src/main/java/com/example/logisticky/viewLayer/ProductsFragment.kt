@@ -1,13 +1,11 @@
 package com.example.logisticky.viewLayer
 
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,9 +37,6 @@ class ProductsFragment : Fragment() {
     val displayList = ArrayList<ProductItem>()
 
     var token:String? = null
-
-
-
     lateinit var recyclerView: RecyclerView
 
     // TODO: Rename and change types of parameters
@@ -95,10 +90,6 @@ class ProductsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         productsListForRecyclerView.clear()
-
-
-        //fetchJson()
-
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
@@ -107,6 +98,7 @@ class ProductsFragment : Fragment() {
                 }.await()
 
                 if (dataFromAPI == 200) {
+
                     updateProductsFragmentUI()
                 }
             }catch (e: SocketTimeoutException) {
@@ -122,7 +114,7 @@ class ProductsFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
         inflater.inflate(R.menu.search, menu)
-        val menuItem = menu!!.findItem(R.id.searchProducts)
+        val menuItem = menu!!.findItem(R.id.search)
 
         if(menuItem != null){
 
@@ -222,7 +214,7 @@ class ProductsFragment : Fragment() {
         activity?.runOnUiThread(object : Runnable {
             override fun run() {
                 displayList.clear()
-                displayList.addAll(productsListForRecyclerView)
+                displayList.addAll(productsListForRecyclerView.sortedBy { it.name })
 
                 recyclerView?.adapter = ProductsAdapter(displayList)
                 recyclerView?.layoutManager = LinearLayoutManager(activity)

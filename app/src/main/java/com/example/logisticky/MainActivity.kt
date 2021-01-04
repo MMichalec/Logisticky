@@ -13,12 +13,12 @@ import com.example.logisticky.viewLayer.ProductsFragment
 
 
 
-//TODO - add dialog popups when critical changes are being made (dialog "Are You Sure" when deleting delivery etc)
-//TODO - add scrolls to recyclerView
-//TODO - add checkboxes to delivery list view with selectable status fd delivery
-//TODO - add preloaders when data is downloaded from DB
-//TODO - make check when creating delivery from cartFragment if all checked items are from the same warehouse
-//TODO - make sure the date of new delivery is not from the past
+
+
+//TODO for future update - add checkboxes to delivery list view with selectable status for delivery
+
+
+//TODO - Make checking token date. If its 23h+ logout user || just check for 401 error cocde (unauthorized access) - implement it in userHandler
 //TODO - get warehouse name for delivery info product
 //TODO - add amount in unit to DeliveryInfoFragment. Currently shows only in packages. If dispatch would return also product ID I could grab that data from other endpoint
 

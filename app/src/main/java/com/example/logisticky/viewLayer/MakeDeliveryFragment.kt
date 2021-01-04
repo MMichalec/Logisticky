@@ -102,6 +102,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
 
         token = this.activity?.let { TokenManager.loadData(it) }
         deliveryId = "NEW DELIVERY"
+        warehouseName = requireArguments().getString("deliveryId").toString()
         productsForDeliveryList = requireArguments().getIntegerArrayList("reservationsIdList") as ArrayList<Int>
     }
 
@@ -138,7 +139,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
             println(dataFromAPI?.responseCode)
 
             cartItemsList = dataFromAPI!!.cartProductsItemList
-            warehouseName = dataFromAPI!!.cartProductsItemList[0].warehouseName
+
             dataFromAPI?.cartProductsItemList?.forEach{
 
                 println("Debug: Product ${it.productName}, amount: ${it.amount}, ${it.warehouseName}")

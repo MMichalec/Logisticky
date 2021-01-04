@@ -15,7 +15,7 @@
             app:popExitAnim="@anim/slide_out_right"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
-            app:destination="@id/productsFragment"
+            app:destination="@id/deliverysFragment"
             />
         <action
             app:popEnterAnim="@anim/slide_in_left"
@@ -47,7 +47,7 @@
             app:destination="@id/settingsVersionFragment" />
     </fragment>
     <fragment
-        android:id="@+id/productsFragment"
+        android:id="@+id/deliverysFragment"
         android:name="com.example.logisticky.viewLayer.ProductsFragment"
         android:label="fragment_products"
         tools:layout="@layout/fragment_products" >
@@ -123,7 +123,7 @@
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_cartFragment_to_productsFragment"
-            app:destination="@id/productsFragment" />
+            app:destination="@id/deliverysFragment" />
         <action
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right"

@@ -113,7 +113,10 @@ class CartFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
+
+
         when (v!!.id) {
+
 
             R.id.cartRemoveSelectedButton -> {
                 itemsToRemoveList.clear()
@@ -165,45 +168,42 @@ class CartFragment : Fragment(), View.OnClickListener {
 
             R.id.cartMakeDeliveryButton -> {
 
+
+                var warehousesList = ArrayList<String>()
                 var reservationList = ArrayList<Int>()
-                reservationList.clear()
+
                 displayList.forEach {
                     if (it.isSelected) {
                         reservationList.add(it.reservationId)
-
+                        warehousesList.add(it.magazineName)
                     }
-
                 }
                 if (reservationList.isEmpty()) {
                     showInfoDialog("No products selected. Please select at least one product.")
-                } else {
+                } else if (warehousesList.distinct().size > 1){
+                    showInfoDialog("Selected products are from different warehouses. Please select products from the same warehouse.")
+                }
+                else {
 
-                    //TODO display something if user did not check a signle item
+                    val warehouseName = warehousesList[0]
 
-                    val delIdString = "127"
-//                CoroutineScope(Dispatchers.IO).launch {
-//                    val dataFromApi2 = async {
-//                        token?.let { DeliverysHandler.addDelivery(it, 909, 250, reservationList) }
-//
-//                    }.await()
-//                    println("Debug: Make Delivery code: $dataFromApi2")
-//                    //updateUI()
-//                }
-
-
-                    val bundle = bundleOf("deliveryId" to delIdString)
+                    val bundle = bundleOf("deliveryId" to warehouseName)
                     bundle.putIntegerArrayList("reservationsIdList", reservationList)
                     navController.navigate(R.id.action_cartFragment_to_makeDeliveryFragment, bundle)
                 }
+                displayList.forEach{
+                    it.isSelected = false
+                }
+                updateUI()
             }
-
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
         inflater.inflate(R.menu.search, menu)
-        val menuItem = menu!!.findItem(R.id.searchProducts)
+        val menuItem = menu!!.findItem(R.id.search)
 
         if(menuItem != null){
 
@@ -274,7 +274,7 @@ class CartFragment : Fragment(), View.OnClickListener {
 
         activity?.runOnUiThread(object: Runnable {
             override fun run() {
-
+                view?.findViewById<ProgressBar>(R.id.cartLoader)?.visibility = View.GONE
                 displayList = testList
 
 
@@ -304,7 +304,7 @@ class CartFragment : Fragment(), View.OnClickListener {
         val builder = AlertDialog.Builder(this.activity)
         builder.setTitle ("")
         builder.setMessage (message)
-        builder.setPositiveButton("Okay",{ dialogInterface: DialogInterface, i: Int -> Toast.makeText(activity, "Okay!", Toast.LENGTH_LONG).show()} )
+        builder.setPositiveButton("Okay",{ dialogInterface: DialogInterface, i: Int -> } )
         builder.show()
     }
 

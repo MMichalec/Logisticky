@@ -3,6 +3,7 @@ package com.example.logisticky.viewLayer
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
+import android.widget.ProgressBar
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -47,7 +48,7 @@ class DeliversFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        setHasOptionsMenu(true)
         //fragmentManager?.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         val callersName = getCallerFragment()
         //TODO callers name is changing. Need to find out what this name means
@@ -173,22 +174,21 @@ class DeliversFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
         inflater.inflate(R.menu.search, menu)
-        val menuItem = menu!!.findItem(R.id.searchProducts)
+        val menuItem = menu.findItem(R.id.search)
 
         if (menuItem != null) {
 
             val searchView = menuItem.actionView as SearchView
-            val editText =
-                searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
-            editText.hint = "Search Your Product..."
+            val editText = searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text)
+            editText.hint = "Search delivery by ID..."
 
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     return true
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-
                     if (newText!!.isNotEmpty()) {
                         displayList.clear()
                         val search = newText.toLowerCase(Locale.getDefault())
@@ -230,7 +230,8 @@ class DeliversFragment : Fragment() {
         activity?.runOnUiThread(object : Runnable {
             override fun run() {
 
-                displayList = testList
+                view?.findViewById<ProgressBar>(R.id.deliversLoader)?.visibility = View.GONE
+                displayList.addAll(testList)
 
                 recyclerView = view!!.findViewById(R.id.delivers_recycleView)
                 recyclerView?.adapter = DeliverysAdapter(displayList)

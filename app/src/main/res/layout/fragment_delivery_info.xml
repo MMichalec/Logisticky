@@ -104,6 +104,13 @@
         android:textColor="@color/white"
         android:textSize="30sp" />
 
+    <ProgressBar
+        android:id="@+id/deliveryInfoLoader"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"/>
+
 
 
 <!--    <Button-->

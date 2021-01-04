@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".viewLayer.ProductsFragment"
-    android:id="@+id/productsFragment">
+    android:id="@+id/deliverysFragment">
 
     <ProgressBar
         android:id="@+id/productsLoader"
@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/product_list_item"
-        android:layout_above="@+id/searchProducts"
+        android:scrollbars="vertical"
         >
 
     </androidx.recyclerview.widget.RecyclerView>

@@ -18,7 +18,7 @@
         android:id="@+id/vehicles_recycleView"
         android:layout_width="match_parent"
         android:layout_height="520dp"
-        android:layout_above="@+id/searchProducts"
+        android:layout_above="@+id/search"
         android:clipToPadding="false"
         android:padding="10dp"
         tools:listitem="@layout/vehicle_list_item"/>
