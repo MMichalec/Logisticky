@@ -1,6 +1,8 @@
 package com.example.logisticky.viewLayer
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -110,16 +112,25 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
 
                 amount = view?.findViewById<EditText>(R.id.productAddPackage)?.text.toString().toInt()
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    async {
-                        token?.let { DeliverysHandler.addProductToCart(it, warehouseProductId, amount) }
+                var amountAvaible = view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt()
 
-                    }.await()
-                    view?.findViewById<TextView>(R.id.productAmountInPackages)?.text = (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt()  - amount).toString() +" p."
-                    //view?.findViewById<TextView>(R.id.productAmount)?.text =  (view?.findViewById<TextView>(R.id.productAmount)?.text.toString().filter { it.isDigit() || it.equals(".") }.toFloat() -  view?.findViewById<TextView>(R.id.productAddAmount)?.text.toString().toFloat()).toString() + " $unitType"
-                    view?.findViewById<TextView>(R.id.productAmount)?.text = (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt() * packingValue).toString() +" $unitType"
-                    //updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
+                if(amount > amountAvaible){
+                    showInfoDialog("There is not enough product in the warehouse. Value has been set to maximum possible amount")
+                    amount = amountAvaible
+                    view?.findViewById<EditText>(R.id.productAddPackage)?.setText("$amountAvaible")
+                    view?.findViewById<TextView>(R.id.productAddAmount)?.text = (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt() * packingValue).toString()
+                }else{
+                    CoroutineScope(Dispatchers.IO).launch {
+                        async {
+                            token?.let { DeliverysHandler.addProductToCart(it, warehouseProductId, amount) }
+
+                        }.await()
+                        view?.findViewById<TextView>(R.id.productAmountInPackages)?.text = (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt()  - amount).toString() +" p."
+                        view?.findViewById<TextView>(R.id.productAmount)?.text = (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt() * packingValue).toString() +" $unitType"
+
+                    }
                 }
+
             }
         }
     }
@@ -220,21 +231,7 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
             override fun run() {
 
 
-//                CoroutineScope(Dispatchers.IO).launch {
-//
-//                    val dataFromAPI = async {
-//                        token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(it,productId.toInt()) }
-//                    }.await()
-//
-//                    if (dataFromAPI?.responseCode == 200) {
-//
-//                        testData = dataFromAPI
-//                        dataWarehouses = dataFromAPI.warehouses
-//                        dataJsonProduct = dataFromAPI.jsonProductObject
-//                        //updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
-//                    }
-//
-//                }
+
 
                 view?.findViewById<EditText>(R.id.productAddAmount)?.hint = unitType
                 view?.findViewById<ProgressBar>(R.id.productInfoLoader)?.visibility = View.GONE
@@ -287,7 +284,7 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
                     )
                 packingValue = json_Product.getString("unit_number").toDouble()
                 view?.findViewById<TextView>(R.id.productPrice)?.text = "${json_Product.getString("price")} zł/p."
-                view?.findViewById<TextView>(R.id.productPricePerUnit)?.text = (json_Product.getString("price").toFloat() / json_Product.getString("unit_number").toFloat()).toString() + " zł/${json_Product.getString("unit_name")}"
+                view?.findViewById<TextView>(R.id.productPricePerUnit)?.text = String.format("%.2f", (json_Product.getString("price").toFloat() / json_Product.getString("unit_number").toFloat())) + " zł/${json_Product.getString("unit_name")}"
                 view?.findViewById<TextView>(R.id.packing)?.text = "Packing: ${json_Product.getString("unit_number")} ${json_Product.getString("unit_name")}"
 
 
@@ -301,6 +298,13 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
             }
         })
     }
-
+    private fun showInfoDialog(message: String){
+        val builder = AlertDialog.Builder(this.activity)
+        builder.setTitle("")
+        builder.setMessage(message)
+        builder.setPositiveButton("Okay") { dialogInterface: DialogInterface, i: Int ->
+        }
+        builder.show()
+    }
 
 }
