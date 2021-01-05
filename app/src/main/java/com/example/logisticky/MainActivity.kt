@@ -18,7 +18,7 @@ import com.example.logisticky.viewLayer.ProductsFragment
 //TODO for future update - add checkboxes to delivery list view with selectable status for delivery
 
 
-//TODO - Make checking token date. If its 23h+ logout user || just check for 401 error cocde (unauthorized access) - implement it in userHandler
+//TODO - Token validation should occur on every fragment
 //TODO - get warehouse name for delivery info product
 //TODO - add amount in unit to DeliveryInfoFragment. Currently shows only in packages. If dispatch would return also product ID I could grab that data from other endpoint
 

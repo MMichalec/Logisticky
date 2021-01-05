@@ -1,11 +1,22 @@
 package com.example.logisticky
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
+import androidx.core.content.ContextCompat.startActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.Navigation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -21,19 +32,19 @@ class TokenManager {
 
 
         //TODO I think save data should be privet LoginFragment function not public avaible from handler
-        fun saveData(activity: FragmentActivity, data: String?){
+        fun saveData(activity: FragmentActivity, data: String?) {
             val sharedPreferences: SharedPreferences = activity.getSharedPreferences(
                 "sharedPrefs",
                 Context.MODE_PRIVATE
             )
             val editor = sharedPreferences.edit()
 
-            editor.apply(){
+            editor.apply() {
                 putString("STRING_KEY", data)
             }.apply()
         }
 
-        fun loadData(activity: FragmentActivity):String? {
+        fun loadData(activity: FragmentActivity): String? {
             val sharedPreferences: SharedPreferences? = activity.getSharedPreferences(
                 "sharedPrefs",
                 Context.MODE_PRIVATE
@@ -44,7 +55,7 @@ class TokenManager {
             return savedString
         }
 
-        fun register(id: String, pw: String):Int{
+        fun register(id: String, pw: String): Int {
             println("Attempting to Fetch JSON")
 
             val url = "https://dystproapi.azurewebsites.net/auth/register"
@@ -73,7 +84,7 @@ class TokenManager {
             return response.code()
         }
 
-        fun getPermissions(token: String):AuthMe{
+        fun getPermissions(token: String): AuthMe {
             var responseCode = 0
             var roles = ArrayList<String>()
 
@@ -107,7 +118,7 @@ class TokenManager {
             return authMeData
         }
 
-        fun postRequest(token: String, request: String):Int{
+        fun postRequest(token: String, request: String): Int {
             val url = "https://dystproapi.azurewebsites.net/requests"
 
             val client = OkHttpClient()
@@ -119,7 +130,8 @@ class TokenManager {
 
 
             val body: RequestBody = RequestBody.create(JSON, loginData.toString())
-            val newRequest = Request.Builder().header("x-access-token", token).url(url).post(body).build()
+            val newRequest =
+                Request.Builder().header("x-access-token", token).url(url).post(body).build()
 
             val response = client.newCall(newRequest).execute()
 
@@ -148,7 +160,7 @@ class TokenManager {
             return false
         }
 
-        fun getDiscount(token: String):Int{
+        fun getDiscount(token: String): Int {
             val url = "https://dystproapi.azurewebsites.net/distributor/discount"
 
             val client = OkHttpClient()
@@ -168,6 +180,25 @@ class TokenManager {
             return discount
         }
 
+        fun isTokenValid(token: String, fragment: Fragment): Boolean {
+
+            var isValid = true
+            var responseCode = 999
+            CoroutineScope(Dispatchers.IO).launch {
+                async {
+                    val url = "https://dystproapi.azurewebsites.net/auth/me/roles"
+                    val client = OkHttpClient()
+                    val request = Request.Builder().header("x-access-token", token).url(url).build()
+                    val response = client.newCall(request).execute()
+                    responseCode = response.code()
+                }.await()
+
+                print("Debug: token validation: $responseCode")
+                if(responseCode==401) isValid=false
+
+            }
+            return isValid
+        }
     }
 }
 

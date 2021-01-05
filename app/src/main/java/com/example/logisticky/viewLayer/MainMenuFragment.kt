@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.example.logisticky.LoginActivity
 import com.example.logisticky.MainActivity
 import com.example.logisticky.R
 import com.example.logisticky.TokenManager
@@ -35,6 +36,7 @@ private const val ARG_PARAM2 = "param2"
 class MainMenuFragment : Fragment(), View.OnClickListener {
 
 
+
     lateinit var navController: NavController
     var token:String? = null
 
@@ -42,62 +44,71 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
 
-
     ): View? {
         return inflater.inflate(R.layout.fragment_main_menu, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-             val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+        token = this.activity?.let { TokenManager.loadData(it) }
+        if(!TokenManager.isTokenValid(token!!, this))
+        {
+            relogin()
+        }else {
+
+            val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
                 showInfoDialog("Are you sure you want to close application?")
             }
-            this.requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback);
+            this.requireActivity().onBackPressedDispatcher.addCallback(
+                viewLifecycleOwner,
+                callback
+            );
 
 
 
-        buttonState(false)
-        changeButtonsColor(R.color.hint)
+            buttonState(false)
+            changeButtonsColor(R.color.hint)
 
-        super.onViewCreated(view, savedInstanceState)
-        token = this.activity?.let { TokenManager.loadData(it) }
+            super.onViewCreated(view, savedInstanceState)
 
-        navController = Navigation.findNavController(view)
-        view.findViewById<Button>(R.id.productsButton)?.setOnClickListener(this)
-        view.findViewById<Button>(R.id.cartButton)?.setOnClickListener(this)
-        view.findViewById<Button>(R.id.deliversButton)?.setOnClickListener(this)
-        view.findViewById<Button>(R.id.logOutButton)?.setOnClickListener(this)
-        view.findViewById<Button>(R.id.settingsButton)?.setOnClickListener(this)
-        buttonState(false)
 
-        CoroutineScope(IO).launch {
-            val role = async {
-                token?.let { TokenManager.getPermissions(it) }
-            }.await()
+            navController = Navigation.findNavController(view)
+            view.findViewById<Button>(R.id.productsButton)?.setOnClickListener(this)
+            view.findViewById<Button>(R.id.cartButton)?.setOnClickListener(this)
+            view.findViewById<Button>(R.id.deliversButton)?.setOnClickListener(this)
+            view.findViewById<Button>(R.id.logOutButton)?.setOnClickListener(this)
+            view.findViewById<Button>(R.id.settingsButton)?.setOnClickListener(this)
+            buttonState(false)
 
-            activity?.runOnUiThread(object: Runnable {
-                override fun run() {
-                    view.findViewById<ProgressBar>(R.id.mainMenuLoader).visibility = View.GONE
+            CoroutineScope(IO).launch {
+                val role = async {
+
+                    token?.let { TokenManager.getPermissions(it) }
+                }.await()
+
+                activity?.runOnUiThread(object : Runnable {
+                    override fun run() {
+                        view.findViewById<ProgressBar>(R.id.mainMenuLoader).visibility = View.GONE
+                    }
+                })
+
+                if (role?.roles?.size == 0) {
+                    activity?.runOnUiThread(object : Runnable {
+                        override fun run() {
+                            showInfoDialog()
+                        }
+                    })
+                } else {
+                    activity?.runOnUiThread(object : Runnable {
+                        override fun run() {
+                            buttonState(true)
+                            changeButtonsColor(R.color.mainTile)
+
+                        }
+                    })
                 }
-            })
-
-            if(role?.roles?.size == 0){
-                activity?.runOnUiThread(object: Runnable {
-                    override fun run() {
-                        showInfoDialog()
-                    }
-                })
-            }else {
-                activity?.runOnUiThread(object: Runnable {
-                    override fun run() {
-                        buttonState(true)
-                        changeButtonsColor(R.color.mainTile)
-
-                    }
-                })
             }
         }
-
     }
 
     override fun onClick(v: View?) {
@@ -152,6 +163,21 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
         }
         builder.show()
     }
+
+    private fun relogin (){
+
+                    val builder = AlertDialog.Builder(this.activity)
+                    builder.setTitle("Unauthorized access")
+                    builder.setMessage("Token has expired, pleas log in again.")
+                    builder.setPositiveButton("LOGIN") { dialogInterface: DialogInterface, i: Int ->
+
+                        val intent = Intent(this.context, LoginActivity::class.java)
+                        this.context?.startActivity(intent)
+                        this.activity?.finish()
+                    }
+                    builder.show()
+                }
+
 
 
 }
