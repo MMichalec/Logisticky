@@ -1,18 +1,14 @@
 package com.example.logisticky
 
-import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.util.Log
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.navigation.Navigation
+import com.google.gson.JsonParser
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -22,7 +18,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
-import java.io.IOException
+
 
 class TokenManager {
 
@@ -55,7 +51,7 @@ class TokenManager {
             return savedString
         }
 
-        fun register(id: String, pw: String): Int {
+        fun register(id: String, pw: String): String {
             println("Attempting to Fetch JSON")
 
             val url = "https://dystproapi.azurewebsites.net/auth/register"
@@ -75,13 +71,20 @@ class TokenManager {
             val response = client.newCall(newRequest).execute()
             //communicationToServerStatus= response.code()
             println("Debug: ${response.code()}")
+            println("Debug: ${response.message()}")
 
-            //println("Debug auth body : ${response.body()?.toString()}")
+
 
             val jsonBody = response.body()?.string()
+
+
+            val msg = JSONObject(jsonBody)
+val msg2 = msg.getJSONObject("error").getString("message")
+            println("Debug auth token from msg: $msg2")
+
             println("Debug auth token from body: $jsonBody}")
 
-            return response.code()
+            return msg2
         }
 
         fun getPermissions(token: String): AuthMe {

@@ -69,19 +69,18 @@ class RegisterFragment : Fragment(), View.OnClickListener {
 
                     activity?.runOnUiThread(object : Runnable {
                         override fun run() {
-                            when (responseCode){
-                                200 -> showInfoDialog("Regiester successful. You will be redirected to login page")
-                                400 -> {
-                                    showInfoDialog("Missing one of the arguments needed for registration")
-                                }
-                                422 -> {
-                                    showInfoDialog("Password is too weak! Password has to be at least 8 characters long, have at least one big and small letter, special character and number.")
-                                }
-                            }
+                            showInfoDialog(responseCode)
+//                            when (responseCode){
+//                                200 -> showInfoDialog("Regiester successful. You will be redirected to login page")
+//                                400 -> {
+//                                    showInfoDialog("Missing one of the arguments needed for registration")
+//                                }
+//                                422 -> {
+//                                    showInfoDialog("Password is too weak! Password has to be at least 8 characters long, have at least one big and small letter, special character and number.")
+//                                }
+//                            }
                         }
                     })
-
-
                 }
 
             }

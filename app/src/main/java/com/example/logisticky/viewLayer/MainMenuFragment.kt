@@ -35,8 +35,6 @@ private const val ARG_PARAM2 = "param2"
  */
 class MainMenuFragment : Fragment(), View.OnClickListener {
 
-
-
     lateinit var navController: NavController
     var token:String? = null
 
@@ -103,7 +101,6 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
                         override fun run() {
                             buttonState(true)
                             changeButtonsColor(R.color.mainTile)
-
                         }
                     })
                 }

@@ -19,15 +19,14 @@ import com.example.logisticky.viewLayer.ProductsFragment
 
 
 //TODO - Token validation should occur on every fragment
+//TODO - fix views on multiple screens.
+//TODO - on register fragment talk with Motyl about type of error you want to display
 //TODO - get warehouse name for delivery info product
 //TODO - add amount in unit to DeliveryInfoFragment. Currently shows only in packages. If dispatch would return also product ID I could grab that data from other endpoint
 
 
 
 class MainActivity : AppCompatActivity() {
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
