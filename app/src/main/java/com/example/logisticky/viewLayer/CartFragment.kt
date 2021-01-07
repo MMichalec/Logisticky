@@ -2,6 +2,7 @@ package com.example.logisticky.viewLayer
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.*
 import android.widget.*
@@ -13,6 +14,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.*
 import org.json.JSONObject
 import java.lang.Runnable
@@ -274,6 +276,7 @@ class CartFragment : Fragment(), View.OnClickListener {
 
         activity?.runOnUiThread(object: Runnable {
             override fun run() {
+                activity?.findViewById<FloatingActionButton>(R.id.cartFab)?.setBackgroundTintList(ColorStateList.valueOf(resources.getColor( R.color.fab)))
                 view?.findViewById<ProgressBar>(R.id.cartLoader)?.visibility = View.GONE
                 displayList = testList
 

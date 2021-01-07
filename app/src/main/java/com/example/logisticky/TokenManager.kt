@@ -1,5 +1,6 @@
 package com.example.logisticky
 
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
@@ -7,12 +8,12 @@ import android.net.NetworkCapabilities
 import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.JsonParser
+import kotlinx.coroutines.*
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -183,25 +184,24 @@ val msg2 = msg.getJSONObject("error").getString("message")
             return discount
         }
 
-        fun isTokenValid(token: String, fragment: Fragment): Boolean {
+        suspend fun isTokenValid(token: String): Boolean = withContext(Dispatchers.IO) {
 
             var isValid = true
             var responseCode = 999
-            CoroutineScope(Dispatchers.IO).launch {
-                async {
+
                     val url = "https://dystproapi.azurewebsites.net/auth/me/roles"
                     val client = OkHttpClient()
                     val request = Request.Builder().header("x-access-token", token).url(url).build()
                     val response = client.newCall(request).execute()
                     responseCode = response.code()
-                }.await()
 
                 print("Debug: token validation: $responseCode")
-                if(responseCode==401) isValid=false
+                if(responseCode!=200) isValid=false
 
-            }
-            return isValid
+
+            return@withContext isValid
         }
+
     }
 }
 

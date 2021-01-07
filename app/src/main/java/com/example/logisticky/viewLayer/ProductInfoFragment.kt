@@ -3,10 +3,15 @@ package com.example.logisticky.viewLayer
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -16,6 +21,8 @@ import com.example.logisticky.DeliverysHandler
 import com.example.logisticky.ProductsHandler
 import com.example.logisticky.R
 import com.example.logisticky.TokenManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -67,6 +74,7 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
         productId = requireArguments().getString("productId").toString()
         token = this.activity?.let { TokenManager.loadData(it) }
 
+
     }
 
     override fun onCreateView(
@@ -81,7 +89,6 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -109,28 +116,63 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
     override fun onClick( v: View?) {
         when (v!!.id){
             R.id.addToCartButton -> {
+                val anim = AnimationUtils.loadAnimation(this.context, R.anim.scale)
 
-                amount = view?.findViewById<EditText>(R.id.productAddPackage)?.text.toString().toInt()
-
-                var amountAvaible = view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt()
-
-                if(amount > amountAvaible){
-                    showInfoDialog("There is not enough product in the warehouse. Value has been set to maximum possible amount")
-                    amount = amountAvaible
-                    view?.findViewById<EditText>(R.id.productAddPackage)?.setText("$amountAvaible")
-                    view?.findViewById<TextView>(R.id.productAddAmount)?.text = (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt() * packingValue).toString()
-                }else{
-                    CoroutineScope(Dispatchers.IO).launch {
-                        async {
-                            token?.let { DeliverysHandler.addProductToCart(it, warehouseProductId, amount) }
-
-                        }.await()
-                        view?.findViewById<TextView>(R.id.productAmountInPackages)?.text = (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt()  - amount).toString() +" p."
-                        view?.findViewById<TextView>(R.id.productAmount)?.text = (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString().filter { it.isDigit() }.toInt() * packingValue).toString() +" $unitType"
-
-                    }
+                if (view?.findViewById<EditText>(R.id.productAddPackage)?.text.toString() == "") {
+                    amount = 0
+                } else {
+                    amount =view?.findViewById<EditText>(R.id.productAddPackage)?.text.toString().toInt()
                 }
 
+                if (amount == 0) {
+                    showInfoDialog("Please specify an amount of product!")
+                } else {
+
+
+                    var amountAvaible =
+                        view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString()
+                            .filter { it.isDigit() }.toInt()
+
+                    if (amount > amountAvaible) {
+                        showInfoDialog("There is not enough product in the warehouse. Value has been set to maximum possible amount")
+                        amount = amountAvaible
+                        view?.findViewById<EditText>(R.id.productAddPackage)
+                            ?.setText("$amountAvaible")
+                        view?.findViewById<TextView>(R.id.productAddAmount)?.text =
+                            (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString()
+                                .filter { it.isDigit() }.toInt() * packingValue).toString()
+                    } else {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            async {
+                                token?.let {
+                                    DeliverysHandler.addProductToCart(
+                                        it,
+                                        warehouseProductId,
+                                        amount
+                                    )
+                                }
+
+                            }.await()
+                            view?.findViewById<TextView>(R.id.productAmountInPackages)?.text =
+                                (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString()
+                                    .filter { it.isDigit() }.toInt() - amount).toString() + " p."
+                            view?.findViewById<TextView>(R.id.productAmount)?.text =
+                                (view?.findViewById<TextView>(R.id.productAmountInPackages)?.text.toString()
+                                    .filter { it.isDigit() }
+                                    .toInt() * packingValue).toString() + " $unitType"
+
+
+                            Snackbar.make(requireView(), "Product added to the cart!", Snackbar.LENGTH_LONG).show()
+
+                            val fab = activity?.findViewById<FloatingActionButton>(R.id.cartFab)
+                            fab?.startAnimation(anim)
+                            fab?.setBackgroundTintList(ColorStateList.valueOf(resources.getColor(R.color.fabNewItem)))
+
+
+                        }
+                    }
+
+                }
             }
         }
     }

@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -18,10 +17,12 @@ import com.example.logisticky.LoginActivity
 import com.example.logisticky.MainActivity
 import com.example.logisticky.R
 import com.example.logisticky.TokenManager
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,22 +38,25 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
 
     lateinit var navController: NavController
     var token:String? = null
-
+    var isTokenValid:Boolean = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
 
     ): View? {
+
+        token = this.activity?.let { TokenManager.loadData(it) }
+        isTokenValid =  runBlocking {   TokenManager.isTokenValid(token!!)}
+
+
         return inflater.inflate(R.layout.fragment_main_menu, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        token = this.activity?.let { TokenManager.loadData(it) }
-        if(!TokenManager.isTokenValid(token!!, this))
-        {
-            relogin()
-        }else {
+            if(!isTokenValid) relogin()
+
+
 
             val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
                 showInfoDialog("Are you sure you want to close application?")
@@ -71,6 +75,13 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
 
 
             navController = Navigation.findNavController(view)
+
+        //TODO Set animations somehow
+
+        activity?.findViewById<FloatingActionButton>(R.id.cartFab)?.setOnClickListener {
+            navController.navigate(R.id.cartFragment)
+        }
+
             view.findViewById<Button>(R.id.productsButton)?.setOnClickListener(this)
             view.findViewById<Button>(R.id.cartButton)?.setOnClickListener(this)
             view.findViewById<Button>(R.id.deliversButton)?.setOnClickListener(this)
@@ -105,7 +116,7 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
                     })
                 }
             }
-        }
+
     }
 
     override fun onClick(v: View?) {

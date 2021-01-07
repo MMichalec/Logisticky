@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -213,6 +214,7 @@ class ProductsFragment : Fragment() {
     private fun updateProductsFragmentUI(){
         activity?.runOnUiThread(object : Runnable {
             override fun run() {
+
                 displayList.clear()
                 displayList.addAll(productsListForRecyclerView.sortedBy { it.name })
 

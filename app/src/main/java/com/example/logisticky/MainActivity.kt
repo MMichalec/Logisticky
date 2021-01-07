@@ -9,10 +9,10 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
+import androidx.navigation.Navigation
 import com.example.logisticky.viewLayer.ProductsFragment
-
-
-
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 
 
 //TODO for future update - add checkboxes to delivery list view with selectable status for delivery
@@ -23,6 +23,8 @@ import com.example.logisticky.viewLayer.ProductsFragment
 //TODO - on register fragment talk with Motyl about type of error you want to display
 //TODO - get warehouse name for delivery info product
 //TODO - add amount in unit to DeliveryInfoFragment. Currently shows only in packages. If dispatch would return also product ID I could grab that data from other endpoint
+
+//TODO ROADMAP : Product 0 amount package in ProductInfoFragment, Regiester messages change to proper messages, secure socketTimeout and NoNetwork
 
 
 

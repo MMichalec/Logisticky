@@ -6,6 +6,8 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
@@ -13,6 +15,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -47,6 +50,9 @@ class DeliversFragment : Fragment() {
     private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        activity?.findViewById<FloatingActionButton>(R.id.cartFab)?.visibility = View.GONE
+
+
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         //fragmentManager?.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
@@ -73,6 +79,12 @@ class DeliversFragment : Fragment() {
 
 
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        activity?.findViewById<FloatingActionButton>(R.id.cartFab)?.visibility = View.VISIBLE
+        println("Debug: destruction")
     }
 
     override fun onCreateView(
@@ -174,6 +186,7 @@ class DeliversFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
         inflater.inflate(R.menu.search, menu)
+
         val menuItem = menu.findItem(R.id.search)
 
         if (menuItem != null) {
