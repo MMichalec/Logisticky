@@ -158,29 +158,6 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProductInfoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProductInfoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
-
-    class Availability(var amount: Float, var product_warehouseId: Int, var warehouseName: String)
-
     private fun autoRoundingProductAdding (editTextAddAmount: EditText, editTextAddPackage: EditText  ){
 
         editTextAddAmount?.setOnEditorActionListener(OnEditorActionListener { v, actionId, event ->
@@ -230,14 +207,12 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_PREVIOUS -> {
                     if (editTextAddPackage.text.isNotEmpty()) {
-                        val calculatedPackage =
-                            editTextAddPackage.text.toString().toDouble()
+                        val calculatedPackage = editTextAddPackage.text.toString().toDouble()
                         editTextAddAmount?.setText((calculatedPackage * packingValue).toString())
 
 
                         //hide keyboard after input
-                        val imm =
-                            activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         imm.hideSoftInputFromWindow(view?.getWindowToken(), 0)
 
                     }
@@ -246,18 +221,15 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
             }
             false
         })
-
     }
 
     private fun updateProductInfoFragmentUI(){
         activity?.runOnUiThread(object : Runnable {
             override fun run() {
 
-
-
-
                 view?.findViewById<EditText>(R.id.productAddAmount)?.hint = unitType
                 view?.findViewById<ProgressBar>(R.id.productInfoLoader)?.visibility = View.GONE
+
                 //Setting up spinners ------------------------------------------------------
                 spinnerArray.clear()
                 dataWarehouses.forEach{
@@ -301,10 +273,7 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
 
 
 
-                view?.findViewById<TextView>(R.id.productName)?.text =
-                    dataJsonProduct.getString(
-                        "name"
-                    )
+                view?.findViewById<TextView>(R.id.productName)?.text = dataJsonProduct.getString("name")
                 packingValue = dataJsonProduct.getString("unit_number").toDouble()
                 view?.findViewById<TextView>(R.id.productPrice)?.text = "${dataJsonProduct.getString("price")} zł/p."
                 view?.findViewById<TextView>(R.id.productPricePerUnit)?.text = String.format("%.2f", (dataJsonProduct.getString("price").toFloat() / dataJsonProduct.getString("unit_number").toFloat())) + " zł/${dataJsonProduct.getString("unit_name")}"
@@ -329,5 +298,5 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
         }
         builder.show()
     }
-
+    class Availability(var amount: Float, var product_warehouseId: Int, var warehouseName: String)
 }
