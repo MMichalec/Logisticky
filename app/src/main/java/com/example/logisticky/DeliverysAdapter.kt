@@ -61,9 +61,9 @@ class DeliverysAdapter(private var exampleList: List<DeliveryItem>):
 
         holder.itemView.setOnClickListener{
 
-            var navController = Navigation.findNavController(it)
+            val navController = Navigation.findNavController(it)
             val bundle = bundleOf("deliveryId" to currentItem.deliveryId.toString())
-            navController!!.navigate(R.id.action_deliversFragment_to_deliveryInfoFragment, bundle)
+            navController.navigate(R.id.action_deliversFragment_to_deliveryInfoFragment, bundle)
         }
 
 

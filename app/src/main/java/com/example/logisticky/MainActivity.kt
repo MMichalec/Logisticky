@@ -1,8 +1,12 @@
 package com.example.logisticky
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -13,6 +17,8 @@ import androidx.navigation.Navigation
 import com.example.logisticky.viewLayer.ProductsFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.runBlocking
+import java.lang.Exception
 
 
 //TODO for future update - add checkboxes to delivery list view with selectable status for delivery
@@ -29,13 +35,16 @@ import com.google.android.material.snackbar.Snackbar
 
 
 class MainActivity : AppCompatActivity() {
+    var isTokenValid:Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
 
         println("Debug " + TokenManager.loadData(this))
         if (TokenManager.loadData(this) == null){
@@ -44,6 +53,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent);
             finish()
         }
+
+        val token = TokenManager.loadData(this)
+
+        try {
+            isTokenValid =  runBlocking {   TokenManager.isTokenValid(token!!)}
+        }catch (e: Exception){
+            println("Debug : No network")
+        }
+
+        if(!isTokenValid) relogin()
     }
 
 
@@ -65,6 +84,20 @@ class MainActivity : AppCompatActivity() {
     companion object {
         var isUserLogged = false
 
+    }
+
+    private fun relogin (){
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Unauthorized access")
+        builder.setMessage("Token has expired, pleas log in again.")
+        builder.setPositiveButton("LOGIN") { dialogInterface: DialogInterface, i: Int ->
+
+            val intent = Intent(this, LoginActivity::class.java)
+            this.startActivity(intent)
+            this.finish()
+        }
+        builder.show()
     }
 
 }

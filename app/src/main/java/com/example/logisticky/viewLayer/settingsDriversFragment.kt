@@ -185,9 +185,9 @@ class settingsDriversFragment : Fragment(), View.OnClickListener {
 
                 displayList = testList
                 recyclerView = view?.findViewById(R.id.drivers_recycleView)!!
-                recyclerView?.adapter = DriverAdapter(displayList)
-                recyclerView?.layoutManager = LinearLayoutManager(activity)
-                recyclerView?.setHasFixedSize(true)
+                recyclerView.adapter = DriverAdapter(displayList)
+                recyclerView.layoutManager = LinearLayoutManager(activity)
+                recyclerView.setHasFixedSize(true)
                 view?.findViewById<ProgressBar>(R.id.driversLoader)?.visibility = View.GONE
             }
         })

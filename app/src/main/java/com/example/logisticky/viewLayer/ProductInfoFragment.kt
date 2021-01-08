@@ -4,9 +4,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -27,10 +24,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import okhttp3.*
 import org.json.JSONObject
-import java.io.IOException
-import java.net.SocketTimeoutException
 import kotlin.math.roundToInt
 
 
@@ -45,31 +39,24 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class ProductInfoFragment : Fragment(), View.OnClickListener {
-    lateinit var productId:String
+    private lateinit var productId:String
 
-    var amount = 0
-    var warehouseProductId = 0
+    private var amount = 0
+    private var warehouseProductId = 0
+    private var packingValue = 1.0
 
-    lateinit var dataWarehouses: ArrayList<Availability>
-    lateinit var dataJsonProduct: JSONObject
-    lateinit var testData: ProductsHandler.ProductInfoFragmentBundle
+     private lateinit var dataWarehouses: ArrayList<Availability>
+     private lateinit var dataJsonProduct: JSONObject
+     private lateinit var productInfoBundle: ProductsHandler.ProductInfoFragmentBundle
 
-    var unitType = "u"
+     private var unitType = "u"
+     private val spinnerArray: MutableList<String> = ArrayList()
+     private var token:String? = null
 
-    val spinnerArray: MutableList<String> = ArrayList()
-    var packingValue = 1.0
-    var token:String? = null
 
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
 
         productId = requireArguments().getString("productId").toString()
         token = this.activity?.let { TokenManager.loadData(it) }
@@ -81,9 +68,6 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-
-
         return inflater.inflate(R.layout.fragment_product_info, container, false)
     }
 
@@ -91,23 +75,20 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         CoroutineScope(Dispatchers.IO).launch {
-
-
-                val dataFromAPI = async {
+                val productInfoFromApi = async {
                     token?.let { ProductsHandler.getDataForProductInfoFragmentFromApi(it,productId.toInt()) }
                 }.await()
 
-                if (dataFromAPI?.responseCode == 200) {
+                if (productInfoFromApi?.responseCode == 200) {
 
-                    testData = dataFromAPI
-                    dataWarehouses = dataFromAPI.warehouses
-                    dataJsonProduct = dataFromAPI.jsonProductObject
+                    productInfoBundle = productInfoFromApi
+                    dataWarehouses = productInfoFromApi.warehouses
+                    dataJsonProduct = productInfoFromApi.jsonProductObject
                     unitType = dataJsonProduct.getString("unit_name")
 
-                    updateProductInfoFragmentUI(dataWarehouses, dataJsonProduct)
+                    updateProductInfoFragmentUI()
 
                 }
-
         }
 
         view.findViewById<Button>(R.id.addToCartButton).setOnClickListener(this)
@@ -268,7 +249,7 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
 
     }
 
-    private fun updateProductInfoFragmentUI(warehouseList:ArrayList<Availability>, json_Product:JSONObject){
+    private fun updateProductInfoFragmentUI(){
         activity?.runOnUiThread(object : Runnable {
             override fun run() {
 
@@ -279,7 +260,7 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
                 view?.findViewById<ProgressBar>(R.id.productInfoLoader)?.visibility = View.GONE
                 //Setting up spinners ------------------------------------------------------
                 spinnerArray.clear()
-                warehouseList.forEach{
+                dataWarehouses.forEach{
                     spinnerArray.add(it.warehouseName)
                 }
 
@@ -300,10 +281,10 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
                     ) {
 
 
-                        warehouseList.forEach{
+                        dataWarehouses.forEach{
                             if (it.warehouseName == spinnerArray[p2])
                             {
-                                view!!.findViewById<TextView>(R.id.productAmount).text = (it.amount.toString().toFloat() * json_Product.getString("unit_number").toFloat()).toString() + " ${json_Product.getString("unit_name")} "
+                                view!!.findViewById<TextView>(R.id.productAmount).text = (it.amount.toString().toFloat() * dataJsonProduct.getString("unit_number").toFloat()).toString() + " ${dataJsonProduct.getString("unit_name")} "
                                 view!!.findViewById<TextView>(R.id.productAmountInPackages).text = "${it.amount.toInt()} p."
 
                                 warehouseProductId = it.product_warehouseId
@@ -321,13 +302,13 @@ class ProductInfoFragment : Fragment(), View.OnClickListener {
 
 
                 view?.findViewById<TextView>(R.id.productName)?.text =
-                    json_Product.getString(
+                    dataJsonProduct.getString(
                         "name"
                     )
-                packingValue = json_Product.getString("unit_number").toDouble()
-                view?.findViewById<TextView>(R.id.productPrice)?.text = "${json_Product.getString("price")} zł/p."
-                view?.findViewById<TextView>(R.id.productPricePerUnit)?.text = String.format("%.2f", (json_Product.getString("price").toFloat() / json_Product.getString("unit_number").toFloat())) + " zł/${json_Product.getString("unit_name")}"
-                view?.findViewById<TextView>(R.id.packing)?.text = "Packing: ${json_Product.getString("unit_number")} ${json_Product.getString("unit_name")}"
+                packingValue = dataJsonProduct.getString("unit_number").toDouble()
+                view?.findViewById<TextView>(R.id.productPrice)?.text = "${dataJsonProduct.getString("price")} zł/p."
+                view?.findViewById<TextView>(R.id.productPricePerUnit)?.text = String.format("%.2f", (dataJsonProduct.getString("price").toFloat() / dataJsonProduct.getString("unit_number").toFloat())) + " zł/${dataJsonProduct.getString("unit_name")}"
+                view?.findViewById<TextView>(R.id.packing)?.text = "Packing: ${dataJsonProduct.getString("unit_number")} ${dataJsonProduct.getString("unit_name")}"
 
 
                 //Autocalculating amounts of product

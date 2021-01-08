@@ -60,8 +60,8 @@
     <Spinner
 
         android:id="@+id/magazinePicker"
-        android:layout_width="200dp"
-        android:layout_height="80dp"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
 
 
         android:spinnerMode="dropdown"
@@ -177,32 +177,31 @@
         android:layout_width="161dp"
         android:layout_height="48dp"
         android:ems="10"
+        android:gravity="center"
+        android:hint="packages"
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.936"
+        app:layout_constraintHorizontal_bias="0.904"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.74"
-        android:gravity="center"
-        android:hint="packages"
-        />
+        app:layout_constraintVertical_bias="0.808" />
 
     <EditText
         android:id="@+id/productAddAmount"
         android:layout_width="161dp"
         android:layout_height="48dp"
         android:ems="10"
+        android:gravity="center"
+        android:hint="m2"
+        android:imeOptions="actionDone"
         android:inputType="numberDecimal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.064"
+        app:layout_constraintHorizontal_bias="0.096"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.74"
-        android:hint="m2"
-        android:gravity="center"
-        android:imeOptions="actionDone"/>
+        app:layout_constraintVertical_bias="0.808" />
 
     <Button
         android:id="@+id/addToCartButton"

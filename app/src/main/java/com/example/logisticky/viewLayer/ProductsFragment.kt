@@ -4,21 +4,16 @@ import android.os.Bundle
 import android.view.*
 import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.logisticky.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import okhttp3.*
-import java.io.IOException
-import java.net.SocketTimeoutException
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -34,22 +29,18 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class ProductsFragment : Fragment() {
+    lateinit var recyclerView: RecyclerView
+
     var productsListForRecyclerView = ArrayList<ProductItem>()
     val displayList = ArrayList<ProductItem>()
 
     var token:String? = null
-    lateinit var recyclerView: RecyclerView
 
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
 
         setHasOptionsMenu(true)
         token = this.activity?.let { TokenManager.loadData(it) }
@@ -66,56 +57,32 @@ class ProductsFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_products, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ProductsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ProductsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
 
-                }
-            }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         productsListForRecyclerView.clear()
+
         CoroutineScope(Dispatchers.IO).launch {
 
-            try {
-                val dataFromAPI = async {
+                val getProductsListApiResponseCode = async {
                     token?.let { ProductsHandler.getDataForProductsFragmentFromApi(it,productsListForRecyclerView) }
                 }.await()
 
-                if (dataFromAPI == 200) {
-
+                if (getProductsListApiResponseCode == 200) {
                     updateProductsFragmentUI()
                 }
-            }catch (e: SocketTimeoutException) {
-                view.findViewById<TextView>(R.id.noNetworkView).visibility = View.VISIBLE
-            }
+
 
         }
-
-        recyclerView = view?.findViewById(R.id.products_recycleView)
-
+        recyclerView = view.findViewById(R.id.products_recycleView)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 
         inflater.inflate(R.menu.search, menu)
-        val menuItem = menu!!.findItem(R.id.search)
+        val menuItem = menu.findItem(R.id.search)
 
         if(menuItem != null){
 
@@ -140,11 +107,12 @@ class ProductsFragment : Fragment() {
                             }
                         }
 
-
                         recyclerView.adapter!!.notifyDataSetChanged()
                     } else {
                         displayList.clear()
-                        displayList.addAll(productsListForRecyclerView)
+
+                        displayList.addAll(productsListForRecyclerView.sortedBy { it.name })
+
                         recyclerView.adapter!!.notifyDataSetChanged()
                     }
 
@@ -162,65 +130,22 @@ class ProductsFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun fetchJson(){
-        println("Debug : Attempting to Fetch JSON")
 
-        val url = "https://dystproapi.azurewebsites.net/products"
-
-        val client = OkHttpClient()
-
-
-        val request = Request.Builder().header("x-access-token", token).url(url).build()
-        println("Debug: token in fetchJson $token")
-        client.newCall(request).enqueue(object : Callback {
-
-            override fun onResponse(call: Call, response: Response) {
-                println("Debug: Data access succesful")
-
-                val body = response.body()?.string()
-                println("Debug: $body")
-
-                val gson = GsonBuilder().create()
-                val simpleProducts = gson.fromJson(body, ProductList::class.java)
-
-                simpleProducts.products.forEach{
-
-                    productsListForRecyclerView.add(ProductItem(it.name, it.product_id))
-
-                }
-
-                activity?.runOnUiThread(object : Runnable {
-                    override fun run() {
-                        displayList.clear()
-                        displayList.addAll(productsListForRecyclerView)
-
-                        recyclerView?.adapter = ProductsAdapter(displayList)
-                        recyclerView?.layoutManager = LinearLayoutManager(activity)
-                        recyclerView?.setHasFixedSize(true)
-                        view?.findViewById<ProgressBar>(R.id.productsLoader)?.visibility = View.GONE
-                    }
-                })
-
-
-            }
-
-            override fun onFailure(call: Call, e: IOException) {
-                println("Data not loaded")
-                productsListForRecyclerView.add(ProductItem("COULD NOT LOAD DATA. CHECK YOUR NETWORK CONNECTION", 0) )
-            }
-        })
+    override fun onDestroyView() {
+        super.onDestroyView()
+        activity?.findViewById<FloatingActionButton>(R.id.cartFab)?.visibility = View.VISIBLE
     }
 
     private fun updateProductsFragmentUI(){
         activity?.runOnUiThread(object : Runnable {
             override fun run() {
-
+                activity?.findViewById<FloatingActionButton>(R.id.cartFab)?.visibility = View.GONE
                 displayList.clear()
                 displayList.addAll(productsListForRecyclerView.sortedBy { it.name })
 
-                recyclerView?.adapter = ProductsAdapter(displayList)
-                recyclerView?.layoutManager = LinearLayoutManager(activity)
-                recyclerView?.setHasFixedSize(true)
+                recyclerView.adapter = ProductsAdapter(displayList)
+                recyclerView.layoutManager = LinearLayoutManager(activity)
+                recyclerView.setHasFixedSize(true)
                 view?.findViewById<ProgressBar>(R.id.productsLoader)?.visibility = View.GONE
             }
         })
@@ -228,7 +153,6 @@ class ProductsFragment : Fragment() {
 
 
     class ProductList(var products: ArrayList<SimpleProduct>)
-
     class SimpleProduct(var name:String, var product_id: Int)
 
 }

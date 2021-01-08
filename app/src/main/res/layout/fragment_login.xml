@@ -25,8 +25,9 @@
         />
 
     <EditText
+        android:layout_margin="10dp"
         android:id="@+id/editTextTextPersonName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
         android:textColor="@color/white"
@@ -56,6 +57,7 @@
         app:layout_constraintVertical_bias="0.499" />
 
     <Button
+
         android:id="@+id/registerButton"
         android:layout_width="288dp"
         android:layout_height="48dp"
@@ -69,11 +71,12 @@
         app:layout_constraintVertical_bias="0.581" />
 
     <EditText
+        android:layout_margin="10dp"
         android:id="@+id/editTextTextPassword"
         android:backgroundTint="@color/white"
         android:textColor="@color/white"
         android:textSize="20sp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
         android:ems="10"

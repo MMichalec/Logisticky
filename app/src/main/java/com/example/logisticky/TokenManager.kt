@@ -19,6 +19,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
+import java.io.IOException
+import java.lang.NumberFormatException
+import java.lang.RuntimeException
 
 
 class TokenManager {
@@ -184,22 +187,30 @@ val msg2 = msg.getJSONObject("error").getString("message")
             return discount
         }
 
+        @Throws (Exception::class)
         suspend fun isTokenValid(token: String): Boolean = withContext(Dispatchers.IO) {
 
             var isValid = true
-            var responseCode = 999
+
 
                     val url = "https://dystproapi.azurewebsites.net/auth/me/roles"
                     val client = OkHttpClient()
                     val request = Request.Builder().header("x-access-token", token).url(url).build()
+
                     val response = client.newCall(request).execute()
-                    responseCode = response.code()
+                   val responseCode = response.code()
 
                 print("Debug: token validation: $responseCode")
                 if(responseCode!=200) isValid=false
 
 
             return@withContext isValid
+        }
+
+        @Throws (NumberFormatException::class)
+        fun testExcept (){
+            val x = "2rf"
+            val y = x.toInt()
         }
 
     }

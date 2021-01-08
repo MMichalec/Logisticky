@@ -131,6 +131,9 @@
             app:exitAnim="@anim/slide_out_left"
             android:id="@+id/action_cartFragment_to_makeDeliveryFragment"
             app:destination="@id/makeDeliveryFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment" />
     </fragment>
     <fragment
         android:id="@+id/deliversFragment"

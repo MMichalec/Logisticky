@@ -23,6 +23,10 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.lang.Exception
+import java.lang.NumberFormatException
+import java.lang.RuntimeException
+import java.net.SocketTimeoutException
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,46 +42,35 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
 
     lateinit var navController: NavController
     var token:String? = null
-    var isTokenValid:Boolean = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
 
     ): View? {
-
-        token = this.activity?.let { TokenManager.loadData(it) }
-        isTokenValid =  runBlocking {   TokenManager.isTokenValid(token!!)}
-
-
+        token = TokenManager.loadData(this.requireActivity())
         return inflater.inflate(R.layout.fragment_main_menu, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-            if(!isTokenValid) relogin()
-
-
-
+        //Overwriting default back button action
             val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
                 showInfoDialog("Are you sure you want to close application?")
             }
             this.requireActivity().onBackPressedDispatcher.addCallback(
                 viewLifecycleOwner,
                 callback
-            );
-
-
+            )
 
             buttonState(false)
             changeButtonsColor(R.color.hint)
 
             super.onViewCreated(view, savedInstanceState)
-
-
             navController = Navigation.findNavController(view)
 
         //TODO Set animations somehow
-
+        //Setting up cartFab Floating Action Button
         activity?.findViewById<FloatingActionButton>(R.id.cartFab)?.setOnClickListener {
             navController.navigate(R.id.cartFragment)
         }
@@ -91,7 +84,6 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
 
             CoroutineScope(IO).launch {
                 val role = async {
-
                     token?.let { TokenManager.getPermissions(it) }
                 }.await()
 
@@ -121,16 +113,16 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when(v!!.id){
-            R.id.settingsButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_settingsFragment)
-            R.id.productsButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_productsFragment)
-            R.id.cartButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_cartFragment)
-            R.id.deliversButton -> navController!!.navigate(R.id.action_mainMenuFragment_to_deliversFragment)
+            R.id.settingsButton -> navController.navigate(R.id.action_mainMenuFragment_to_settingsFragment)
+            R.id.productsButton -> navController.navigate(R.id.action_mainMenuFragment_to_productsFragment)
+            R.id.cartButton -> navController.navigate(R.id.action_mainMenuFragment_to_cartFragment)
+            R.id.deliversButton -> navController.navigate(R.id.action_mainMenuFragment_to_deliversFragment)
             R.id.logOutButton -> {
+                //Restarting activity with resetting token to null value. If Token == null then from MainActivity will be loaded Login Activity
                 this.activity?.let { TokenManager.saveData(it,null) }
                 MainActivity.isUserLogged = false
                 val intent = Intent(activity, MainActivity::class.java)
 
-                //intent.putExtra("TOKEN", token)
                 startActivity(intent);
                 activity?.finish()
             }
@@ -171,21 +163,5 @@ class MainMenuFragment : Fragment(), View.OnClickListener {
         }
         builder.show()
     }
-
-    private fun relogin (){
-
-                    val builder = AlertDialog.Builder(this.activity)
-                    builder.setTitle("Unauthorized access")
-                    builder.setMessage("Token has expired, pleas log in again.")
-                    builder.setPositiveButton("LOGIN") { dialogInterface: DialogInterface, i: Int ->
-
-                        val intent = Intent(this.context, LoginActivity::class.java)
-                        this.context?.startActivity(intent)
-                        this.activity?.finish()
-                    }
-                    builder.show()
-                }
-
-
 
 }

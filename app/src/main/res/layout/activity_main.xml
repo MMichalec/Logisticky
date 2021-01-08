@@ -39,6 +39,7 @@
         app:tint="@android:color/white"
         app:srcCompat="@drawable/ic_cart"
         app:borderWidth="5dp"
+
         />
 
     <fragment

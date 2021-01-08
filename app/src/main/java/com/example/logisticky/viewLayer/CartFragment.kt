@@ -6,9 +6,11 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.*
 import android.widget.*
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -58,6 +60,11 @@ class CartFragment : Fragment(), View.OnClickListener {
         //Get list from database here
 
         token = this.activity?.let { TokenManager.loadData(it) }
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            navController.navigate(R.id.action_cartFragment_to_mainMenuFragment)
+            clearBackStack()
+        }
+        this.requireActivity().onBackPressedDispatcher.addCallback(this, callback);
     }
 
     override fun onCreateView(
@@ -89,7 +96,7 @@ class CartFragment : Fragment(), View.OnClickListener {
             cartItemsList = dataFromAPI!!.cartProductsItemList
             dataFromAPI?.cartProductsItemList?.forEach{
                 println("Debug: Product ${it.productName}, amount: ${it.amount}, ${it.warehouseName}")
-                val checkBox = CheckBox(activity)
+                
 
                 var dataFromApi2 = async {
                     getProductInfo(it.productId)
@@ -99,7 +106,7 @@ class CartFragment : Fragment(), View.OnClickListener {
                 val unit = dataFromApi2.getString("unit_name")
 
 
-                testList.add(CartItem(it.productName, "W: ${it.warehouseName}", "Amount: ${it.amount} p. | $amount $unit,", it.reservationId, checkBox))
+                testList.add(CartItem(it.productName, "W: ${it.warehouseName}", "Amount: ${it.amount} p. | $amount $unit,", it.reservationId, checkBox = CheckBox(activity)))
                 totalPrice += it.price
             }
             updateUI()
@@ -309,6 +316,15 @@ class CartFragment : Fragment(), View.OnClickListener {
         builder.setMessage (message)
         builder.setPositiveButton("Okay",{ dialogInterface: DialogInterface, i: Int -> } )
         builder.show()
+    }
+    private fun clearBackStack() {
+        val manager: FragmentManager? = getFragmentManager()
+        if (manager != null) {
+            if (manager.backStackEntryCount > 0) {
+                val first = manager.getBackStackEntryAt(0)
+                manager.popBackStack(first.id, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            }
+        }
     }
 
     }

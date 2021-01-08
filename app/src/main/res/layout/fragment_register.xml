@@ -11,8 +11,9 @@
 
 
     <EditText
+        android:layout_margin="10dp"
         android:id="@+id/registerEmailEditText"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
         android:textColor="@color/white"
@@ -30,11 +31,12 @@
         app:layout_constraintVertical_bias="0.24" />
 
     <EditText
+        android:layout_margin="10dp"
         android:id="@+id/registerPasswordEditText"
         android:backgroundTint="@color/white"
         android:textColor="@color/white"
         android:textSize="20sp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
         android:ems="10"

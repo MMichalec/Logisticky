@@ -68,7 +68,7 @@ class SettingsDefaultMagazineFragment : Fragment() {
             view.context, R.layout.spinner_item, magazinesList
         )
         magazinesAdapter.setDropDownViewResource(R.layout.spinner_dropdown_list)
-        spinnerMagazines = view?.findViewById(R.id.settingsMagazinePicker) as Spinner
+        spinnerMagazines = view.findViewById(R.id.settingsMagazinePicker) as Spinner
         spinnerMagazines.adapter = magazinesAdapter
     }
 

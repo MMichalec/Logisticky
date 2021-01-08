@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:textColor="@color/black"
-        android:text="ELO ELO"
+        android:text="-"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.606"
@@ -81,8 +81,9 @@
         android:background="@color/hint"
         android:id="@+id/delivery_recycleView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="300dp"
         android:layout_margin="5dp"
+
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:layout_below="@id/deliveryVehicle"
         android:clipToPadding="false"
@@ -95,12 +96,16 @@
         android:id="@+id/deliveryAmountText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/delivery_recycleView"
-        android:layout_margin="20dp"
+        android:layout_above="@id/deliveryCancel"
+
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="157dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/rounded_textview"
         android:gravity="center"
         android:padding="10dp"
-        android:text="1273.20 PLN"
+        android:text="-"
         android:textColor="@color/white"
         android:textSize="30sp" />
 
@@ -151,18 +156,14 @@
         android:id="@+id/deliveryCancel"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_below="@id/deliveryAmountText"
 
-        android:layout_alignParentRight="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
 
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center"
+
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
         android:backgroundTint="#b33939"
-        android:text="Cancel delivery"
-        />
+        android:gravity="center"
+        android:text="Cancel delivery" />
 
 <!--    <Button-->
 <!--        android:id="@+id/deliverySaveEdit"-->

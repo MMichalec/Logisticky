@@ -50,7 +50,7 @@ class DeliversFragment : Fragment() {
     private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        activity?.findViewById<FloatingActionButton>(R.id.cartFab)?.visibility = View.GONE
+
 
 
         super.onCreate(savedInstanceState)
@@ -58,7 +58,7 @@ class DeliversFragment : Fragment() {
         //fragmentManager?.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         val callersName = getCallerFragment()
         //TODO callers name is changing. Need to find out what this name means
-        if (callersName == "4-2131230874" ){
+        if (callersName?.take(1) == "4" ){
             val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
                 navController.navigate(R.id.action_deliversFragment_to_mainMenuFragment)
                 clearBackStack()
@@ -242,7 +242,7 @@ class DeliversFragment : Fragment() {
     private fun updateUI() {
         activity?.runOnUiThread(object : Runnable {
             override fun run() {
-
+                activity?.findViewById<FloatingActionButton>(R.id.cartFab)?.visibility = View.GONE
                 view?.findViewById<ProgressBar>(R.id.deliversLoader)?.visibility = View.GONE
                 displayList.addAll(testList)
 

@@ -93,8 +93,6 @@ class DriversHandler {
 
             val client = OkHttpClient()
 
-            val JSON = MediaType.parse("application/json;charset=utf-8")
-
 
             val newRequest = Request.Builder().header("x-access-token", token).url(url).delete().build()
 
