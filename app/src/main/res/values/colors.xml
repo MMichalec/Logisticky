@@ -16,6 +16,7 @@
     <color name="cancel">#A33636</color>
     <color name="fab">#1B232C</color>
     <color name="fabNewItem">#6E0B0B</color>
+    <color name="credentials">#39FFFFFF</color>
 
     <color name="inputTexts">#494949</color>
     <color name="hint">#978C8C</color>

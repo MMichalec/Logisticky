@@ -30,7 +30,8 @@ import java.lang.Exception
 //TODO - get warehouse name for delivery info product
 //TODO - add amount in unit to DeliveryInfoFragment. Currently shows only in packages. If dispatch would return also product ID I could grab that data from other endpoint
 
-//TODO ROADMAP : Product 0 amount package in ProductInfoFragment, Regiester messages change to proper messages, secure socketTimeout and NoNetwork
+//TODO ROADMAP : Regiester messages change to proper messages, secure socketTimeout and NoNetwork, Display delivery status on deliveryInfoFragment. If status is cancelled do not allow to cancel anymore, Hide keyboard after inputing credentials
+
 
 
 

@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -69,6 +66,11 @@ class loginFragment : Fragment(), View.OnClickListener {
 
             navController = Navigation.findNavController(view)
 
+            if(TokenManager.loadId(requireActivity()) != null && TokenManager.loadPw(requireActivity())!= null){
+                view.findViewById<EditText>(R.id.editTextTextPersonName).setText(TokenManager.loadId(requireActivity()))
+                view.findViewById<EditText>(R.id.editTextTextPassword).setText(TokenManager.loadPw(requireActivity()))
+            }
+
             view.findViewById<Button>(R.id.logInButton).setOnClickListener(this)
             view.findViewById<Button>(R.id.registerButton).setOnClickListener(this)
 
@@ -83,6 +85,16 @@ class loginFragment : Fragment(), View.OnClickListener {
 
                 val id = view?.findViewById<EditText>(R.id.editTextTextPersonName)?.text.toString()
                 val pw = view?.findViewById<EditText>(R.id.editTextTextPassword)?.text.toString()
+
+                val credentialsCheckbox = view?.findViewById<CheckBox>(R.id.credentialsCheckbox)
+                if(credentialsCheckbox!!.isChecked){
+                    TokenManager.saveId(requireActivity(), id)
+                    TokenManager.savePw(requireActivity(), pw)
+                } else
+                {
+                    TokenManager.saveId(requireActivity(), null)
+                    TokenManager.savePw(requireActivity(), null)
+                }
 
 
                 CoroutineScope(IO).launch {

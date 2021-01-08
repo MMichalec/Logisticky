@@ -44,6 +44,30 @@ class TokenManager {
             }.apply()
         }
 
+        fun saveId(activity: FragmentActivity, data: String?) {
+            val sharedPreferences: SharedPreferences = activity.getSharedPreferences(
+                "sharedPrefs",
+                Context.MODE_PRIVATE
+            )
+            val editor = sharedPreferences.edit()
+
+            editor.apply() {
+                putString("ID", data)
+            }.apply()
+        }
+
+        fun savePw(activity: FragmentActivity, data: String?) {
+            val sharedPreferences: SharedPreferences = activity.getSharedPreferences(
+                "sharedPrefs",
+                Context.MODE_PRIVATE
+            )
+            val editor = sharedPreferences.edit()
+
+            editor.apply() {
+                putString("PW", data)
+            }.apply()
+        }
+
         fun loadData(activity: FragmentActivity): String? {
             val sharedPreferences: SharedPreferences? = activity.getSharedPreferences(
                 "sharedPrefs",
@@ -51,6 +75,27 @@ class TokenManager {
             )
 
             val savedString = sharedPreferences?.getString("STRING_KEY", null)
+
+            return savedString
+        }
+        fun loadId(activity: FragmentActivity): String? {
+            val sharedPreferences: SharedPreferences? = activity.getSharedPreferences(
+                "sharedPrefs",
+                Context.MODE_PRIVATE
+            )
+
+            val savedString = sharedPreferences?.getString("ID", null)
+
+            return savedString
+        }
+
+        fun loadPw(activity: FragmentActivity): String? {
+            val sharedPreferences: SharedPreferences? = activity.getSharedPreferences(
+                "sharedPrefs",
+                Context.MODE_PRIVATE
+            )
+
+            val savedString = sharedPreferences?.getString("PW", null)
 
             return savedString
         }
