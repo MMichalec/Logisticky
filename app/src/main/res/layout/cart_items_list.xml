@@ -47,12 +47,12 @@
 
         <CheckBox
             android:id="@+id/productCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_width="30dp"
+            android:layout_alignParentEnd="true"
             android:layout_height="50dp"
-            android:layout_toRightOf="@id/text_view_list2"
+
             android:button="@null"
-            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
             android:gravity="center"
             android:text="" />
 
