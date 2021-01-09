@@ -41,6 +41,7 @@ class DeliversFragment : Fragment() {
    private var deliversList = ArrayList<DeliveryItem>()
    private var displayList = ArrayList<DeliveryItem>()
    private var token: String? = null
+    private var callersName:String = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,9 +51,10 @@ class DeliversFragment : Fragment() {
         setHasOptionsMenu(true)
         //fragmentManager?.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
             //Checking what fragment called (first on backstack). If the Make Delivery info called this fragment it clears backstack and overrides back button action
-        val callersName = getCallerFragment()
+        callersName = getCallerFragment()!!
         //TODO callers name is changing. Need to find out what this name means
-        if (callersName?.take(1) == "4" ){
+        //7-2131230879
+        if (callersName?.take(1) != "2" ){
             val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
                 navController.navigate(R.id.action_deliversFragment_to_mainMenuFragment)
                 clearBackStack()
@@ -82,7 +84,7 @@ class DeliversFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
-
+        callersName = getCallerFragment()!!
 
         CoroutineScope(Dispatchers.IO).launch {
             val deliversDataFromApi = async {

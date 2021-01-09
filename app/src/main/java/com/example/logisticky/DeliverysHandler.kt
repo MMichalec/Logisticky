@@ -20,7 +20,7 @@ class DeliverysHandler {
     data class DeliverysData (var deliveryId:Int, var state:String, var date:String, var pickupDate:String)
     data class DeliverysFragmentBundle (var responseCode:Int, var deliverysList: ArrayList<DeliverysData>)
     data class DeliveryProduct (val name:String, val amount:Int, val price: Float)
-    data class DeliveryInfoFragmentBundle (val date:String, val driverName:String, val driverSurname:String, val vehiclePlateNumber: String, var  productsList: ArrayList<DeliveryProduct>)
+    data class DeliveryInfoFragmentBundle (val date:String, val driverName:String, val driverSurname:String, val vehiclePlateNumber: String, var  productsList: ArrayList<DeliveryProduct>, val warehouseName: String, val state: String)
 
     companion object {
         fun getCartList (token:String):CartFragmentBundle {
@@ -224,8 +224,11 @@ class DeliverysHandler {
             val dataFromJson = JSONObject(body)
             val json = dataFromJson.getJSONObject("dispatch")
             var jsonArray_productsList = json.getJSONArray("dispatched_products")
+            var jsonArray_states = json.getJSONArray("states")
 
             val deliverysList = ArrayList<DeliveryProduct>()
+
+
 
             for (i in 0 until jsonArray_productsList.length()) {
 
@@ -262,9 +265,21 @@ class DeliverysHandler {
             val jsonDriverSurname = jsonDriver.getString("surname")
 
             val jsonVehicle = json.getJSONObject("vehicle")
+            val jsonWarehouse = json.getString("warehouse_name")
             val jsonVehiclePlateNumber = jsonVehicle.getString("registration_number")
 
-            var bundle = DeliveryInfoFragmentBundle (dateString,jsonDriverName, jsonDriverSurname, jsonVehiclePlateNumber, deliverysList)
+            var state =""
+            val jsonState = jsonArray_states.getJSONObject(0).getString("state")
+
+
+            for (i in 0 until jsonArray_states.length()) {
+                val stateObject = jsonArray_states.getJSONObject(i).getString("state")
+                state = stateObject
+            }
+
+            if (state!= "REALIZED") state = jsonState
+
+            var bundle = DeliveryInfoFragmentBundle (dateString,jsonDriverName, jsonDriverSurname, jsonVehiclePlateNumber, deliverysList, jsonWarehouse, state)
             return bundle;
         }
 

@@ -39,6 +39,7 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
    private lateinit var currentVehicle:String
    private lateinit var deliveryId:String
    private lateinit var warehouseName:String
+    private var status = ""
    private var dateString = ""
    private var totalPrice: Float= 0.0F
    private var testList = ArrayList<CartItem>()
@@ -79,6 +80,8 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
             currentDriver = "${deliveryInfoFromApi!!.driverName} ${deliveryInfoFromApi.driverSurname}"
             currentVehicle= deliveryInfoFromApi.vehiclePlateNumber
             dateString = deliveryInfoFromApi.date
+            warehouseName = deliveryInfoFromApi.warehouseName
+            status = deliveryInfoFromApi.state
 
             deliveryInfoFromApi.productsList.forEach{
                 testList.add(CartItem(it.name, "${String.format("%.2f", it.price )} PLN", "Amount: ${it.amount} p. |",0,
@@ -93,6 +96,7 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
 
 
         view.findViewById<Button>(R.id.deliveryCancel).setOnClickListener(this)
+        view.findViewById<Button>(R.id.deliveryBack)?.setOnClickListener(this)
 
 
     }
@@ -100,8 +104,11 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when(v!!.id){
             R.id.deliveryCancel -> {
-                showInfoDialog("Are you sure you want to delete delivery $deliveryId")
+                showInfoDialog("Are you sure you want to cancel delivery $deliveryId")
+
             }
+
+            R.id.deliveryBack -> navController.navigate(R.id.action_deliveryInfoFragment_to_deliversFragment2)
         }
     }
 
@@ -114,13 +121,21 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
             override fun run() {
 
                 view?.findViewById<ProgressBar>(R.id.deliveryInfoLoader)?.visibility = View.GONE
+                view?.findViewById<TextView>(R.id.deliveryStatus)?.text = "Status: $status"
+
+                if(status == "CREATED")
+                {
+                    view?.findViewById<Button>(R.id.deliveryCancel)?.visibility = View.VISIBLE
+                    view?.findViewById<Button>(R.id.deliveryBack)?.visibility = View.GONE
+                }
+
 
                 view?.findViewById<TextView>(R.id.deliveryAmountText)?.text = "${String.format("%.2f", totalPrice )} PLN"
                 view?.findViewById<TextView>(R.id.deliveryId)?.text ="Delivery ID: $deliveryId"
                 view?.findViewById<TextView>(R.id.deliveryDriver)?.text = "Driver: $currentDriver"
                 view?.findViewById<TextView>(R.id.deliveryVehicle)?.text = "Vehicle: $currentVehicle"
                 view?.findViewById<TextView>(R.id.deliveryDate)?.text = dateString
-                view?.findViewById<TextView>(R.id.deliveryMagazinePicker)?.text = "PUT WAREHOUSE NAME HERE"
+                view?.findViewById<TextView>(R.id.deliveryMagazinePicker)?.text = warehouseName
 
                 recyclerView = view?.findViewById(R.id.delivery_recycleView)!!
                 recyclerView.adapter = ProductsAdapter3(testList)
@@ -147,6 +162,11 @@ class DeliveryInfoFragment : Fragment(), View.OnClickListener {
 
                 }.await()
                 println ("Debug: Deleting delivery response code $dataFromApi")
+                activity?.runOnUiThread(object : Runnable{
+                    override fun run() {
+                        view?.findViewById<TextView>(R.id.deliveryStatus)?.text = "Status: CANCELED"
+                    }
+                })
             }
         }
         builder.setNeutralButton("Cancel") { dialogInterface: DialogInterface, i: Int ->

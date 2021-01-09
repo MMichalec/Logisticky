@@ -78,6 +78,7 @@ class CartFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        totalPrice = 0.0F
         super.onViewCreated(view, savedInstanceState)
         navController = Navigation.findNavController(view)
 

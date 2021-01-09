@@ -63,6 +63,24 @@
         />
 
     <TextView
+        android:id="@+id/deliveryStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_below="@id/deliveryVehicle"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.606"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.219" />
+
+    <TextView
         android:gravity="center"
         android:id="@+id/deliveryMagazinePicker"
         android:layout_width="match_parent"
@@ -70,6 +88,7 @@
         android:layout_margin="10dp"
         android:textColor="@color/black"
         android:text="-"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.606"
@@ -78,16 +97,19 @@
         app:layout_constraintVertical_bias="0.219" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:background="@color/hint"
         android:id="@+id/delivery_recycleView"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_margin="5dp"
+        android:layout_height="275dp"
+        android:layout_below="@id/deliveryStatus"
 
-        android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:layout_below="@id/deliveryVehicle"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@color/hint"
         android:clipToPadding="false"
         android:padding="10dp"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
         tools:listitem="@layout/product_list_item">
 
     </androidx.recyclerview.widget.RecyclerView>
@@ -156,14 +178,23 @@
         android:id="@+id/deliveryCancel"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-
-
-
         android:layout_alignParentBottom="true"
         android:layout_margin="10dp"
         android:backgroundTint="#b33939"
         android:gravity="center"
+        android:visibility="invisible"
         android:text="Cancel delivery" />
+
+    <Button
+        android:id="@+id/deliveryBack"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/mainTile"
+        android:gravity="center"
+        android:visibility="visible"
+        android:text="Back" />
 
 <!--    <Button-->
 <!--        android:id="@+id/deliverySaveEdit"-->
