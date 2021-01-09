@@ -41,7 +41,7 @@
             android:layout_below="@id/text_view_deliveryId"
             android:text="Creation date 10-12-2020"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="12sp"
             />
 
 
@@ -56,7 +56,7 @@
 
             android:text="Due date: 12-12-2020"
             android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:textSize="12sp" />
 
 
 

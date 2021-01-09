@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.navigation.Navigation
 import com.example.logisticky.R
 import com.example.logisticky.TokenManager
 import kotlinx.coroutines.CoroutineScope
@@ -58,6 +59,8 @@ class RegisterFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v!!.id) {
             R.id.registerSendButton -> {
+                view?.findViewById<ProgressBar>(R.id.registerLoader)?.visibility = View.VISIBLE
+
                 val id = view?.findViewById<EditText>(R.id.registerEmailEditText)?.text.toString()
                 val pw = view?.findViewById<EditText>(R.id.registerPasswordEditText)?.text.toString()
 
@@ -69,7 +72,13 @@ class RegisterFragment : Fragment(), View.OnClickListener {
 
                     activity?.runOnUiThread(object : Runnable {
                         override fun run() {
+                            view?.findViewById<ProgressBar>(R.id.registerLoader)?.visibility = View.GONE
+                            if (responseCode == "Register successful. You will be redirected to login screen.")
                             showInfoDialog(responseCode)
+                            else {
+                                showInfoDialogNoRedirecting(responseCode)
+                            }
+
 //                            when (responseCode){
 //                                200 -> showInfoDialog("Regiester successful. You will be redirected to login page")
 //                                400 -> {
@@ -87,11 +96,24 @@ class RegisterFragment : Fragment(), View.OnClickListener {
         }
         }
 
-    fun showInfoDialog(message:String){
+    private fun showInfoDialog(message:String){
         val builder = AlertDialog.Builder(this.activity)
         builder.setTitle ("")
         builder.setMessage (message)
-        builder.setPositiveButton("Okay",{ dialogInterface: DialogInterface, i: Int -> Toast.makeText(activity, "Okay!", Toast.LENGTH_LONG).show()} )
+        builder.setPositiveButton("Okay") { dialogInterface: DialogInterface, i: Int ->
+            val navController = Navigation.findNavController(requireView())
+            navController.navigate(R.id.action_registerFragment_to_loginFragment)
+        }
+        builder.show()
+    }
+
+    private fun showInfoDialogNoRedirecting(message:String){
+        val builder = AlertDialog.Builder(this.activity)
+        builder.setTitle ("")
+        builder.setMessage (message)
+        builder.setPositiveButton("Okay") { dialogInterface: DialogInterface, i: Int ->
+
+        }
         builder.show()
     }
 

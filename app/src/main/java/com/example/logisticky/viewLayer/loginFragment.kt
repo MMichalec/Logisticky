@@ -119,8 +119,16 @@ class loginFragment : Fragment(), View.OnClickListener {
                             startActivity(intent);
                             activity?.finish()
                         } else {
-                            Toast.makeText(activity, "Invalid ID or/and PW", Toast.LENGTH_LONG)
-                                .show()
+                            activity?.runOnUiThread(object : Runnable {
+                                override fun run() {
+                                    Toast.makeText(activity, "Invalid ID or/and PW", Toast.LENGTH_LONG)
+                                        .show()
+
+                                    view?.findViewById<ProgressBar>(R.id.loginLoader)?.visibility =
+                                        View.GONE
+                                }
+                            })
+
                         }
                         activity.let {
                             if (it != null) {

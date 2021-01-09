@@ -128,9 +128,11 @@ class TokenManager {
 
 
             val msg = JSONObject(jsonBody)
-val msg2 = msg.getJSONObject("error").getString("message")
-            println("Debug auth token from msg: $msg2")
-
+            var msg2 = "Register successful. You will be redirected to login screen."
+            if (response.code() != 200) {
+                msg2 = msg.getJSONObject("error").getString("message")
+                println("Debug auth token from msg: $msg2")
+            }
             println("Debug auth token from body: $jsonBody}")
 
             return msg2
@@ -162,7 +164,7 @@ val msg2 = msg.getJSONObject("error").getString("message")
             val jsonArray = json.getJSONArray("roles")
             println("Debug: permissions and roles for current account $jsonArray")
             for (i in 0 until jsonArray.length()) {
-                roles?.add(jsonArray[i].toString())
+                roles.add(jsonArray[i].toString())
             }
 
             println("Debug: permissions and roles for current account ${roles.size}")
@@ -250,12 +252,6 @@ val msg2 = msg.getJSONObject("error").getString("message")
 
 
             return@withContext isValid
-        }
-
-        @Throws (NumberFormatException::class)
-        fun testExcept (){
-            val x = "2rf"
-            val y = x.toInt()
         }
 
     }

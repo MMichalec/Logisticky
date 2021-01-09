@@ -48,12 +48,6 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         println("Debug " + TokenManager.loadData(this))
-        if (TokenManager.loadData(this) == null){
-
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent);
-            finish()
-        }
 
         val token = TokenManager.loadData(this)
 
@@ -63,7 +57,25 @@ class MainActivity : AppCompatActivity() {
             println("Debug : No network")
         }
 
-        if(!isTokenValid) relogin()
+        if(!isTokenValid)
+        {
+            val intent = Intent(this, LoginActivity::class.java)
+            this.startActivity(intent)
+            this.finish()
+        }
+        else {
+
+            if (TokenManager.loadData(this) == null) {
+
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent);
+                finish()
+            }
+        }
+
+
+
+
     }
 
 
@@ -87,18 +99,5 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun relogin (){
-
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Unauthorized access")
-        builder.setMessage("Token has expired, pleas log in again.")
-        builder.setPositiveButton("LOGIN") { dialogInterface: DialogInterface, i: Int ->
-
-            val intent = Intent(this, LoginActivity::class.java)
-            this.startActivity(intent)
-            this.finish()
-        }
-        builder.show()
-    }
 
 }

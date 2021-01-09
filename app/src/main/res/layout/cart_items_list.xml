@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:gravity="left|center"
             android:layout_below="@id/text_view_list1"
-            android:text="3631 m2 | 12 p."
+            android:text="3631 m2 | 10 p."
             android:textColor="@color/black"
             android:textSize="14sp"
             />
