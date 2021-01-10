@@ -13,41 +13,47 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
+import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import com.example.logisticky.viewLayer.ProductsFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.runBlocking
 import java.lang.Exception
+import java.lang.IllegalArgumentException
 
 
 //TODO for future update - add checkboxes to delivery list view with selectable status for delivery
 
-
-//TODO - Token validation should occur on every fragment
-//TODO - fix views on multiple screens.
-//TODO - on register fragment talk with Motyl about type of error you want to display
-//TODO - get warehouse name for delivery info product
-//TODO - add amount in unit to DeliveryInfoFragment. Currently shows only in packages. If dispatch would return also product ID I could grab that data from other endpoint
-
-//TODO ROADMAP : Regiester messages change to proper messages, secure socketTimeout and NoNetwork, Display delivery status on deliveryInfoFragment. If status is cancelled do not allow to cancel anymore, Hide keyboard after inputing credentials
-
-
-
-
 class MainActivity : AppCompatActivity() {
     var isTokenValid:Boolean = false
+    var isConnection = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        println("Debug " + TokenManager.loadData(this))
+        val networkConnection = NetworkConnection(applicationContext)
+
+            networkConnection.observe(this, Observer {isConnected ->
+                isConnection = isConnected
+                if(isConnected){
+                    println("Debug: CONNECTION - IS CONNECTED!")
+                    if (TokenManager.loadData(this) == null) {
+                        val intent = Intent(this, LoginActivity::class.java)
+                        startActivity(intent);
+                        finish()
+                    }
+
+                }else {
+                    println("Debug: CONNECTION - IS DISCONNECTED!")
+                    noNetworkPopup()
+                }
+            })
+
 
         val token = TokenManager.loadData(this)
 
@@ -63,18 +69,6 @@ class MainActivity : AppCompatActivity() {
             this.startActivity(intent)
             this.finish()
         }
-        else {
-
-            if (TokenManager.loadData(this) == null) {
-
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent);
-                finish()
-            }
-        }
-
-
-
 
     }
 
@@ -97,6 +91,29 @@ class MainActivity : AppCompatActivity() {
     companion object {
         var isUserLogged = false
 
+    }
+    private fun showInfoDialog(message: String){
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("WARNING")
+        builder.setMessage(message)
+        builder.setOnDismissListener(DialogInterface.OnDismissListener { dialog ->
+            if(!isConnection)
+                noNetworkPopup()
+        })
+
+        builder.setPositiveButton("Try again") { dialogInterface: DialogInterface, i: Int ->
+            if(!isConnection)
+                noNetworkPopup()
+        }
+        builder.show()
+    }
+
+    private fun noNetworkPopup(){
+        this.runOnUiThread(object : Runnable {
+            override fun run() {
+                showInfoDialog("There seems to be a problem with network connectivity! Check your connection.")
+            }
+        })
     }
 
 

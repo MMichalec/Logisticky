@@ -239,7 +239,6 @@ class TokenManager {
 
             var isValid = true
 
-
                     val url = "https://dystproapi.azurewebsites.net/auth/me/roles"
                     val client = OkHttpClient()
                     val request = Request.Builder().header("x-access-token", token).url(url).build()

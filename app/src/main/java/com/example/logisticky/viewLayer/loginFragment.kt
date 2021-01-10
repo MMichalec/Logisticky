@@ -62,7 +62,6 @@ class loginFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (context?.let { TokenManager.isOnline(it) }!!) {
 
             navController = Navigation.findNavController(view)
 
@@ -74,7 +73,7 @@ class loginFragment : Fragment(), View.OnClickListener {
             view.findViewById<Button>(R.id.logInButton).setOnClickListener(this)
             view.findViewById<Button>(R.id.registerButton).setOnClickListener(this)
 
-        } else println("Debug: Check your network connection!")
+
     }
 
 
