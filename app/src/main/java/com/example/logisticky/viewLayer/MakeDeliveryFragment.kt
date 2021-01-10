@@ -52,6 +52,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
     var isoDateString: String?= null
 
     var totalPrice: Float= 0.0F
+    lateinit var checkBox: CheckBox
 
     lateinit var navController: NavController
 
@@ -100,6 +101,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
             param2 = it.getString(ARG_PARAM2)
         }
 
+        checkBox = CheckBox(activity)
         token = this.activity?.let { TokenManager.loadData(it) }
         deliveryId = "NEW DELIVERY"
         warehouseName = requireArguments().getString("deliveryId").toString()
@@ -143,7 +145,7 @@ class MakeDeliveryFragment : Fragment(), View.OnClickListener, DatePickerDialog.
             dataFromAPI?.cartProductsItemList?.forEach{
 
                 println("Debug: Product ${it.productName}, amount: ${it.amount}, ${it.warehouseName}")
-                val checkBox = CheckBox(activity)
+
 
 
                 var dataFromApi2 = async {

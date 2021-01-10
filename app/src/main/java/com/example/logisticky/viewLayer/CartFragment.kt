@@ -41,9 +41,10 @@ class CartFragment : Fragment(), View.OnClickListener {
     lateinit var recyclerView: RecyclerView
     var token:String? = null
     lateinit var navController: NavController
+    lateinit var checkBox:CheckBox
 
     var totalPrice: Float= 0.0F
-    var priceToSubstract = 0.0F
+
 
 
     // TODO: Rename and change types of parameters
@@ -58,7 +59,7 @@ class CartFragment : Fragment(), View.OnClickListener {
         }
 
         //Get list from database here
-
+        checkBox= CheckBox(activity)
         token = this.activity?.let { TokenManager.loadData(it) }
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
             navController.navigate(R.id.action_cartFragment_to_mainMenuFragment)
@@ -107,7 +108,7 @@ class CartFragment : Fragment(), View.OnClickListener {
                 val unit = dataFromApi2.getString("unit_name")
 
 
-                testList.add(CartItem(it.productName, "W: ${it.warehouseName}", "Amount: ${it.amount} p. | $amount $unit,", it.reservationId, checkBox = CheckBox(activity)))
+                testList.add(CartItem(it.productName, "W: ${it.warehouseName}", "Amount: ${it.amount} p. | $amount $unit,", it.reservationId, checkBox))
                 totalPrice += it.price
             }
             updateUI()
